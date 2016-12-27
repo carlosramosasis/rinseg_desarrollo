@@ -75,4 +75,8 @@ public class AccionPreventiva extends RealmObject {
             this.fechaString = new String();
         }
     }
+
+    public void setFechaString(String fecha) {
+        this.fechaString = fecha;
+    }
 }

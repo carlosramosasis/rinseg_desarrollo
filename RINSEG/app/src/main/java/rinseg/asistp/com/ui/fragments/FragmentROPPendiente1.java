@@ -292,6 +292,8 @@ public class FragmentROPPendiente1 extends Fragment {
                         public void onClick(View view) {
                             Realm realm = Realm.getInstance(myConfig);
                             try {
+                                boolean eliminoCarpeta = Generic.EliminarImagenCarpeta(activityMain.getApplicationContext(),mRop.getTmpId());
+
                                 realm.beginTransaction();
                                 mRop.deleteFromRealm();
                                 realm.commitTransaction();

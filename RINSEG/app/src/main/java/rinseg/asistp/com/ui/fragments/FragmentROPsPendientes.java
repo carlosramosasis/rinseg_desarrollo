@@ -30,6 +30,7 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.utils.DialogRINSEG;
+import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
@@ -138,35 +139,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
 
     @Override
     public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
-        Log.e("Long click", "long click " + position);
-
-        final ROP ropEliminar = listaRops.get(position);
-        final DialogRINSEG dialogEliminarRop = new DialogRINSEG(activityMain);
-        dialogEliminarRop.show();
-        dialogEliminarRop.setTitle(getString(R.string.dialog_title_rop_pendiente_eliminar));
-        dialogEliminarRop.setBody(getString(R.string.dialog_body_rop_pendiente_eliminar) + " " + ropEliminar.getTmpId());
-        dialogEliminarRop.btnAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Realm realm = Realm.getInstance(myConfig);
-                try {
-                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId()).equalTo("cerrado",false).findFirst();
-
-                    if(ropRealm != null){
-                        realm.beginTransaction();
-                        ropRealm.deleteFromRealm();
-                        realm.commitTransaction();
-                    }
-                    dialogEliminarRop.dismiss();
-                    Messages.showToast(getView(),"");
-                } catch (Exception e) {
-
-                } finally {
-                    realm.close();
-                }
-
-            }
-        });
+        MostrarEliminarRop(position);
     }
 
     @Override
@@ -279,6 +252,53 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+
+    public void MostrarEliminarRop(int position){
+        final int mPosition = position;
+        final View v = getView();
+        Log.e("Long click", "long click " + position);
+
+        final ROP ropEliminar = listaRops.get(mPosition);
+        final DialogRINSEG dialogEliminarRop = new DialogRINSEG(activityMain);
+        dialogEliminarRop.show();
+        dialogEliminarRop.setTitle(getString(R.string.dialog_title_rop_pendiente_eliminar));
+        dialogEliminarRop.setBody(getString(R.string.dialog_body_rop_pendiente_eliminar) + " " + ropEliminar.getTmpId());
+        dialogEliminarRop.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Realm realm = Realm.getInstance(myConfig);
+                try {
+                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId()).equalTo("cerrado",false).findFirst();
+
+                    if(ropRealm != null){
+                        boolean eliminoCarpeta = Generic.EliminarImagenCarpeta(activityMain.getApplicationContext(),ropRealm.getTmpId());
+
+                        realm.beginTransaction();
+                        ropRealm.deleteFromRealm();
+                        realm.commitTransaction();
+                        listaRops.remove(mPosition);
+                        ropAdapter.notifyDataSetChanged();
+
+
+
+                        Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_ok));
+                    }else{
+                        Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_fail_cerrado));
+                    }
+
+                    dialogEliminarRop.dismiss();
+
+                } catch (Exception e) {
+                    Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_error));
+                    dialogEliminarRop.dismiss();
+                } finally {
+                    realm.close();
+                }
+
+            }
+        });
     }
 
 }

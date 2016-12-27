@@ -45,11 +45,13 @@
         android:layout_marginLeft="23dp"
         android:layout_marginRight="23dp"
         android:layout_marginTop="7dp"
-        android:backgroundTint="@color/colorWhite"
+        android:backgroundTint="@color/colorAccent"
         android:gravity="center"
         android:hint="@string/dialog_recupera_rop_txtcodigo"
         android:textColor="@color/colorPrimary"
         android:textSize="15dp"
+        android:lines="1"
+        android:inputType="number"
 
         />
 

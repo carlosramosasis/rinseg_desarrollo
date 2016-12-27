@@ -14,6 +14,8 @@ import rinseg.asistp.com.utils.Generic;
 public class ROP extends RealmObject{
     private int id;
 
+    private int code;
+
     @SerializedName("risk_id")
     private int riskId;
 
@@ -34,6 +36,8 @@ public class ROP extends RealmObject{
 
     @SerializedName("company_id")
     private int companyId;
+
+    private CompanyRO company;
 
     private Date eventDate;
 
@@ -73,6 +77,8 @@ public class ROP extends RealmObject{
 
     public RealmList<ImagenRO> listaImgComent;
 
+    public RealmList<EventItemsRO> listaEventItems;
+
     private String tmpId;
     private boolean puedeElimianrse;
     private String imageFolder;
@@ -95,6 +101,14 @@ public class ROP extends RealmObject{
 
     public void setId(int _id) {
         this.id = _id;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int _code) {
+        this.code = _code;
     }
 
     public Date getEventDate() {
@@ -141,6 +155,10 @@ public class ROP extends RealmObject{
     public int getCompanyId() {return companyId;}
 
     public void setCompanyId(int _companyId) {this.companyId = _companyId;}
+
+    public CompanyRO getCompany() {return company;}
+
+    public void setCompany(CompanyRO _company) {this.company = _company;}
 
     public String getEventDescription() {
         return eventDescription;

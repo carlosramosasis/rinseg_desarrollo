@@ -31,6 +31,7 @@ public class FragmentTabRops extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tabs_rops, container, false);
 
         setUpElements(view);
+
         return view;
     }
 

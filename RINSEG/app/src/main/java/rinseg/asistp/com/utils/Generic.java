@@ -129,6 +129,32 @@ public class Generic {
         return result;
     }
 
+    public static boolean EliminarImagenCarpeta(Context context, String carpertaRop) {
+        boolean result = false;
+
+        File myDir = context.getFilesDir();
+        File myDirGaleria = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop);
+
+        try {
+
+            if(myDirGaleria.isDirectory()){
+                myDirGaleria.delete();
+                result = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+
+
+        return result;
+    }
+
+
+
+
+
     public static int CantidadImagenesPorRop(Context context, String carpertaRop) {
         boolean existeCarpeta = false;
         int resu = 0;

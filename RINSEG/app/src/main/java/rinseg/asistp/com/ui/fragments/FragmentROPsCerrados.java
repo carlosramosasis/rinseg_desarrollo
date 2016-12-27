@@ -35,8 +35,11 @@ import retrofit2.Response;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
+import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.CompanyRO;
+import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.SettingsInspectionRO;
@@ -76,7 +79,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
 
     private FloatingActionButton fab;
-    ActivityMain activityMain ;
+    ActivityMain activityMain;
 
     private DialogLoading dialogLoading;
 
@@ -130,7 +133,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
 
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_rops_cerrados, container, false);
+        View view = inflater.inflate(R.layout.fragment_rops_cerrados, container, false);
 
         setUpElements(view);
         setUpActions();
@@ -146,17 +149,19 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         fab = (FloatingActionButton) v.findViewById(R.id.btn_recupera_rop);
         activityMain = ((ActivityMain) getActivity());
 
+        dialogLoading = new DialogLoading(activityMain);
+
         //instanciamos el dialog para recuperar rop
-        recuperaRopDialog = new Dialog(this.getContext(),R.style.CustomDialogTheme);
+        recuperaRopDialog = new Dialog(this.getContext(), R.style.CustomDialogTheme);
 
         //configuracion para el recicler
         recyclerRops = (RecyclerView) v.findViewById(R.id.recycler_view_rops_cerrados);
         recyclerRops.setHasFixedSize(true);
         // usar administrador para linearLayout
-        lManager =  new LinearLayoutManager(this.getActivity().getApplicationContext());
+        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerRops.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        ropAdapter = new RopAdapter(listaRops,activityMain.getApplicationContext(),this);
+        ropAdapter = new RopAdapter(listaRops, activityMain.getApplicationContext(), this);
         recyclerRops.setAdapter(ropAdapter);
 
         //configuramos Realm
@@ -178,18 +183,19 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
                 btnRecuperaRop = (Button) recuperaRopDialog.findViewById(R.id.btn_dialog_recupera_recuperar);
                 btnCancelarRecuperaRop = (Button) recuperaRopDialog.findViewById(R.id.btn_dialog_recupera_cancelar);
-                txtCodigoRecuperar =(EditText) recuperaRopDialog.findViewById(R.id.txt_dialog_codigo_recuperar);
+                txtCodigoRecuperar = (EditText) recuperaRopDialog.findViewById(R.id.txt_dialog_codigo_recuperar);
 
-                btnRecuperaRop.setOnClickListener(new View.OnClickListener(){
+                btnRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v){
-                        txtCodigoRecuperar.setText("REcuperado");
+                    public void onClick(View v) {
+                       final int codRop =  Integer.parseInt(txtCodigoRecuperar.getText().toString().trim());
+                        RecuperarRopCerrado(codRop);
                     }
                 });
 
-                btnCancelarRecuperaRop.setOnClickListener(new View.OnClickListener(){
+                btnCancelarRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v){
+                    public void onClick(View v) {
                         recuperaRopDialog.dismiss();
                     }
                 });
@@ -199,9 +205,8 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     }
 
 
-
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         activityMain.ShowButtonsBottom(false);
     }
@@ -241,6 +246,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
 
     }
+
     @Override
     public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
     }
@@ -269,7 +275,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     private void LoadRopCerrados() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("cerrado",true).findAll().sort("dateClose", Sort.DESCENDING);
+            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("cerrado", true).findAll().sort("dateClose", Sort.DESCENDING);
 
             for (int i = 0; i < RopsRealm.size(); i++) {
                 ROP tRop = RopsRealm.get(i);
@@ -293,11 +299,11 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
         Intent RopDetalleIntent = new Intent().setClass(activityMain, ActivityRopCerradoDetalle.class);
         RopDetalleIntent.putExtra("ROPtmpId", rop.getTmpId());
-        RopDetalleIntent.putExtra("ROPId",rop.getId());
-        startActivity(RopDetalleIntent );
+        RopDetalleIntent.putExtra("ROPId", rop.getId());
+        startActivity(RopDetalleIntent);
     }
 
-  /*  public void RecuperarRopCerrado(int idRop) {
+    public void RecuperarRopCerrado(int codeRop) {
         View parentLAyout = getView().findViewById(R.id.frame_rop_cerrados_content);
 
         if (!Generic.IsOnRed(activityMain)) {
@@ -309,7 +315,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
 
         RestClient restClient = new RestClient(Services.URL_ROPS);
-        Call<ResponseBody> call = restClient.iServices.getRopClosed(Integer.parseInt(txtCodigoRecuperar.getText().toString().trim()), activityMain.usuarioLogueado.getApi_token());
+        Call<ResponseBody> call = restClient.iServices.getRopClosed(codeRop, activityMain.usuarioLogueado.getApi_token());
 
         call.enqueue(new Callback<ResponseBody>() {
             View rootLayout = activityMain.findViewById(R.id.coordinator_activity_main);
@@ -319,7 +325,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 if (response.isSuccessful()) {
                     Realm realm = Realm.getInstance(myConfig);
                     try {
-                        View parentLAyout = findViewById(R.id.layout_content_main);
+                        View parentLAyout = activityMain.findViewById(R.id.layout_content_main);
 
                         int code = response.code();
                         String body = response.body().string();
@@ -331,72 +337,29 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
                         JSONObject jsonObject = new JSONObject(body);
 
-                        ////////////////////////////Inspections//////////////////////////////////////////////
-                        // recuperamos la configuracion inspeccions del resultado recibido del WS
-                        JSONObject inspectionsJSON = jsonObject.getJSONObject("inspections");
-                        JSONArray iCompaniesJSON = inspectionsJSON.getJSONArray("companies");
-                        JSONArray iFecuenciesJSON = inspectionsJSON.getJSONArray("frequencies");
-                        JSONArray iSeveritiesJSON = inspectionsJSON.getJSONArray("severities");
-                        JSONArray iRisksJSON = inspectionsJSON.getJSONArray("risks");
-                        JSONArray iEventsJSON = inspectionsJSON.getJSONArray("event_items");
-                        JSONArray iManagementsJSON = inspectionsJSON.getJSONArray("managements");
-                        JSONArray iTargentsJSON = inspectionsJSON.getJSONArray("targets");
-                        JSONArray iTypesJSON = inspectionsJSON.getJSONArray("types");
-                        JSONArray iRacsJSON = inspectionsJSON.getJSONArray("racs");
-
-                        // creamos una SettingsInspectionRO para almacenar los valores para seleccion en los formularios en nuestra BD local
-                        realm.beginTransaction();
-                        SettingsInspectionRO inspections = realm.createObject(SettingsInspectionRO.class);
-                        // poblamos las tablas para la inspeccion
-                        PopulateCompaniesForInspection(inspections, iCompaniesJSON, realm);
-                        PopulateFrecuenciesForInspection(inspections, iFecuenciesJSON, realm);
-                        PopulateSeveritiesForInspection(inspections, iSeveritiesJSON, realm);
-                        PopulateRisksForInspection(inspections, iRisksJSON, realm);
-                        PopulateEventsForInspection(inspections, iEventsJSON, realm);
-                        PopulateManagementsForInspection(inspections, iManagementsJSON, realm);
-                        PopulateTargetsForInspection(inspections, iTargentsJSON, realm);
-                        PopulateTypesForInspection(inspections, iTypesJSON, realm);
-                        PopulateRacsForInspection(inspections, iRacsJSON, realm);
-
                         ////////////////////////////ROPS//////////////////////////////////////////////
-                        // recuperamos el la configuracion ROP del resultado recibido del WS
-                        JSONObject ropJSON = jsonObject.getJSONObject("rops");
-                        JSONArray rCompaniesJSON = ropJSON.getJSONArray("companies");
-                        JSONArray rRisksJSON = ropJSON.getJSONArray("risks");
-                        JSONArray rEventsJSON = ropJSON.getJSONArray("event_items");
-                        JSONArray rTargetsJSON = ropJSON.getJSONArray("targets");
-                        JSONArray rAreasJSON = ropJSON.getJSONArray("areas");
-                        // creamos un SettingsRopRO para almacenar los valores para seleccion en los formularios en nuestra BD local
-                        SettingsRopRO rops = realm.createObject(SettingsRopRO.class);
+                        //
+                        JSONObject ropJSON = jsonObject.getJSONObject("rop");
+                        JSONObject rCompanyJSON = ropJSON.getJSONObject("company");
+                        JSONArray rImagesJSON = ropJSON.getJSONArray("images");
+                        JSONArray rRopItemsJSON = ropJSON.getJSONArray("rop_items");
+
+                        //
+                        ROP ropRecuperado = realm.createObject(ROP.class);
                         // poblamos las tablas para el ROP
-                        PopulateCompaniesForROP(rops, rCompaniesJSON, realm);
-                        PopulateRisksForROP(rops, rRisksJSON, realm);
-                        PopulateEventsForROP(rops, rEventsJSON, realm);
-                        PopulateTargetsForROP(rops, rTargetsJSON, realm);
-                        PopulateAreasForROP(rops, rAreasJSON, realm);
-
-                        //////////////////////////////////Settings///////////////////////////////////////
-                        JSONObject settingsJSON = jsonObject.getJSONObject("settings");
-                        PopulateSettings(rops, settingsJSON);
-
-
+                        PopulateROP(ropRecuperado, ropJSON);
+                        //PopulateCompanieForRop(ropRecuperado, rCompanyJSON, realm);
+                        PopulateImagesForRop(ropRecuperado, rImagesJSON, realm);
+                        PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
                         realm.commitTransaction();
 
-                        *//*settingInsp = realm.where(SettingsInspectionRO.class).findFirst();
-                        settingRop = realm.where(SettingsRopRO.class).findFirst();*//*
-                        settingInsp = realm.copyFromRealm(inspections);
-                        settingRop = realm.copyFromRealm(rops);
+                        ROP ropCopy = realm.copyFromRealm(ropRecuperado);
+                        listaRops.add(0, ropCopy);
+                        ropAdapter.notifyDataSetChanged();
 
-                        syncDialog.dismiss();
+                        dialogLoading.dismiss();
                         Messages.showToast(rootLayout, getString(R.string.sincronizando_ok));
 
-                        replaceFragment(new FragmentTabRops(), true, 0, 0, 0, 0);
-
-                        //Pintamos como seleccionado el primer item de nuestro NavigationView
-                        navigationView.getMenu().getItem(0).setChecked(true);
-
-                        sincronizar = false;
-                        thiss.getIntent().putExtra("Sincronizar", sincronizar);
 
                         //// TODO: 28/10/2016  Eliminar esta ultima parte
                         SettingsInspectionRO insp = realm.where(SettingsInspectionRO.class).findFirst();
@@ -413,28 +376,109 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         Log.e("COMP", c.toString());
 
                     } catch (Exception e) {
-                        syncDialog.dismiss();
+                        dialogLoading.dismiss();
                         e.printStackTrace();
                         Messages.showSB(rootLayout, e.getMessage(), "ok");
                     } finally {
                         realm.close();
-                        syncDialog.dismiss();
+                        dialogLoading.dismiss();
                     }
 
                 } else {
-                    syncDialog.dismiss();
+                    dialogLoading.dismiss();
                     Messages.showSB(rootLayout, getString(R.string.sincronizando_error), "ok");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                syncDialog.dismiss();
+                dialogLoading.dismiss();
                 Messages.showSB(rootLayout, getString(R.string.sincronizando_error), "ok");
             }
         });
 
 
-    }*/
+    }
+
+    public void PopulateROP(ROP rop, JSONObject ropJson) {
+
+        try {
+            rop.setId(ropJson.getInt("id"));
+            rop.setCode(ropJson.getInt("code"));
+            rop.setRiskId(ropJson.getInt("risk_id"));
+            rop.setEventId(ropJson.getInt("event_id"));
+            rop.setTargetId(ropJson.getInt("target_id"));
+            rop.setAreaId(ropJson.getInt("area_id"));
+            rop.setArea(ropJson.getString("area"));
+            rop.setEventPlace(ropJson.getString("event_place"));
+            rop.setCompanyId(ropJson.getInt("company_id"));
+            rop.setEventDateString(ropJson.getString("event_date"));
+            rop.setEventDescription(ropJson.getString("event_description"));
+            //rop.set(ropJson.getString("worker_commitment"));
+            rop.setReporterName(ropJson.getString("reporter_name"));
+            rop.setReporterCompany(ropJson.getString("reporter_company"));
+            rop.setSupervisorName(ropJson.getString("supervisor_name"));
+            rop.setSupervisorCompany(ropJson.getString("supervisor_company"));
+            rop.setResearch_required(ropJson.getBoolean("research_required"));
+            rop.setDateCloseString(ropJson.getString("date_close"));
+            rop.setUserId(ropJson.getInt("user_id"));
+
+
+            rop.setCerrado(true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void PopulateCompanieForRop(ROP rop, JSONObject companyJson, Realm realm) {
+
+        try {
+            CompanyRO company = realm.createObject(CompanyRO.class);
+            company.setId(companyJson.getInt("id"));
+            company.setDisplayName(companyJson.getString("display_name"));
+            rop.setCompany(company);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void PopulateImagesForRop(ROP rop, JSONArray imagesArray, Realm realm) {
+        for (int i = 0; i < imagesArray.length(); i++) {
+            try {
+                JSONObject imgJson = imagesArray.getJSONObject(i);
+                ImagenRO imagen = realm.createObject(ImagenRO.class);
+                imagen.setId(imgJson.getInt("id"));
+                imagen.setName(imgJson.getString("name"));
+                imagen.setDescripcion(imgJson.getString("description"));
+                imagen.setPath(imgJson.getString("path"));
+                rop.listaImgComent.add(imagen);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void PopulateRopItemsForRop(ROP rop, JSONArray RopItems, Realm realm) {
+        for (int i = 0; i < RopItems.length(); i++) {
+            try {
+                JSONObject item = RopItems.getJSONObject(i);
+                // CompanyRO companie = realm.createObjectFromJson (CompanyRO.class,c);
+                AccionPreventiva accionPreventiva = realm.createObject(AccionPreventiva.class);
+                accionPreventiva.setId(item.getInt("id"));
+                accionPreventiva.setAccion(item.getString("action"));
+                accionPreventiva.setResponsable(item.getString("responsible"));
+                accionPreventiva.setFechaString(item.getString("date"));
+                rop.listaAccionPreventiva.add(accionPreventiva);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

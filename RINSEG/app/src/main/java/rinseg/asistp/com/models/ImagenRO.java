@@ -13,6 +13,8 @@ public class ImagenRO extends RealmObject{
 
     private String descripcion;
 
+    private String path;
+
 
     public String getName() {
         return name;
@@ -37,5 +39,14 @@ public class ImagenRO extends RealmObject{
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }
