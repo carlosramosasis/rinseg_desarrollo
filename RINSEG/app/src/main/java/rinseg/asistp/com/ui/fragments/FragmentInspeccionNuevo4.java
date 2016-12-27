@@ -160,6 +160,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
     public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position){}
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position){}
+    @Override
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
 
 

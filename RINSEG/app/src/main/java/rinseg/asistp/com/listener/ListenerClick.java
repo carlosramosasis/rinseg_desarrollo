@@ -19,6 +19,7 @@ public interface ListenerClick {
     void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position);
 
     void onItemClicked(RopAdapter.RopViewHolder holder, int position);
+    void onItemLongClicked(RopAdapter.RopViewHolder holder, int position);
 
     void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position);
 }

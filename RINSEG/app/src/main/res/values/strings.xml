@@ -11,6 +11,10 @@
     <!--Tabs Rops-->
     <string name="tab_pendientes">Pendientes</string>
     <string name="tab_cerrados">Cerrados</string>
+    <string name="dialog_title_rop_pendiente_eliminar">Eliminar</string>
+    <string name="dialog_body_rop_pendiente_eliminar">Eliminar al rop temporarl</string>
+    <string name="dialog_body_rop_pendiente_eliminar_ok">Se eliminó el rop pendiente</string>
+    <string name="dialog_body_rop_pendiente_eliminar_fail_cerrado">No se ha podido eliminar el rop porque ya fué cerrado.</string>
 
     <!--Login Activity -->
     <string name="usuario_hint">Usuario</string>

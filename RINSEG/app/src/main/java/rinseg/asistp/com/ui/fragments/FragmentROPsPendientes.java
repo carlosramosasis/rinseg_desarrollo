@@ -29,6 +29,8 @@ import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.adapters.RopAdapter;
+import rinseg.asistp.com.utils.DialogRINSEG;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
@@ -135,6 +137,39 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     }
 
     @Override
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+        Log.e("Long click", "long click " + position);
+
+        final ROP ropEliminar = listaRops.get(position);
+        final DialogRINSEG dialogEliminarRop = new DialogRINSEG(activityMain);
+        dialogEliminarRop.show();
+        dialogEliminarRop.setTitle(getString(R.string.dialog_title_rop_pendiente_eliminar));
+        dialogEliminarRop.setBody(getString(R.string.dialog_body_rop_pendiente_eliminar) + " " + ropEliminar.getTmpId());
+        dialogEliminarRop.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Realm realm = Realm.getInstance(myConfig);
+                try {
+                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId()).equalTo("cerrado",false).findFirst();
+
+                    if(ropRealm != null){
+                        realm.beginTransaction();
+                        ropRealm.deleteFromRealm();
+                        realm.commitTransaction();
+                    }
+                    dialogEliminarRop.dismiss();
+                    Messages.showToast(getView(),"");
+                } catch (Exception e) {
+
+                } finally {
+                    realm.close();
+                }
+
+            }
+        });
+    }
+
+    @Override
     public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
     }
 
@@ -186,7 +221,6 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         btnAgregar = (FloatingActionButton) v.findViewById(R.id.btn_agregar_rop);
 
 
-
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
         myConfig = new RealmConfiguration.Builder()
@@ -203,7 +237,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerRops.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        ropAdapter = new RopAdapter(listaRops,activityMain.getApplicationContext(),this);
+        ropAdapter = new RopAdapter(listaRops, activityMain.getApplicationContext(), this);
         recyclerRops.setAdapter(ropAdapter);
     }
 
@@ -224,7 +258,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     private void LoadRopPendientes() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("cerrado",false).findAll().sort("tmpId", Sort.DESCENDING);
+            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("cerrado", false).findAll().sort("tmpId", Sort.DESCENDING);
 
             for (int i = 0; i < RopsRealm.size(); i++) {
                 ROP tRop = RopsRealm.get(i);

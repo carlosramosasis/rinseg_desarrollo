@@ -243,8 +243,12 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     }
     @Override
     public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
-
     }
+
+    @Override
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

@@ -126,6 +126,15 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
                 mListener.onItemClicked(viewHolder, i);
             }
         });
+
+        viewHolder.vLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mListener.onItemLongClicked(viewHolder, i);
+                return true;
+            }
+        });
+
     }
 
 }
