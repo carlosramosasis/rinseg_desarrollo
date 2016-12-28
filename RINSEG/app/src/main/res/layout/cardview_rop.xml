@@ -40,7 +40,7 @@
                 android:id="@+id/txt_card_view_fec_crea_rop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="23/34/34"
+                android:text="@string/rop_c1_texto_default"
                 android:textSize="13sp"
                 android:layout_marginRight="7dp"
                 />
@@ -48,7 +48,7 @@
                 android:id="@+id/txt_card_view_hora_crea_rop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12:12 pm"
+                android:text="@string/rop_c1_texto_default"
                 android:textSize="13sp"
                 />
         </LinearLayout>
@@ -67,7 +67,7 @@
             android:id="@+id/txt_card_view_empresa_rop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="empresa"
+            android:text="@string/rop_c1_texto_default"
             android:textSize="15sp"
             android:textColor="@color/colorPrimary"
             android:layout_below="@+id/txt_card_view_tipo_evento_rop"

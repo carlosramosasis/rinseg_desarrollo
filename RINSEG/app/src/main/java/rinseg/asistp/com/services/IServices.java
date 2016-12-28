@@ -40,6 +40,7 @@ public interface IServices {
                               @Query("api_token") String api_token
     );
 
+    @FormUrlEncoded
     @POST(Services.ROP_RECOVERY)
     Call<ResponseBody> getRopClosed(@Field("code") int id_rop, @Query("api_token") String api_token);
 

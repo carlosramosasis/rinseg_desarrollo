@@ -16,6 +16,8 @@
     <string name="dialog_body_rop_pendiente_eliminar_ok">Se eliminó el rop pendiente</string>
     <string name="dialog_body_rop_pendiente_eliminar_error">Ocurrió un error al eliminar el rop pendiente</string>
     <string name="dialog_body_rop_pendiente_eliminar_fail_cerrado">No se ha podido eliminar el rop porque ya fué cerrado.</string>
+    <string name="msg_rop_recuperado_ok">Se recupero el rop con éxito</string>
+    <string name="msg_rop_recuperado_fail">Ocurió un error al recuperar el rop</string>
 
     <!--Login Activity -->
     <string name="usuario_hint">Usuario</string>

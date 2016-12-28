@@ -312,6 +312,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         }
 
         dialogLoading.show();
+        recuperaRopDialog.hide();
 
 
         RestClient restClient = new RestClient(Services.URL_ROPS);
@@ -345,6 +346,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         JSONArray rRopItemsJSON = ropJSON.getJSONArray("rop_items");
 
                         //
+                        realm.beginTransaction();
                         ROP ropRecuperado = realm.createObject(ROP.class);
                         // poblamos las tablas para el ROP
                         PopulateROP(ropRecuperado, ropJSON);
@@ -358,27 +360,13 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         ropAdapter.notifyDataSetChanged();
 
                         dialogLoading.dismiss();
-                        Messages.showToast(rootLayout, getString(R.string.sincronizando_ok));
+                        Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
 
-
-                        //// TODO: 28/10/2016  Eliminar esta ultima parte
-                        SettingsInspectionRO insp = realm.where(SettingsInspectionRO.class).findFirst();
-                        SettingsRopRO rop = realm.where(SettingsRopRO.class).findFirst();
-                        RealmResults<FrecuencieRO> f = realm.where(FrecuencieRO.class).findAll();
-                        RealmResults<CompanyRO> c = realm.where(CompanyRO.class).findAll();
-                        RealmList<CompanyRO> comp = insp.companies;
-                        Log.e("INSP", insp.toString());
-                        Log.e("ROP", rop.toString());
-                        for (CompanyRO cm : comp) {
-                            Log.e("INSP_COMP", cm.getId() + " " + cm.getDisplayName());
-                        }
-                        Log.e("FREC", f.toString());
-                        Log.e("COMP", c.toString());
 
                     } catch (Exception e) {
                         dialogLoading.dismiss();
                         e.printStackTrace();
-                        Messages.showSB(rootLayout, e.getMessage(), "ok");
+                        Messages.showSB(rootLayout,  getString(R.string.msg_rop_recuperado_fail), "ok");
                     } finally {
                         realm.close();
                         dialogLoading.dismiss();
@@ -386,14 +374,14 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
                 } else {
                     dialogLoading.dismiss();
-                    Messages.showSB(rootLayout, getString(R.string.sincronizando_error), "ok");
+                    Messages.showSB(rootLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 dialogLoading.dismiss();
-                Messages.showSB(rootLayout, getString(R.string.sincronizando_error), "ok");
+                Messages.showSB(rootLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
             }
         });
 
@@ -403,6 +391,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     public void PopulateROP(ROP rop, JSONObject ropJson) {
 
         try {
+            rop.setCerrado(true);
             rop.setId(ropJson.getInt("id"));
             rop.setCode(ropJson.getInt("code"));
             rop.setRiskId(ropJson.getInt("risk_id"));
@@ -419,12 +408,22 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
             rop.setReporterCompany(ropJson.getString("reporter_company"));
             rop.setSupervisorName(ropJson.getString("supervisor_name"));
             rop.setSupervisorCompany(ropJson.getString("supervisor_company"));
-            rop.setResearch_required(ropJson.getBoolean("research_required"));
+            //rop.setResearch_required(ropJson.getBoolean("research_required"));
             rop.setDateCloseString(ropJson.getString("date_close"));
             rop.setUserId(ropJson.getInt("user_id"));
 
+            int research_required = ropJson.getInt("research_required");
+            if(research_required == 1){
+                rop.setResearch_required(true);
+            }else {
+                rop.setResearch_required(false);
+            }
 
-            rop.setCerrado(true);
+
+            Date eventDate= Generic.dateFormatterMySql.parse(rop.getEventDateString());
+            rop.setEventDate(eventDate);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

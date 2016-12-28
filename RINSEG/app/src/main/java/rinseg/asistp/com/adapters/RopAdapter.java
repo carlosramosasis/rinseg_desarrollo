@@ -99,8 +99,11 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
             viewHolder.txtCodigo.setText(ListaRops.get(i).getTmpId());
         }
 
-        viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaRops.get(i).getEventDate()));
-        viewHolder.txtHoraCrea.setText(Generic.timeFormatter.format(ListaRops.get(i).getEventDate()));
+        if(ListaRops.get(i).getEventDate() != null){
+            viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaRops.get(i).getEventDate()));
+            viewHolder.txtHoraCrea.setText(Generic.timeFormatter.format(ListaRops.get(i).getEventDate()));
+        }
+
 
         int idEvent = ListaRops.get(i).getEventId();
         int idCompany = ListaRops.get(i).getCompanyId();
