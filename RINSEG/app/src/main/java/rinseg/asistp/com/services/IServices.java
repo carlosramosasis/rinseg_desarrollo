@@ -44,4 +44,9 @@ public interface IServices {
     @POST(Services.ROP_RECOVERY)
     Call<ResponseBody> getRopClosed(@Field("code") int id_rop, @Query("api_token") String api_token);
 
+
+    @POST(Services.LOGOUT)
+    Call<ResponseBody> setLogout(@Query("api_token") String api_token);
+
+
 }

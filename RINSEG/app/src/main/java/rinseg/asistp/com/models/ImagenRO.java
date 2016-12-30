@@ -1,5 +1,8 @@
 package rinseg.asistp.com.models;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
+
 import io.realm.RealmObject;
 
 /**
@@ -14,6 +17,8 @@ public class ImagenRO extends RealmObject{
     private String descripcion;
 
     private String path;
+
+
 
 
     public String getName() {
@@ -49,4 +54,6 @@ public class ImagenRO extends RealmObject{
     public void setPath(String path) {
         this.path = path;
     }
+
+
 }

@@ -27,6 +27,7 @@ import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.SettingsRopRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.utils.RinsegModule;
 
@@ -227,6 +228,14 @@ public class FragmentROPPendiente3 extends Fragment {
             }
         });
 
+        activityMain.btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivityGaleria();
+
+            }
+        });
+
         activityMain.btnImportarFotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -350,6 +359,12 @@ public class FragmentROPPendiente3 extends Fragment {
         FotoComentarioIntent.putExtra("imagen_rop", fotoModel);
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
         startActivity(FotoComentarioIntent );
+    }
+
+    public void launchActivityGaleria() {
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("ROPtmpId", mRop.getTmpId());
+        startActivity(GaleriaIntent);
     }
 
 

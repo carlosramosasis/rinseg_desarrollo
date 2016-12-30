@@ -62,7 +62,6 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:layout_below="@+id/bar_layout"
-
                 >
 
                 <include layout="@layout/content_main" />

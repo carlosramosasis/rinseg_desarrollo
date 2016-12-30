@@ -50,6 +50,7 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
@@ -272,6 +273,14 @@ public class FragmentROPPendiente4 extends Fragment {
                 activityMain.actualPaginaRop += 1;
                 ConfirmarCierreRop(getString(R.string.msg_confirmar_cerrar_rop));
                 //activityMain.replaceFragment(new FragmentROPPendiente4(),true,R.anim.enter_from_left, R.anim.exit_to_left,R.anim.enter_from_right,R.anim.exit_to_right);
+            }
+        });
+
+        activityMain.btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivityGaleria();
+
             }
         });
 
@@ -748,5 +757,13 @@ public class FragmentROPPendiente4 extends Fragment {
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
         startActivity(FotoComentarioIntent );
     }
+
+    public void launchActivityGaleria() {
+
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("ROPtmpId", mRop.getTmpId());
+        startActivity(GaleriaIntent);
+    }
+
 
 }

@@ -20,6 +20,7 @@ public class Services {
 
     //Métodos
     public static final String LOGIN = "login";
+    public static final String LOGOUT = "logout";
     public static final String SYNC = "sync";
     public static final String ROP_CLOSE = "close";
     public static final String ADD_IMAGEN = "add-image";

@@ -17,12 +17,14 @@
         <service
             android:name="rinseg.asistp.com.intent_services.RopIntentServices"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivitySplash"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,17 +33,25 @@
         </activity>
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityLogin"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityMain"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityFotoComentario"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
 
         <receiver android:name="rinseg.asistp.com.receive.NetworkStateReceiver">
             <intent-filter>
@@ -50,9 +60,16 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle"
+        <activity
+            android:name="rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle"
             android:theme="@style/AppTheme.NoActionBar"
-            ></activity>
+            android:screenOrientation="portrait"
+            />
+        <activity android:name="rinseg.asistp.com.ui.activities.ActivityGaleria"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            >
+        </activity>
     </application>
 
 </manifest>

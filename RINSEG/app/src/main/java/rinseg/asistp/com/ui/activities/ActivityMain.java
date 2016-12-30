@@ -1,6 +1,7 @@
 package rinseg.asistp.com.ui.activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,10 +17,12 @@ import android.view.MenuItem;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,6 +40,7 @@ import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ManagementRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RacRO;
@@ -68,6 +72,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawer;
     private TextView txtNombreUsuario;
     private TextView txtCorreoUsuario;
+    private RelativeLayout relativeContentMain;
 
     private NavigationView navigationView;
     View header;
@@ -251,6 +256,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
         spaceButtonBottom = (LinearLayout) this.findViewById(R.id.espacio_button_bottom);
 
+        relativeContentMain =  (RelativeLayout) this.findViewById(R.id.relative_content_main);
+
         linearButtonsBottom = (LinearLayout) this.findViewById(R.id.linear_buttons_bottom);
         linearButtonsBottom.setY(linearButtonsBottom.getHeight());
 
@@ -276,7 +283,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void setUpActions(){
+    private void setUpActions() {
 
     }
 
@@ -766,15 +773,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Realm realm = Realm.getInstance(myConfig);
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.delete(User.class);
-                    }
-                });
-                thiss.finishAffinity();
-
+                View view = relativeContentMain;
+                Logout(usuarioLogueado.getApi_token(),view);
             }
         });
 
@@ -788,6 +788,59 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         });
 
     }
+
+
+    private void Logout(String token, final View v) {
+        cerrarSesionDialog.hide();
+        dialogLoading.show();
+        RestClient restClient = new RestClient(Services.URL_SECURITY);
+        Call<ResponseBody> call = restClient.iServices.setLogout(token);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        Log.e("jsonObject", jsonObject.toString());
+                        //  JSONObject usur = jsonObject.getJSONObject("user");
+                        //Gson gson = new Gson();
+                        //User u = gson.fromJson(usur.toString(), User.class);
+                        //SaveUserInRealm(u);
+                        //launchActivityMain(u);
+                        Realm realm = Realm.getInstance(myConfig);
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realm.delete(User.class);
+                                launchActivityLogin();
+                                dialogLoading.dismiss();
+                            }
+                        });
+
+                    } catch (Exception e) {
+
+                        dialogLoading.dismiss();
+                        e.printStackTrace();
+                        Messages.showSB(v, e.getMessage(), "ok");
+                    }
+                } else {
+                    dialogLoading.dismiss();
+
+                    Messages.showSB(v, getString(R.string.msg_login_fail), "ok");
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                dialogLoading.dismiss();
+                Messages.showSB(v, getString(R.string.msg_servidor_inaccesible), "ok");
+            }
+        });
+    }
+
 
     //seteamos los valores e iconos por defecto de la barra de botones inferior
     public void ButtonBottomSetDefault() {
@@ -810,6 +863,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         transaction.replace(R.id.frame_main_content, fragment, tag);
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public void launchActivityLogin() {
+        Intent InspeccionDetalleIntent = new Intent().setClass(this, ActivityLogin.class);
+        startActivity(InspeccionDetalleIntent );
     }
 
     public void ShowButtonsBottom(boolean bolean) {

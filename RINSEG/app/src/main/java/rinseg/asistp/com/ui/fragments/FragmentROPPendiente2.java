@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -50,6 +51,7 @@ import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.TargetRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.adapters.AccionPreventivaAdapter;
@@ -223,9 +225,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            launchActivityFotoComentario(data.getData());
+        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            launchActivityFotoComentario(data);
         }
     }
 
@@ -323,7 +324,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 try {
                     dialogLoading.show();
                     //SaveRop();
-                    activityMain.actualPaginaRop -=1;
+                    activityMain.actualPaginaRop -= 1;
                     Fragment fRopPendiente1 = new FragmentROPPendiente1();
                     Bundle args = new Bundle();
                     args.putString("ROPtmpId", mRop.getTmpId());
@@ -339,18 +340,26 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!listaAccionesValida()){
+                if (!listaAccionesValida()) {
                     Validarformulario();
                     Messages.showSB(v, getString(R.string.msg_lista_acciones), "ok");
                     return;
                 }
 
-                activityMain.actualPaginaRop +=1;
+                activityMain.actualPaginaRop += 1;
                 Fragment fRopPendiente3 = new FragmentROPPendiente3();
                 Bundle args = new Bundle();
                 args.putString("ROPtmpId", mRop.getTmpId());
                 fRopPendiente3.setArguments(args);
                 activityMain.replaceFragment(fRopPendiente3, true, R.anim.enter_from_left, R.anim.exit_to_left, R.anim.enter_from_right, R.anim.exit_to_right);
+            }
+        });
+
+        activityMain.btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivityGaleria();
+
             }
         });
 
@@ -375,19 +384,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                     Permissions();
                 }
 
-                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED){
-                    // Here, the counter will be incremented each time, and the
-                    // picture taken by camera will be stored as 1.jpg,2.jpg
-                    // and likewise.    CODIGO PARA LLAMAR A CAMARA
-                    count++;
-                    String file = count + ".jpg";
-                    File newfile = new File(file);
-                    try {
-                        newfile.createNewFile();
-                    } catch (IOException e) {
-                    }
-
-                    Uri outputFileUri = Uri.fromFile(newfile);
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED) {
 
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -406,13 +403,13 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         activityMain.btnGenerarPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               //Messages.showToast(getView(),String.valueOf(Generic.isOnline()));
+                //Messages.showToast(getView(),String.valueOf(Generic.isOnline()));
             }
         });
 
     }
 
-    private boolean Validarformulario(){
+    private boolean Validarformulario() {
         boolean resu = true;
         if (txtAccion.getText().length() == 0) {
             txtAccion.setError(getString(R.string.error_accion_rp2));
@@ -430,7 +427,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         }
 
 
-        return  resu;
+        return resu;
 
     }
 
@@ -523,13 +520,29 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 //    }
 
 
-    public void launchActivityFotoComentario(Uri uri) {
-        FotoModel fotoModel =  new FotoModel();
-        fotoModel.uri = uri ;
+    public void launchActivityFotoComentario(Intent data) {
+        FotoModel fotoMd = new FotoModel();
+        if (data.getData() != null) {
+            Uri uri = data.getData();
+            fotoMd.uri = uri;
+        }
+        if (data.getExtras() != null) {
+            Bitmap bmp = (Bitmap) data.getExtras().get("data");
+            fotoMd.bitmap = bmp;
+        }
+
+
         Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
-        FotoComentarioIntent.putExtra("imagen_rop", fotoModel);
+        FotoComentarioIntent.putExtra("imagen_rop", fotoMd);
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
-        startActivity(FotoComentarioIntent );
+        startActivity(FotoComentarioIntent);
+    }
+
+    public void launchActivityGaleria() {
+
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("ROPtmpId", mRop.getTmpId());
+        startActivity(GaleriaIntent);
     }
 
     public void Permissions() {
@@ -550,17 +563,17 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     }
 
-    private boolean listaAccionesValida(){
+    private boolean listaAccionesValida() {
         boolean resu = false;
-        if (listaAccionPreventiva.size() > 0){
+        if (listaAccionPreventiva.size() > 0) {
             resu = true;
         }
         return resu;
     }
 
-    private void MostrarAccionCondicionSubestandar(){
+    private void MostrarAccionCondicionSubestandar() {
 
-        final DialogActoCondicionSubestandar dialogActoCondicion = new DialogActoCondicionSubestandar(getActivity(),nameEvent);
+        final DialogActoCondicionSubestandar dialogActoCondicion = new DialogActoCondicionSubestandar(getActivity(), nameEvent);
         dialogActoCondicion.show();
 
         dialogActoCondicion.btnAceptar.setOnClickListener(new View.OnClickListener() {

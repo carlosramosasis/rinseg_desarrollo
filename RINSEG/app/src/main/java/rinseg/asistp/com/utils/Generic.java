@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -27,6 +29,8 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Random;
+
+import rinseg.asistp.com.models.FotoModel;
 
 /**
  * Created by Usuario on 05/10/2016.
@@ -62,7 +66,7 @@ public class Generic {
         try {
             Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int returnVal = p1.waitFor();
-            boolean reachable = (returnVal==0);
+            boolean reachable = (returnVal == 0);
             return reachable;
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +109,7 @@ public class Generic {
         boolean result = false;
 
         File myDir = context.getFilesDir();
-        File path = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop + "/" + nombreImagen+".jpg");
+        File path = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop + "/" + nombreImagen + ".jpg");
 
         FileOutputStream out = null;
         try {
@@ -124,10 +128,33 @@ public class Generic {
                 e.printStackTrace();
             }
         }
+        return result;
+    }
 
+    public static FotoModel DevolverImagendeCarpeta(File fcarpetaPrincipalApp, String carpertaRop, String nombreImagen) {
+        FotoModel result = new FotoModel();
+
+        try {
+            File folderRop = new File(fcarpetaPrincipalApp, Constants.PATH_IMAGE_GALERY + carpertaRop + "/");
+            if (folderRop.exists()) {
+                File[] files = folderRop.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    Log.e("getName", files[i].getName());
+                    if (files[i].getName().equals(nombreImagen)) {
+                        result.bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
+                        nombreImagen = nombreImagen.replaceFirst("[.][^.]+$", "");
+                        result.uri = Uri.parse(folderRop + "/" + nombreImagen);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return result;
     }
+
 
     public static boolean EliminarImagenCarpeta(Context context, String carpertaRop) {
         boolean result = false;
@@ -137,7 +164,7 @@ public class Generic {
 
         try {
 
-            if(myDirGaleria.isDirectory()){
+            if (myDirGaleria.isDirectory()) {
                 myDirGaleria.delete();
                 result = true;
             }
@@ -150,9 +177,6 @@ public class Generic {
 
         return result;
     }
-
-
-
 
 
     public static int CantidadImagenesPorRop(Context context, String carpertaRop) {
