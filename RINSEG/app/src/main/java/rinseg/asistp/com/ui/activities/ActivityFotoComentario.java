@@ -26,6 +26,7 @@ import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
+
 public class ActivityFotoComentario extends AppCompatActivity {
     public Toolbar toolbarFotoComentario;
     public ImageView imageFoto;

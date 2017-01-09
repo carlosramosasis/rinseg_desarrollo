@@ -1,51 +1,63 @@
 package rinseg.asistp.com.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rinseg.asistp.com.listener.ListenerClickAccionPreventiva;
 import rinseg.asistp.com.listener.ListenerClickActoCondicion;
-import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.rinseg.R;
-import rinseg.asistp.com.utils.Generic;
 
 /**
  * Created by Carlos Ramos on 30/09/2016.
+ * Adaptador del Recycler del Dialog Acción o Condición
  */
-public class AccionCondicionSubestandarAdapter extends RecyclerView.Adapter<AccionCondicionSubestandarAdapter.AccionViewHolder> {
-    private List<EventItemsRO> ListaActosCondiciones;
+
+public class AccionCondicionSubestandarAdapter
+        extends RecyclerView.Adapter<AccionCondicionSubestandarAdapter.AccionViewHolder> {
+
+    public List<EventItemsRO> ListaActosCondiciones;
+    public List<Boolean> listCheckedActos;
     private final ListenerClickActoCondicion mListener;
     private int selectedPosition = -1;
 
     public static class AccionViewHolder extends RecyclerView.ViewHolder {
-        //Campos respectivos del item
-        public CheckBox chkActoCondicion;
-        public TextView txtActoCondicion;
-
-
+        // Campos respectivos del item
+        public CheckBox mCheckActoCondicion;
+        public TextView mTextActoCondicion;
 
         public AccionViewHolder(View v) {
             super(v);
-
-            chkActoCondicion = (CheckBox) v.findViewById(R.id.chk_card_view_accion_condicion);
-            txtActoCondicion = (TextView) v.findViewById(R.id.txt_card_view_accion_condicion);
-
+            mCheckActoCondicion = (CheckBox) v.findViewById(R.id.chk_card_view_accion_condicion);
+            mTextActoCondicion = (TextView) v.findViewById(R.id.txt_card_view_accion_condicion);
         }
     }
 
-    public AccionCondicionSubestandarAdapter(List<EventItemsRO> actosCondiciones,ListenerClickActoCondicion listener) {
+    public AccionCondicionSubestandarAdapter(List<EventItemsRO> actosCondiciones,
+                                             ListenerClickActoCondicion listener,
+                                             Object[] currentItems) {
         this.ListaActosCondiciones = actosCondiciones;
+        listCheckedActos = new ArrayList<>();
+
+        // Recorremos ambas listas para identificar qué ítems han sido seleccionado
+        for ( int i = 0; i < actosCondiciones.size(); i++ ) {
+            for ( Object c : currentItems ) {
+                if ( actosCondiciones.get(i).getName().equals(((EventItemsRO)c).getName()) ) {
+                    listCheckedActos.add(true);
+                    break;
+                }
+            }
+            if ( listCheckedActos.size() == i ) {
+                listCheckedActos.add(false);
+            }
+        }
         this.mListener = listener;
     }
 
@@ -62,19 +74,18 @@ public class AccionCondicionSubestandarAdapter extends RecyclerView.Adapter<Acci
     }
 
     @Override
-    public void onBindViewHolder(final AccionViewHolder viewHolder, final int i) {
-        //viewHolder.txtResponsable.setText(ListaAcciones.get(i).getResponsable());
-        viewHolder.txtActoCondicion.setText(ListaActosCondiciones.get(i).getName());
-        //viewHolder.chkActoCondicion.setChecked(selectedPosition == i);
-        if(selectedPosition == i){
-            viewHolder.chkActoCondicion.setChecked(true);}
-        else{
-            viewHolder.chkActoCondicion.setChecked(false);
-        }
-        viewHolder.chkActoCondicion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+    public void onBindViewHolder(final AccionViewHolder holder, int i) {
+
+        holder.mTextActoCondicion.setText(ListaActosCondiciones.get(i).getName());
+
+        holder.mCheckActoCondicion.setOnCheckedChangeListener(null);
+
+        holder.mCheckActoCondicion.setChecked(listCheckedActos.get(i));
+
+        holder.mCheckActoCondicion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                selectedPosition = viewHolder.getAdapterPosition();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                listCheckedActos.set(holder.getAdapterPosition(), isChecked);
             }
         });
     }

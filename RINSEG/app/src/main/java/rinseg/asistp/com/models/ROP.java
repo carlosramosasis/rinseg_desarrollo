@@ -251,6 +251,13 @@ public class ROP extends RealmObject{
         this.eventDateString = eventDateString;
     }
 
+    public RealmList<EventItemsRO> getListaEventItems() {
+        return listaEventItems;
+    }
+
+    public void setListaEventItems(RealmList<EventItemsRO> listaEventItems) {
+        this.listaEventItems = listaEventItems;
+    }
 
     public boolean esCerrado() {
         return cerrado;

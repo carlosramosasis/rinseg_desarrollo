@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
@@ -40,19 +41,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        >
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_acto_condicion_subestandar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:orientation="horizontal"
-            android:scrollbars="vertical">
+            android:scrollbars="vertical" />
 
-        </android.support.v7.widget.RecyclerView>
     </LinearLayout>
 
 
@@ -60,8 +58,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
-        android:layout_marginRight="6dp"
-        android:gravity="right"
+        android:layout_marginEnd="6dp"
+        android:gravity="end"
         android:orientation="horizontal">
 
         <Button
@@ -72,14 +70,14 @@
             android:text="@string/btn_cancelar" />
 
         <Button
-            android:id="@+id/btn_dialog_aceptar"
+            android:id="@+id/btn_dialog_actocondi_aceptar"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:backgroundTint="@color/colorAccent"
             android:text="@string/btn_aceptar"
             android:textColor="@color/colorWhite" />
-    </LinearLayout>
 
+    </LinearLayout>
 
 </LinearLayout>

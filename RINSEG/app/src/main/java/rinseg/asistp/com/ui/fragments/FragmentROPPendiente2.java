@@ -85,8 +85,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     ActivityMain activityMain;
     ImageButton btnActoCondicion;
-    EditText txtResponsable;
-    EditText txtAccion;
+    EditText mEditResponsable;
+    EditText mEditAccion;
     TextView txtFecha;
     ImageButton btnCalendar;
     Button btnAgregar;
@@ -200,12 +200,15 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         activityMain.HideNumPagina();
         activityMain.btnFabMenu.setVisibility(View.GONE);
         super.onDestroyView();
-
     }
 
+    //@SuppressWarnings("TryFinallyCanBeTryWithResources")
+    /** Evento para eliminar acción preventiva agregada */
     @Override
     public void onItemClicked(AccionPreventivaAdapter.AccionViewHolder holder, int position) {
+
         Realm realm = Realm.getInstance(myConfig);
+
         try {
             realm.beginTransaction();
             mRop.listaAccionPreventiva.get(position).deleteFromRealm();
@@ -213,20 +216,25 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
             listaAccionPreventiva.remove(position);
             accionAdapter.notifyDataSetChanged();
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             realm.close();
         }
-
-
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//<<<<<<< Updated upstream
         if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             launchActivityFotoComentario(data);
+/*=======
+
+        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode ==
+                Activity.RESULT_OK && data != null && data.getData() != null) {
+            launchActivityFotoComentario(data.getData());
+>>>>>>> Stashed changes*/
         }
     }
 
@@ -256,8 +264,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
         btnActoCondicion = (ImageButton) v.findViewById(R.id.btn_rop2_acto_condicion_subestandar);
 
-        txtResponsable = (EditText) v.findViewById(R.id.txt_rop2_responsable);
-        txtAccion = (EditText) v.findViewById(R.id.txt_rop2_accion);
+        mEditResponsable = (EditText) v.findViewById(R.id.txt_rop2_responsable);
+        mEditAccion = (EditText) v.findViewById(R.id.txt_rop2_accion);
         txtFecha = (TextView) v.findViewById(R.id.txt_rop2_fecha);
         btnCalendar = (ImageButton) v.findViewById(R.id.btn_rop2_calendar);
 
@@ -284,8 +292,6 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 .modules(new RinsegModule())
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
-
     }
 
     //cargamos los eventos
@@ -384,7 +390,24 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                     Permissions();
                 }
 
+//<<<<<<< Updated upstream
                 if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED) {
+/*=======
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED){
+                    // Here, the counter will be incremented each time, and the
+                    // picture taken by camera will be stored as 1.jpg,2.jpg
+                    // and likewise.    CODIGO PARA LLAMAR A CAMARA
+                    count++;
+                    String file = count + ".jpg";
+                    File newfile = new File(file);
+                    try {
+                        newfile.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Uri outputFileUri = Uri.fromFile(newfile);
+>>>>>>> Stashed changes*/
 
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -392,9 +415,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                         //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
                         startActivityForResult(cameraIntent, activityMain.REQUEST_IMAGE_CAPTURE);
                     }
-
                 }
-
             }
 
 
@@ -406,18 +427,17 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 //Messages.showToast(getView(),String.valueOf(Generic.isOnline()));
             }
         });
-
     }
 
     private boolean Validarformulario() {
         boolean resu = true;
-        if (txtAccion.getText().length() == 0) {
-            txtAccion.setError(getString(R.string.error_accion_rp2));
+        if (mEditAccion.getText().length() == 0) {
+            mEditAccion.setError(getString(R.string.error_accion_rp2));
             resu = false;
         }
 
-        if (txtResponsable.getText().length() == 0) {
-            txtResponsable.setError(getString(R.string.error_resp_rp2));
+        if (mEditResponsable.getText().length() == 0) {
+            mEditResponsable.setError(getString(R.string.error_resp_rp2));
             resu = false;
         }
 
@@ -425,16 +445,13 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
             txtFecha.setError(getString(R.string.error_fecha_rp2));
             resu = false;
         }
-
-
         return resu;
-
     }
 
 
     private void AgregarAccion() {
 
-        if (!Validarformulario()) {
+        if ( !Validarformulario() ) {
             return;
         }
 
@@ -442,8 +459,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         try {
             realm.beginTransaction();
             AccionPreventiva mAccion = realm.createObject(AccionPreventiva.class);
-            mAccion.setResponsable(txtResponsable.getText().toString());
-            mAccion.setAccion(txtAccion.getText().toString());
+            mAccion.setResponsable(mEditResponsable.getText().toString());
+            mAccion.setAccion(mEditAccion.getText().toString());
             mAccion.setFecha(newCalendar.getTime());
             mAccion.setFechaString();
 
@@ -452,18 +469,15 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
             listaAccionPreventiva.add(0, mAccion);
             accionAdapter.notifyDataSetChanged();
-            txtResponsable.setText("");
-            txtAccion.setText("");
+            mEditResponsable.setText("");
+            mEditAccion.setText("");
             txtFecha.setText("");
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             realm.close();
         }
-
-
     }
-
 
     public void ShowDatepicker() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
@@ -502,15 +516,12 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                         listaAccionPreventiva.add(ap);
                         accionAdapter.notifyDataSetChanged();
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     realm.close();
                 }
             }
-
         }
     }
 
@@ -547,9 +558,10 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     public void Permissions() {
 
-        ArrayList<String> especificacionPermisos = new ArrayList<String>();
+        ArrayList<String> especificacionPermisos = new ArrayList<>();
 
-        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.CAMERA);
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
         }
@@ -560,40 +572,15 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         if (especificacionPermisos.size() > 0) {
             this.requestPermissions(permisos, activityMain.REQUEST_IMAGE_CAPTURE);
         }
-
     }
 
     private boolean listaAccionesValida() {
-        boolean resu = false;
-        if (listaAccionPreventiva.size() > 0) {
-            resu = true;
-        }
-        return resu;
+        return listaAccionPreventiva.size() > 0;
     }
 
     private void MostrarAccionCondicionSubestandar() {
-
-        final DialogActoCondicionSubestandar dialogActoCondicion = new DialogActoCondicionSubestandar(getActivity(), nameEvent);
+        final DialogActoCondicionSubestandar dialogActoCondicion =
+                new DialogActoCondicionSubestandar(getActivity(), nameEvent, mRop.getTmpId());
         dialogActoCondicion.show();
-
-        dialogActoCondicion.btnAceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Realm realm = Realm.getInstance(myConfig);
-                try {
-                    realm.beginTransaction();
-                    mRop.deleteFromRealm();
-                    realm.commitTransaction();
-                    dialogRINSEG.dismiss();
-                    activityMain.replaceFragment(new FragmentTabRops(), true, 0, 0, 0, 0);
-                } catch (Exception e) {
-
-                } finally {
-                    realm.close();
-                }
-*/
-            }
-        });
     }
-
 }

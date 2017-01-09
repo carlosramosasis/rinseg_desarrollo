@@ -19,65 +19,72 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import rinseg.asistp.com.adapters.AccionCondicionSubestandarAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClickActoCondicion;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * Created by Carlos Ramos  on 25/11/2016.
+ * Dialog de multi-selección de acto o condición
  */
-public class DialogActoCondicionSubestandar extends Dialog implements View.OnClickListener,ListenerClickActoCondicion {
 
-    ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+public class DialogActoCondicionSubestandar extends Dialog
+        implements View.OnClickListener, ListenerClickActoCondicion {
+
+    ///// TODO: :::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::
     public Activity activity;
     public Dialog d;
     public Button btnAceptar, btnCancelar;
-    public TextView title;
-    private RecyclerView recyclerViewItems;
+    private TextView mTextTitle;
     private AccionCondicionSubestandarAdapter itemsAdapter;
-    private RecyclerView.LayoutManager lManager;
 
-
-    public String nameActoCondicion;
+    private String nameActoCondicion;
     private List<EventItemsRO> listaItems = new ArrayList<>();
-    RealmConfiguration myConfig;
+    private Object[] currentItems;
 
-    ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTOR ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    public DialogActoCondicionSubestandar(Activity a, String pNameActoCondicion) {
+    private String idROP;
+    RealmConfiguration myConfig;
+    private ROP currentROP;
+
+    private static String keyIdRop = "tmpId";
+
+    ///// TODO: ::::::::::::::::::::::::::::::: CONSTRUCTOR ::::::::::::::::::::::::::::::::::::::::
+    DialogActoCondicionSubestandar(Activity a, String pNameActoCondicion, String idROP) {
         super(a, R.style.CustomDialogTheme);
-        // TODO Auto-generated constructor stub
         this.activity = a;
         this.nameActoCondicion = pNameActoCondicion;
-
+        this.idROP = idROP;
     }
 
-    ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ///// TODO: ::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_accion_condicion_subestandar);
-        btnCancelar = (Button) findViewById(R.id.btn_dialog_cancelar);
-        btnAceptar = (Button) findViewById(R.id.btn_dialog_aceptar);
-        title = (TextView) findViewById(R.id.txt_title_dialog);
-        btnAceptar.setOnClickListener(this);
-        btnCancelar.setOnClickListener(this);
 
-        //configuracion para el recicler
-        recyclerViewItems= (RecyclerView) findViewById(R.id.recycler_view_acto_condicion_subestandar);
+        btnAceptar = (Button) findViewById(R.id.btn_dialog_actocondi_aceptar);
+        btnCancelar = (Button) findViewById(R.id.btn_dialog_cancelar);
+        mTextTitle = (TextView) findViewById(R.id.txt_title_dialog);
+        RecyclerView recyclerViewItems = (RecyclerView) findViewById(
+                R.id.recycler_view_acto_condicion_subestandar);
+
+        btnCancelar.setOnClickListener(this);
+        btnAceptar.setOnClickListener(this);
+
+        // Propiedades del Recycler
         recyclerViewItems.setHasFixedSize(true);
         // usar administrador para linearLayout
-        lManager = new LinearLayoutManager(this.getContext());
+        RecyclerView.LayoutManager lManager = new LinearLayoutManager(this.getContext());
         recyclerViewItems.setLayoutManager(lManager);
-        // Crear un nuevo Adaptador
-        itemsAdapter = new AccionCondicionSubestandarAdapter(listaItems,this);
-        recyclerViewItems.setAdapter(itemsAdapter);
 
-        //configuramos Realm
+        // Configurando Realm
         Realm.init(getContext());
         myConfig = new RealmConfiguration.Builder()
                 .name("rinseg.realm")
@@ -86,59 +93,67 @@ public class DialogActoCondicionSubestandar extends Dialog implements View.OnCli
                 .deleteRealmIfMigrationNeeded()
                 .build();
 
+        setUpData();
 
-
-        CargarAccionesCondiciones();
-
+        // Creamos el adapter:
+        itemsAdapter = new AccionCondicionSubestandarAdapter(listaItems, this, currentItems);
+        recyclerViewItems.setAdapter(itemsAdapter);
     }
+
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_dialog_aceptar:
-                Log.e("btnAceptar", "ACEPTAR");
+            case R.id.btn_dialog_actocondi_aceptar:
+                // Recorremos la lista de ítems checkeados:
+                RealmList<EventItemsRO> itemsChecked = new RealmList<>();
+                for ( int i = 0; i < listaItems.size(); i++ ){
+                    if ( itemsAdapter.listCheckedActos.get(i) ) {
+                        itemsChecked.add(listaItems.get(i));
+                    }
+                }
+                // Guardamos en Realm
+                Realm realm = Realm.getInstance(myConfig);
+                realm.beginTransaction();
+                currentROP.setListaEventItems(itemsChecked);
+                realm.commitTransaction();
+                dismiss();
                 break;
-            case R.id.btn_cancelar:
+            case R.id.btn_dialog_cancelar:
                 dismiss();
                 break;
             default:
                 break;
         }
-        dismiss();
     }
 
 
     @Override
-    public void onProvideKeyboardShortcuts(List<KeyboardShortcutGroup> data, Menu menu, int deviceId) {
+    public void onProvideKeyboardShortcuts(List<KeyboardShortcutGroup> data, Menu menu,
+                                           int deviceId) { }
 
-    }
 
-
-    ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ///// TODO: :::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::
 
     public void setTitle(String pTitle) {
-        title.setText(pTitle);
+        mTextTitle.setText(pTitle);
     }
 
-    public void setTextBtnAceptar(String pTexte) {
-        btnAceptar.setText(pTexte);
-    }
-
-    public void setTextBtnCancelar(String pBody) {
-        btnCancelar.setText(pBody);
-    }
-
-    public void CargarAccionesCondiciones(){
+    private void setUpData() {
         Realm realm = Realm.getInstance(myConfig);
+
         try {
-            EventRO event = realm.where(EventRO.class).equalTo("name",nameActoCondicion).findFirst();
+            // Recuperar los ítems de eventos:
+            EventRO event = realm.where(EventRO.class).equalTo("name", nameActoCondicion).findFirst();
 
             for (int i = 0; i < event.eventItems.size(); i++) {
                 EventItemsRO eventItem = event.eventItems.get(i);
                 listaItems.add(eventItem);
-                itemsAdapter.notifyDataSetChanged();
             }
 
+            // Recuperamos los ítems checkeados:
+            currentROP = realm.where(ROP.class).equalTo(keyIdRop, idROP).findFirst();
+            currentItems = currentROP.getListaEventItems().toArray();
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -147,7 +162,6 @@ public class DialogActoCondicionSubestandar extends Dialog implements View.OnCli
     }
 
     @Override
-    public void onItemClicked(AccionCondicionSubestandarAdapter.AccionViewHolder holder, int position) {
-
-    }
+    public void onItemClicked(AccionCondicionSubestandarAdapter.AccionViewHolder holder,
+                              int position) { }
 }
