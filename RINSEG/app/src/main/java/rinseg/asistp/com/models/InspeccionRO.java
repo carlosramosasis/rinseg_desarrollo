@@ -2,6 +2,7 @@ package rinseg.asistp.com.models;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -15,6 +16,7 @@ public class InspeccionRO extends RealmObject {
 
     private int companyId;
     private CompanyRO company;
+    private String companyString;
 
     private int typeInspectionId;
     private TypeInspection typeInspection;
@@ -23,6 +25,13 @@ public class InspeccionRO extends RealmObject {
     private String dateCloseString;
 
     private int userId;
+
+    private String tmpId;
+
+    public RealmList<InspectorRO> listaInspectores;
+    public RealmList<InspectorRO> listaResponsables;
+
+    public RealmList<IncidenciaRO> listaIncidencias;
 
 
     public int getId() {
@@ -111,5 +120,22 @@ public class InspeccionRO extends RealmObject {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+
+    public String getTmpId() {
+        return tmpId;
+    }
+
+    public void setTmpId(String tmpId) {
+        this.tmpId = tmpId;
+    }
+
+    public String getCompanyString() {
+        return companyString;
+    }
+
+    public void setCompanyString(String companyString) {
+        this.companyString = companyString;
     }
 }

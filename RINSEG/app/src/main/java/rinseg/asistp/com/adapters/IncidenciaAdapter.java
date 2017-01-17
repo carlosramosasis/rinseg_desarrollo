@@ -1,5 +1,6 @@
 package rinseg.asistp.com.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,21 +10,28 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import rinseg.asistp.com.listener.ListenerClick;
-import rinseg.asistp.com.models.Incidencia;
-import rinseg.asistp.com.models.Inspeccion;
+import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.IncidenciaRO;
+import rinseg.asistp.com.models.SettingsInspectionRO;
+import rinseg.asistp.com.models.SettingsRopRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * Created by Usuario on 30/09/2016.
  */
 public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.IncidenciaViewHolder> {
-    private List<Incidencia> ListaIncidencias;
+    private List<IncidenciaRO> ListaIncidencias;
     private final ListenerClick mListener;
+    private RealmList<EventRO> mEvents = new RealmList<>();
 
     public static class IncidenciaViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
-        public TextView txtNombre;
+        public TextView txtTipo;
         public TextView txtDesc;
         public final LinearLayout vLayout;
 
@@ -31,15 +39,29 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
         public IncidenciaViewHolder(View v){
             super(v);
 
-            txtNombre  = (TextView) v.findViewById(R.id.txt_card_view_incidencia_nombre);
+            txtTipo  = (TextView) v.findViewById(R.id.txt_card_view_incidencia_nombre);
             txtDesc  = (TextView) v.findViewById(R.id.txt_card_view_incidencia_desc);
             vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_incidencia);
         }
     }
 
-    public IncidenciaAdapter(List<Incidencia> incidencias,ListenerClick listener){
+    public IncidenciaAdapter(List<IncidenciaRO> incidencias, Context context, ListenerClick listener){
         this.ListaIncidencias = incidencias;
         mListener = listener;
+
+        Realm.init(context);
+        RealmConfiguration myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        Realm realm = Realm.getInstance(myConfig);
+        SettingsInspectionRO settingsInsp = realm.where(SettingsInspectionRO.class).findFirst();
+        if (settingsInsp != null) {
+            this.mEvents = settingsInsp.events;
+        }
     }
 
     @Override
@@ -56,8 +78,16 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
 
     @Override
     public void onBindViewHolder(final IncidenciaViewHolder viewHolder,final int i){
-        viewHolder.txtNombre.setText(ListaIncidencias.get(i).getNombre());
-        viewHolder.txtDesc.setText( ListaIncidencias.get(i).getDetalle().toString() );
+
+        int idEvent = ListaIncidencias.get(i).getEventId();
+        for (int j = 0; j < mEvents.size(); j++) {
+            EventRO evnt = mEvents.get(j);
+            if (idEvent == evnt.getId()) {
+                viewHolder.txtTipo.setText(evnt.getDisplayName());
+            }
+        }
+
+        viewHolder.txtDesc.setText( ListaIncidencias.get(i).getDescripcion().toString() );
 
         viewHolder.vLayout.setOnClickListener(new View.OnClickListener(){
             @Override

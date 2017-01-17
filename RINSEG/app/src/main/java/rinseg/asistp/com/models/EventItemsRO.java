@@ -38,4 +38,10 @@ public class EventItemsRO  extends RealmObject {
     public boolean isChecked() {return checked;}
 
     public void setChecked(boolean checked) {this.checked = checked;}
+
+    @Override
+    public String toString() {
+        return this.Name; // Value to be displayed in the Spinner
+    }
+
 }

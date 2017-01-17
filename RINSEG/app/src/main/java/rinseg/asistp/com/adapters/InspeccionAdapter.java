@@ -33,40 +33,43 @@ public class InspeccionAdapter extends RecyclerView.Adapter<InspeccionAdapter.In
         public final LinearLayout vLayout;
 
 
-        public InspeccionViewHolder(View v){
+        public InspeccionViewHolder(View v) {
             super(v);
 
-            txtCodigo  = (TextView) v.findViewById(R.id.txt_card_view_cod_inspeccion);
-            txtFechaCrea  = (TextView) v.findViewById(R.id.txt_card_view_fec_crea_inspeccion);
-           vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_inspecciones);
+            txtCodigo = (TextView) v.findViewById(R.id.txt_card_view_cod_inspeccion);
+            txtFechaCrea = (TextView) v.findViewById(R.id.txt_card_view_fec_crea_inspeccion);
+            vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_inspecciones);
         }
     }
 
-    public InspeccionAdapter(List<InspeccionRO> inspecciones,ListenerClick listener){
+    public InspeccionAdapter(List<InspeccionRO> inspecciones, ListenerClick listener) {
         this.ListaInspecciones = inspecciones;
         mListener = listener;
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return ListaInspecciones.size();
     }
 
     @Override
-    public InspeccionViewHolder onCreateViewHolder(ViewGroup viewGroup,int i){
+    public InspeccionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.cardview_inspeccion,viewGroup,false);
+                .inflate(R.layout.cardview_inspeccion, viewGroup, false);
         return new InspeccionViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final InspeccionViewHolder viewHolder,final int i){
-        viewHolder.txtCodigo.setText(ListaInspecciones.get(i).getId());
-        viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaInspecciones.get(i).getDate()));;
+    public void onBindViewHolder(final InspeccionViewHolder viewHolder, final int i) {
 
-        viewHolder.vLayout.setOnClickListener(new View.OnClickListener(){
+        InspeccionRO in = ListaInspecciones.get(i);
+        viewHolder.txtCodigo.setText("" + ListaInspecciones.get(i).getId());
+        viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaInspecciones.get(i).getDate()));
+
+
+        viewHolder.vLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 mListener.onItemClicked(viewHolder, i);
             }
         });

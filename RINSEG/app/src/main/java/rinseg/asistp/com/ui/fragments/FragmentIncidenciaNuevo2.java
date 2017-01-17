@@ -3,12 +3,31 @@ package rinseg.asistp.com.ui.fragments;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import rinseg.asistp.com.models.EventItemsRO;
+import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.IncidenciaRO;
+import rinseg.asistp.com.models.InspectorRO;
+import rinseg.asistp.com.models.RacRO;
+import rinseg.asistp.com.models.SecuencialRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.DialogRINSEG;
+import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +50,24 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
 
-    ActivityMain activityMain;
+    ActivityGenerarIncidencia activityMain;
+
+    ArrayAdapter<EventItemsRO> adapterActoCondicionSubStndr;
+    ArrayAdapter<RacRO> adapterRac;
+    ArrayAdapter<InspectorRO> adapterReportante;
+
+    Spinner spinnerActoCondicionSubStndr;
+    Spinner spinnerRac;
+    Spinner spinnerReportante;
+
+    EditText txtResponsables;
+    EditText txtSupervisor;
+
+    IncidenciaRO mIncidencia;
+    RealmConfiguration myConfig;
+
+    Bundle bundle;
+
 
     public FragmentIncidenciaNuevo2() {
         // Required empty public constructor
@@ -74,15 +110,23 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         setUpElements(view);
         setUpActions();
 
+        LoadFormDefault();
+        LoadIncidencia();
+
         return view;
     }
-
 
 
     @Override
     public void onResume() {
         super.onResume();
-        activityMain.toolbar.setTitle(R.string.title_nuevo_incidente);
+        activityMain.toolbarGenerarIncidencia.setTitle(R.string.title_nuevo_incidente);
+        activityMain.btnLeft.setText(R.string.btn_atras);
+        activityMain.btnRight.setText(R.string.btn_agreagar);
+        activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_plus_circle, 0);
+
+        activityMain.actualPagina = 2;
+        activityMain.ShowNumPagina();
 
     }
 
@@ -128,18 +172,33 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
 
     @Override
     public void onDestroyView() {
-        activityMain.ButtonBottomSetDefault();
+        //activityMain.ButtonBottomSetDefault();
         super.onDestroyView();
     }
 
 
-
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
-        activityMain = ((ActivityMain) getActivity());
-        activityMain.btnRight.setText(R.string.btn_agreagar);
-        activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_plus_circle, 0);
+        activityMain = ((ActivityGenerarIncidencia) getActivity());
 
+        spinnerActoCondicionSubStndr = (Spinner) v.findViewById(R.id.spinner_incidencia_2_tipo_acto_condicion);
+        spinnerRac = (Spinner) v.findViewById(R.id.spinner_incidencia_2_rac);
+        spinnerReportante = (Spinner) v.findViewById(R.id.spinner_incidencia_2_reportante);
+
+        txtResponsables = (EditText) v.findViewById(R.id.txt_incidencia_2_responsable);
+        txtSupervisor = (EditText) v.findViewById(R.id.txt_incidencia_2_supervisor);
+
+
+        //configuramos Realm
+        Realm.init(this.getActivity().getApplicationContext());
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        bundle = getArguments();
     }
 
     //cargamos los eventos
@@ -147,15 +206,203 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentIncidenciaNuevo1(), true,0,0,0,0);
+                saveIncidencia(false);
+                Fragment fIncidencia1 = new FragmentIncidenciaNuevo1();
+                Bundle args = new Bundle();
+                args.putString("InciTmpId", mIncidencia.getTmpId());
+                args.putInt("InciId", mIncidencia.getId());
+                fIncidencia1.setArguments(args);
+                activityMain.replaceFragment(fIncidencia1, true, 0, 0, 0, 0);
             }
         });
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentInspeccionNuevo4(), true,0,0,0,0);
+                if (!ValidarFormulario()) {
+                    return;
+                }
+                ConfirmarAgregarIncidente(getString(R.string.confirmar_agregar_inccidente));
             }
         });
+    }
+
+
+    private boolean ValidarFormulario() {
+        boolean resu = true;
+
+        EventItemsRO eventSelect;
+        eventSelect = ((EventItemsRO) spinnerActoCondicionSubStndr.getSelectedItem());
+        if (eventSelect.getId() == 0) {
+            TextView txtActoCondicion = (TextView) spinnerActoCondicionSubStndr.getSelectedView();
+            txtActoCondicion.setError("");
+            resu = false;
+        }
+
+
+        RacRO racSelect;
+        racSelect = ((RacRO) spinnerRac.getSelectedItem());
+        if (racSelect.getId() == 0) {
+            TextView txtRac = (TextView) spinnerRac.getSelectedView();
+            txtRac.setError("");
+            resu = false;
+        }
+
+        if (txtResponsables.getText().length() == 0) {
+            txtResponsables.setError(getString(R.string.error_resp_inci2));
+            resu = false;
+        }
+
+        if (txtSupervisor.getText().length() == 0) {
+            txtSupervisor.setError(getString(R.string.error_supervisor_inci2));
+            resu = false;
+        }
+
+        return resu;
+    }
+
+    private void saveIncidencia(boolean vincularAInspeccion) {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+
+            EventItemsRO tipoActoCondicion = ((EventItemsRO) spinnerActoCondicionSubStndr.getSelectedItem());
+            RacRO racSelect = (RacRO) spinnerRac.getSelectedItem();
+            InspectorRO reportanteSelect = (InspectorRO) spinnerReportante.getSelectedItem();
+
+            realm.beginTransaction();
+            mIncidencia.setEventItemId(tipoActoCondicion.getId());
+            mIncidencia.setRacId(racSelect.getId());
+            mIncidencia.setReportanteId(reportanteSelect.getId());
+            mIncidencia.setResponsable(txtResponsables.getText().toString().trim());
+            mIncidencia.setSupervisor(txtSupervisor.getText().toString().trim());
+
+            if (vincularAInspeccion) {
+                activityMain.mInspeccion.listaIncidencias.add(mIncidencia);
+            }
+
+            realm.commitTransaction();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
+    private void LoadFormDefault() {
+        try {
+
+            //cargar rac
+            adapterRac = new ArrayAdapter<RacRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.racs);
+            adapterRac.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerRac.setAdapter(adapterRac);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void LoadIncidencia() {
+        String tmpIdInsp = null;
+        int id = 0;
+        if (bundle != null) {
+            tmpIdInsp = bundle.getString("InciTmpId", null);
+            id = bundle.getInt("InciId", 0);
+
+            final Realm realm = Realm.getInstance(myConfig);
+            try {
+                if (id != 0) {
+                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("id", id).findFirst();
+                } else if (tmpIdInsp != null) {
+                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
+                }
+
+                if (mIncidencia == null) {
+                    return;
+                }
+
+                //cargar los items segun acto inseguro , condicion insegura.
+                for (int i = 0; i < activityMain.sIns.events.size(); i++) {
+                    EventRO event = activityMain.sIns.events.get(i);
+                    if (mIncidencia.getEventId() == event.getId()) {
+                        adapterActoCondicionSubStndr = new ArrayAdapter<EventItemsRO>(getActivity(), R.layout.spinner_item, event.eventItems);
+                        adapterActoCondicionSubStndr.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerActoCondicionSubStndr.setAdapter(adapterActoCondicionSubStndr);
+
+                        // recuperar Acto o condicion SubStandar
+                        for (int j = 0; j < event.eventItems.size(); j++) {
+                            EventItemsRO tmpEventItem = event.eventItems.get(j);
+                            if (tmpEventItem.getId() == mIncidencia.getEventItemId()) {
+                                spinnerActoCondicionSubStndr.setSelection(j);
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+
+                // recuperar Rac
+                for (int i = 0; i < activityMain.sIns.racs.size(); i++) {
+                    RacRO tmpRac = activityMain.sIns.racs.get(i);
+                    if (tmpRac.getId() == mIncidencia.getRacId()) {
+                        spinnerRac.setSelection(i);
+                        break;
+                    }
+                }
+
+
+                // cargar reportante
+                adapterReportante = new ArrayAdapter<InspectorRO>(getActivity(), R.layout.spinner_item, activityMain.mInspeccion.listaInspectores);
+                adapterReportante.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerReportante.setAdapter(adapterReportante);
+
+
+                // recuperar reportante
+                for (int i = 0; i < activityMain.mInspeccion.listaInspectores.size(); i++) {
+                    InspectorRO tmpInspector = activityMain.mInspeccion.listaInspectores.get(i);
+                    if (tmpInspector.getId() == mIncidencia.getReportanteId()) {
+                        spinnerReportante.setSelection(i);
+                        break;
+                    }
+                }
+
+
+                txtResponsables.setText(mIncidencia.getResponsable());
+                txtSupervisor.setText(mIncidencia.getSupervisor());
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                realm.close();
+            } finally {
+                realm.close();
+            }
+
+
+        }
+    }
+
+    private void ConfirmarAgregarIncidente(String msg) {
+        final DialogRINSEG dialogConfirmarCierre = new DialogRINSEG(getActivity());
+        dialogConfirmarCierre.show();
+        dialogConfirmarCierre.setBody(msg);
+        dialogConfirmarCierre.btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogConfirmarCierre.dismiss();
+            }
+        });
+        dialogConfirmarCierre.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogConfirmarCierre.dismiss();
+                saveIncidencia(true);
+                activityMain.finish();
+            }
+        });
+
     }
 
 }

@@ -1,14 +1,39 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.util.Calendar;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import rinseg.asistp.com.models.EventItemsRO;
+import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.IncidenciaRO;
+import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.SecuencialRO;
+import rinseg.asistp.com.models.SeveritiesRO;
+import rinseg.asistp.com.models.TargetRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +44,7 @@ import rinseg.asistp.com.ui.activities.ActivityMain;
  * create an instance of this fragment.
  */
 public class FragmentIncidenciaNuevo1 extends Fragment {
+    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,8 +57,31 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
 
-    ActivityMain activityMain;
+    ActivityGenerarIncidencia activityMain;
 
+    Spinner spinnerTipoIncidencia;
+    EditText txtDescripcion;
+    Spinner spinnerFrecuencia;
+    Spinner spinnerSveridad;
+    Spinner spinnerBlanco;
+    TextView txtFecha;
+    ImageButton btnFecha;
+
+    ArrayAdapter<EventRO> adapterTipoIncidencia;
+    ArrayAdapter<FrecuencieRO> adapterFrecuencia;
+    ArrayAdapter<SeveritiesRO> adapterTipoSeveridad;
+    ArrayAdapter<TargetRO> adapterBlanco;
+
+    Calendar calendarFechaLimite;
+
+    Calendar newCalendar;
+
+    IncidenciaRO mIncidencia;
+    RealmConfiguration myConfig;
+
+    Bundle bundle;
+
+    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTORES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     public FragmentIncidenciaNuevo1() {
         // Required empty public constructor
     }
@@ -55,6 +104,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         return fragment;
     }
 
+
+    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +125,10 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         setUpElements(view);
         setUpActions();
 
+        LoadFormDefault();
+
+        LoadIncidencia();
+
         return view;
     }
 
@@ -81,8 +136,14 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        activityMain.toolbar.setTitle(R.string.title_nuevo_incidente);
+        activityMain.toolbarGenerarIncidencia.setTitle(R.string.title_nuevo_incidente);
+        activityMain.btnLeft.setText(R.string.btn_cancelar);
+        activityMain.btnRight.setText(R.string.btn_ccontinuar);
+        activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_chevron_right_black_24dp, 0);
 
+        activityMain.actualPagina = 1;
+        activityMain.totalPaginas = 2;
+        activityMain.ShowNumPagina();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -124,26 +185,290 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
-        activityMain = ((ActivityMain) getActivity());
+        activityMain = ((ActivityGenerarIncidencia) getActivity());
+
+        newCalendar = Calendar.getInstance();
+        calendarFechaLimite = Calendar.getInstance();
+
+        spinnerTipoIncidencia = (Spinner) v.findViewById(R.id.spinner_incidencia_1_tipo_incidencia);
+        txtDescripcion = (EditText) v.findViewById(R.id.text_incidencia_1_descripcion);
+        spinnerFrecuencia = (Spinner) v.findViewById(R.id.spinner_incidencia_1_frecuencia);
+        spinnerSveridad = (Spinner) v.findViewById(R.id.spinner_incidencia_1_severidad);
+        spinnerBlanco = (Spinner) v.findViewById(R.id.spinner_incidencia_1_blanco);
+        txtFecha = (TextView) v.findViewById(R.id.txt_incidencia_1_fecha);
+        btnFecha = (ImageButton) v.findViewById(R.id.btn_incidencia_1_calendar);
+
+        //configuramos Realm
+        Realm.init(this.getActivity().getApplicationContext());
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        bundle = getArguments();
 
     }
 
     //cargamos los eventos
     private void setUpActions() {
+        txtFecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowDatepicker();
+            }
+        });
+        btnFecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowDatepicker();
+            }
+        });
+
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentInspeccionNuevo4(), true,0,0,0,0);
+                activityMain.finish();
             }
         });
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentIncidenciaNuevo2(), true,0,0,0,0);
+                if (!ValidarFormulario()) {
+                    return;
+                }
+
+                saveIncidencia();
+                Fragment fIncidencia2 = new FragmentIncidenciaNuevo2();
+                Bundle args = new Bundle();
+                args.putString("InciTmpId", mIncidencia.getTmpId());
+                args.putInt("InciId", mIncidencia.getId());
+                fIncidencia2.setArguments(args);
+                activityMain.replaceFragment(fIncidencia2, true, 0, 0, 0, 0);
             }
         });
     }
+
+    private void ShowDatepicker() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendarFechaLimite = Calendar.getInstance();
+                calendarFechaLimite.set(year, monthOfYear, dayOfMonth);
+                txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
+                txtFecha.setError(null);
+
+            }
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+    }
+
+    private void saveIncidencia() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            EventRO tipoIncidente = ((EventRO) spinnerTipoIncidencia.getSelectedItem());
+            FrecuencieRO frecuencia = ((FrecuencieRO) spinnerFrecuencia.getSelectedItem());
+            SeveritiesRO severidad = ((SeveritiesRO) spinnerSveridad.getSelectedItem());
+            TargetRO blanco = ((TargetRO) spinnerBlanco.getSelectedItem());
+
+            realm.beginTransaction();
+            if (mIncidencia == null) {
+                mIncidencia = realm.createObject(IncidenciaRO.class);
+
+                // Obtener id Secuencial para id temporal
+                int codigoSecuencial = 0;
+                RealmResults<SecuencialRO> resultsSecuancial = realm.where(SecuencialRO.class).equalTo("tagTabla", Constants.tagIncidentes).findAll();
+                if (resultsSecuancial.isEmpty() && resultsSecuancial.size() < 1) {
+                    codigoSecuencial += 1;
+                    mIncidencia.setTmpId(Generic.FormatTmpId(codigoSecuencial));
+                } else {
+                    codigoSecuencial = (resultsSecuancial.max("codigo").intValue() + 1);
+                    mIncidencia.setTmpId(Generic.FormatTmpId(codigoSecuencial));
+                }
+                SecuencialRO mSecuencial = realm.createObject(SecuencialRO.class);
+                mSecuencial.setCodigo(codigoSecuencial);
+                mSecuencial.setTagTabla(Constants.tagIncidentes);
+            }
+
+            mIncidencia.setEventId(tipoIncidente.getId());
+            mIncidencia.setDescripcion(txtDescripcion.getText().toString().trim());
+            mIncidencia.setFrecuenciaId(frecuencia.getId());
+            mIncidencia.setSeveridadId(severidad.getId());
+            mIncidencia.setBlancoId(blanco.getId());
+            mIncidencia.setFechalimite(calendarFechaLimite.getTime());
+            mIncidencia.setFechalimiteString(Generic.dateFormatterMySql.format(mIncidencia.getFechalimite()));
+
+
+            realm.commitTransaction();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
+    private void LoadFormDefault() {
+        try {
+            //cargar Tipo de incidencia  (Events)
+            adapterTipoIncidencia = new ArrayAdapter<EventRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.events);
+            adapterTipoIncidencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerTipoIncidencia.setAdapter(adapterTipoIncidencia);
+
+            //cargar Frecuencia
+            adapterFrecuencia = new ArrayAdapter<FrecuencieRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.frecuencies);
+            adapterFrecuencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerFrecuencia.setAdapter(adapterFrecuencia);
+
+            //cargar Severidad
+            adapterTipoSeveridad = new ArrayAdapter<SeveritiesRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
+            adapterTipoSeveridad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSveridad.setAdapter(adapterTipoSeveridad);
+
+            //cargar Severidad
+            adapterTipoSeveridad = new ArrayAdapter<SeveritiesRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
+            adapterTipoSeveridad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSveridad.setAdapter(adapterTipoSeveridad);
+
+            //cargar Blanco (Target)
+            adapterBlanco = new ArrayAdapter<TargetRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.targets);
+            adapterBlanco.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerBlanco.setAdapter(adapterBlanco);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void LoadIncidencia() {
+        String tmpIdInsp = null;
+        int id = 0;
+        if (bundle != null) {
+            tmpIdInsp = bundle.getString("InciTmpId", null);
+            id = bundle.getInt("InciId", 0);
+
+            final Realm realm = Realm.getInstance(myConfig);
+            try {
+                if (id != 0) {
+                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("id", id).findFirst();
+                } else if (tmpIdInsp != null) {
+                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
+                }
+                if (mIncidencia == null) {
+                    return;
+                }
+
+                // recuperar tipo incidencia
+                for (int i = 0; i < activityMain.sIns.events.size(); i++) {
+                    EventRO tmpEvent = activityMain.sIns.events.get(i);
+                    if (tmpEvent.getId() == mIncidencia.getEventId()) {
+                        spinnerTipoIncidencia.setSelection(i);
+                        break;
+                    }
+                }
+
+                // recuperar Descripcion
+                txtDescripcion.setText(mIncidencia.getDescripcion());
+
+                // recuperar frecuancia
+                for (int i = 0; i < activityMain.sIns.frecuencies.size(); i++) {
+                    FrecuencieRO tmpFrec = activityMain.sIns.frecuencies.get(i);
+                    if (tmpFrec.getId() == mIncidencia.getFrecuenciaId()) {
+                        spinnerFrecuencia.setSelection(i);
+                        break;
+                    }
+                }
+
+
+                // recuperar severidad
+                for (int i = 0; i < activityMain.sIns.severities.size(); i++) {
+                    SeveritiesRO tmpSev = activityMain.sIns.severities.get(i);
+                    if (tmpSev.getId() == mIncidencia.getSeveridadId()) {
+                        spinnerSveridad.setSelection(i);
+                        break;
+                    }
+                }
+
+                // recuperar Blanco
+                for (int i = 0; i < activityMain.sIns.targets.size(); i++) {
+                    TargetRO tmpBlanco = activityMain.sIns.targets.get(i);
+                    if (tmpBlanco.getId() == mIncidencia.getBlancoId()) {
+                        spinnerBlanco.setSelection(i);
+                        break;
+                    }
+                }
+
+                newCalendar.setTime(mIncidencia.getFechalimite());
+                calendarFechaLimite.setTime(mIncidencia.getFechalimite());
+                txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                realm.close();
+            } finally {
+                realm.close();
+            }
+
+
+        }
+    }
+
+    private boolean ValidarFormulario() {
+        boolean resu = true;
+
+        EventRO eventSelect;
+        eventSelect = ((EventRO) spinnerTipoIncidencia.getSelectedItem());
+        if (eventSelect.getId() == 0) {
+            TextView txtEmpresa = (TextView) spinnerTipoIncidencia.getSelectedView();
+            txtEmpresa.setError("");
+            resu = false;
+        }
+
+        if (txtDescripcion.getText().length() == 0) {
+            txtDescripcion.setError(getString(R.string.error_desc_inci1));
+            resu = false;
+        }
+
+        FrecuencieRO frecSelect;
+        frecSelect = ((FrecuencieRO) spinnerFrecuencia.getSelectedItem());
+        if (frecSelect.getId() == 0) {
+            TextView txtFrec = (TextView) spinnerFrecuencia.getSelectedView();
+            txtFrec.setError("");
+            resu = false;
+        }
+
+        SeveritiesRO severitiesSelect;
+        severitiesSelect = ((SeveritiesRO) spinnerSveridad.getSelectedItem());
+        if (severitiesSelect.getId() == 0) {
+            TextView txtSev = (TextView) spinnerSveridad.getSelectedView();
+            txtSev.setError("");
+            resu = false;
+        }
+
+
+        TargetRO blancoSelect;
+        blancoSelect = ((TargetRO) spinnerBlanco.getSelectedItem());
+        if (blancoSelect.getId() == 0) {
+            TextView txtBlanco = (TextView) spinnerBlanco.getSelectedView();
+            txtBlanco.setError("");
+            resu = false;
+        }
+
+        if (txtFecha.getText().length() == 0) {
+            txtFecha.setError(getString(R.string.error_fecha_inci11));
+            resu = false;
+        }
+
+
+        return resu;
+    }
+
 
 }

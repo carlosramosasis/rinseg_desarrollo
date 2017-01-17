@@ -52,6 +52,7 @@
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
                     <EditText
+                        android:id="@+id/txt_inpeccion_2_dni"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
@@ -73,6 +74,7 @@
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
                     <EditText
+                        android:id="@+id/txt_inpeccion_2_nombre"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
@@ -95,21 +97,27 @@
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
 
-                    <com.jaredrummler.materialspinner.MaterialSpinner
-                        android:id="@+id/spinner4"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
                         android:background="@color/colorWhite"
                         android:elevation="2dp"
-                        android:hint="@string/insp_nuevo1_hint_gerencia"
-                        android:textColorHint="@color/colorSecondary0"
-                        android:textSize="17.3dp"
-                        app:ms_arrow_tint="@color/colorPrimaryDark" />
+                        android:paddingRight="12dp"
+                        >
+                        <Spinner
+                            android:id="@+id/spinner_inpeccion_2_gerencia"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="@color/colorPrimaryDark"
+                            android:textSize="17.3dp"
+                            >
+                        </Spinner>
+                    </LinearLayout>
 
                     <Button
-                        android:id="@+id/btn_rop2_agregar"
-                        android:layout_width="match_parent"
+                        android:id="@+id/btn_incpeccion_2_agregar_responsable"
+                        android:layout_width="170dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:backgroundTint="@color/colorSecondary0"
@@ -117,8 +125,13 @@
                         android:text="@string/insp_nuevo2_btn_agregar_responsable"
                         android:textColor="@color/colorPrimary" />
                     <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_inpeccion_2_responsable"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="match_parent"
+                        android:minHeight="250dp"
+                        android:background="@drawable/backgorund_login"
+                        android:scrollbars="vertical"
+                        >
 
                     </android.support.v7.widget.RecyclerView>
 

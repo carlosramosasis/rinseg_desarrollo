@@ -24,4 +24,9 @@ public class ManagementRO extends RealmObject{
     public void setDisplayName(String _displayName) {
         displayName = _displayName;
     }
+
+    @Override
+    public String toString() {
+        return this.displayName; // Value to be displayed in the Spinner
+    }
 }

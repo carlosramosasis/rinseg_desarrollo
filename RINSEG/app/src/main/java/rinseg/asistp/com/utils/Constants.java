@@ -13,6 +13,8 @@ public class Constants {
 
     //tag tablas para secuencial
     public static String tagROP_Pendiente = "RP";
+    public static String tagInspeccion_Pendiente = "IP";
+    public static String tagIncidentes= "INC";
 
     public static int ANIO = 1990;
     public static int MES = 1;

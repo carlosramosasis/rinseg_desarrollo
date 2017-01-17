@@ -40,6 +40,7 @@ import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ManagementRO;
 import rinseg.asistp.com.models.ROP;
@@ -212,7 +213,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -240,7 +240,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
     ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
     //Proceso para cargar las vistas
     private void setUpElements() {
 
@@ -256,7 +255,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
         spaceButtonBottom = (LinearLayout) this.findViewById(R.id.espacio_button_bottom);
 
-        relativeContentMain =  (RelativeLayout) this.findViewById(R.id.relative_content_main);
+        relativeContentMain = (RelativeLayout) this.findViewById(R.id.relative_content_main);
 
         linearButtonsBottom = (LinearLayout) this.findViewById(R.id.linear_buttons_bottom);
         linearButtonsBottom.setY(linearButtonsBottom.getHeight());
@@ -484,6 +483,12 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateCompaniesForInspection(SettingsInspectionRO insp, JSONArray companies, Realm realm) {
         for (int i = 0; i < companies.length(); i++) {
             try {
+                if (i == 0) {
+                    CompanyRO companySelect = realm.createObject(CompanyRO.class);
+                    companySelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.companies.add(companySelect);
+                }
+
                 JSONObject c = companies.getJSONObject(i);
                 // CompanyRO companie = realm.createObjectFromJson (CompanyRO.class,c);
                 CompanyRO companie = realm.createObject(CompanyRO.class);
@@ -501,6 +506,12 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < frecuencies.length(); i++) {
             try {
 
+                if (i == 0) {
+                    FrecuencieRO frecSelect = realm.createObject(FrecuencieRO.class);
+                    frecSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.frecuencies.add(frecSelect);
+                }
+
                 JSONObject f = frecuencies.getJSONObject(i);
                 FrecuencieRO realmFrecuencie = realm.createObject(FrecuencieRO.class);
                 realmFrecuencie.setId(f.getInt("id"));
@@ -516,6 +527,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateSeveritiesForInspection(SettingsInspectionRO insp, JSONArray severities, Realm realm) {
         for (int i = 0; i < severities.length(); i++) {
             try {
+                if (i == 0) {
+                    SeveritiesRO severitiesSelect = realm.createObject(SeveritiesRO.class);
+                    severitiesSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.severities.add(severitiesSelect);
+                }
 
                 JSONObject f = severities.getJSONObject(i);
                 SeveritiesRO realmSeverities = realm.createObject(SeveritiesRO.class);
@@ -534,6 +550,12 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < risks.length(); i++) {
             try {
 
+                if (i == 0) {
+                    RiskRO riskSelect = realm.createObject(RiskRO.class);
+                    riskSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.risks.add(riskSelect);
+                }
+
                 JSONObject f = risks.getJSONObject(i);
                 RiskRO realmRisks = realm.createObject(RiskRO.class);
                 realmRisks.setId(f.getInt("id"));
@@ -551,14 +573,26 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateEventsForInspection(SettingsInspectionRO insp, JSONArray events, Realm realm) {
         for (int i = 0; i < events.length(); i++) {
             try {
+                if (i == 0) {
+                    EventRO eventSelect = realm.createObject(EventRO.class);
+                    eventSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.events.add(eventSelect);
+                }
 
                 JSONObject f = events.getJSONObject(i);
                 EventRO realmEvents = realm.createObject(EventRO.class);
                 realmEvents.setId(f.getInt("id"));
+                realmEvents.setName(f.getString("name"));
                 realmEvents.setDisplayName(f.getString("display_name"));
 
                 JSONArray eventItems = f.getJSONArray("items");
                 for (int j = 0; j < eventItems.length(); j++) {
+                    if (j == 0) {
+                        EventItemsRO eventItemSelect = realm.createObject(EventItemsRO.class);
+                        eventItemSelect.setName(getString(R.string.spinner_default));
+                        realmEvents.eventItems.add(eventItemSelect);
+                    }
+
                     JSONObject item = eventItems.getJSONObject(j);
                     EventItemsRO itemRO = realm.createObject(EventItemsRO.class);
                     itemRO.setId(item.getInt("id"));
@@ -578,6 +612,12 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateManagementsForInspection(SettingsInspectionRO insp, JSONArray managements, Realm realm) {
         for (int i = 0; i < managements.length(); i++) {
             try {
+                if (i == 0) {
+                    ManagementRO managmentDefault = realm.createObject(ManagementRO.class);
+                    managmentDefault.setDisplayName(getString(R.string.spinner_default));
+                    insp.managements.add(managmentDefault);
+                }
+
                 JSONObject m = managements.getJSONObject(i);
                 ManagementRO realmManagement = realm.createObject(ManagementRO.class);
                 realmManagement.setId(m.getInt("id"));
@@ -593,6 +633,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateTargetsForInspection(SettingsInspectionRO insp, JSONArray targets, Realm realm) {
         for (int i = 0; i < targets.length(); i++) {
             try {
+                if (i == 0) {
+                    TargetRO targetSelect = realm.createObject(TargetRO.class);
+                    targetSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.targets.add(targetSelect);
+                }
                 JSONObject t = targets.getJSONObject(i);
                 TargetRO realmTargetRO = realm.createObject(TargetRO.class);
                 realmTargetRO.setId(t.getInt("id"));
@@ -608,6 +653,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateTypesForInspection(SettingsInspectionRO insp, JSONArray types, Realm realm) {
         for (int i = 0; i < types.length(); i++) {
             try {
+                if (i == 0) {
+                    TypesRO typeSelect = realm.createObject(TypesRO.class);
+                    typeSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.types.add(typeSelect);
+                }
                 JSONObject t = types.getJSONObject(i);
                 TypesRO realmTypeRO = realm.createObject(TypesRO.class);
                 realmTypeRO.setId(t.getInt("id"));
@@ -623,6 +673,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public void PopulateRacsForInspection(SettingsInspectionRO insp, JSONArray racs, Realm realm) {
         for (int i = 0; i < racs.length(); i++) {
             try {
+                if (i == 0) {
+                    RacRO racSelect = realm.createObject(RacRO.class);
+                    racSelect.setDisplayName(getString(R.string.spinner_default));
+                    insp.racs.add(racSelect);
+                }
                 JSONObject r = racs.getJSONObject(i);
                 RacRO realmRacsRO = realm.createObject(RacRO.class);
                 realmRacsRO.setId(r.getInt("id"));
@@ -774,7 +829,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 View view = relativeContentMain;
-                Logout(usuarioLogueado.getApi_token(),view);
+                EliminarRops();
+                Logout(usuarioLogueado.getApi_token(), view);
             }
         });
 
@@ -789,10 +845,28 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void EliminarRops() {
+        try {
+            Realm realm = Realm.getInstance(myConfig);
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.delete(ROP.class);
+                    realm.delete(InspeccionRO.class);
+                    realm.delete(SettingsRopRO.class);
+                    realm.delete(SettingsInspectionRO.class);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void Logout(String token, final View v) {
         cerrarSesionDialog.hide();
         dialogLoading.show();
+
+
         RestClient restClient = new RestClient(Services.URL_SECURITY);
         Call<ResponseBody> call = restClient.iServices.setLogout(token);
 
@@ -867,7 +941,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
     public void launchActivityLogin() {
         Intent InspeccionDetalleIntent = new Intent().setClass(this, ActivityLogin.class);
-        startActivity(InspeccionDetalleIntent );
+        startActivity(InspeccionDetalleIntent);
     }
 
     public void ShowButtonsBottom(boolean bolean) {

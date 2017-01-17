@@ -16,9 +16,12 @@
         android:orientation="horizontal"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
+            android:background="@drawable/backgorund_circle_gradient"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="2dp"
             />
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,8 +43,11 @@
                 android:id="@+id/txt_card_view_incidencia_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="23/34/34"
+                android:text="Descr"
                 android:textSize="13sp"
+                android:textColor="@color/colorGray"
+                android:ellipsize="marquee"
+                android:maxLines="2"
                 />
         </LinearLayout>
     </LinearLayout>

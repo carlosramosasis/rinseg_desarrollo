@@ -37,17 +37,25 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner4"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo1_hint_tipo"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_1_tipo_incidencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -56,7 +64,7 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
                 <EditText
-                    android:id="@+id/text_input_usuariod"
+                    android:id="@+id/text_incidencia_1_descripcion"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
@@ -65,12 +73,14 @@
                     android:drawableRight="@drawable/ic_pencil"
                     android:elevation="2dp"
                     android:hint="@string/hint_descr"
-                    android:inputType="textMultiLine"
-                    android:maxLines="10"
                     android:paddingBottom="7dp"
                     android:paddingLeft="23dp"
                     android:paddingRight="15dp"
                     android:paddingTop="11dp"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:minLines="5"
+                    android:padding="4dp"
                     android:scrollbars="vertical"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp" />
@@ -82,17 +92,25 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner7"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo1_hint_frecuencia"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_1_frecuencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
 
                 <TextView
@@ -102,17 +120,25 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo1_hint_severidad"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_1_severidad"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -166,16 +192,25 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo1_hint_campo_afectacion"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_1_blanco"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -189,7 +224,7 @@
                     android:orientation="horizontal"
                     >
                     <TextView
-                        android:id="@+id/txt_rop2_fecha"
+                        android:id="@+id/txt_incidencia_1_fecha"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_weight="1"
@@ -205,7 +240,7 @@
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17dp" />
                     <ImageButton
-                        android:id="@+id/btn_rop2_calendar"
+                        android:id="@+id/btn_incidencia_1_calendar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:elevation="2dp"

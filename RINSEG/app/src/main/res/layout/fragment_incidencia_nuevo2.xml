@@ -36,17 +36,26 @@
                     android:text="@string/inscidencia_nuevo2_hint_tipo_acto"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner4"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo2_hint_tipo_acto"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_2_tipo_acto_condicion"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -54,17 +63,25 @@
                     android:text="@string/inscidencia_nuevo2_hint_rac_relacionado"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
-                <com.jaredrummler.materialspinner.MaterialSpinner
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo2_hint_rac_relacionado"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_2_rac"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
 
+                </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -72,17 +89,25 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner7"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo2_hint_reportante"
-                    android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:paddingRight="12dp"
+                    android:orientation="vertical"
+                    >
+                    <Spinner
+                        android:id="@+id/spinner_incidencia_2_reportante"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:textSize="17.3dp"
+                        >
+                    </Spinner>
+
+                </LinearLayout>
 
 
                 <TextView
@@ -92,17 +117,22 @@
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
-                <com.jaredrummler.materialspinner.MaterialSpinner
-                    android:id="@+id/spinner"
+                <EditText
+                    android:id="@+id/txt_incidencia_2_responsable"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
+                    android:drawableRight="@drawable/ic_pencil"
                     android:elevation="2dp"
                     android:hint="@string/inscidencia_nuevo2_hint_responsable_lev"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingLeft="23dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/colorSecondary0"
-                    android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
+                    android:textSize="17.3dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -112,7 +142,7 @@
                     android:textSize="12dp" />
 
                 <EditText
-                    android:id="@+id/text_input_usuario"
+                    android:id="@+id/txt_incidencia_2_supervisor"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"

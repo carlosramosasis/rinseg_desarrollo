@@ -8,7 +8,9 @@ import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.ImagenRO;
+import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.models.ManagementRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RacRO;
@@ -26,7 +28,7 @@ import rinseg.asistp.com.models.User;
  * Created by Carlos Ramos on 25/10/2016.
  */
 @RealmModule(classes = {
-          SettingsInspectionRO.class
+        SettingsInspectionRO.class
         , CompanyRO.class
         , FrecuencieRO.class
         , SettingsRopRO.class
@@ -46,6 +48,8 @@ import rinseg.asistp.com.models.User;
         , ImagenRO.class
         , InspeccionRO.class
         , TypeInspection.class
+        , InspectorRO.class
+        , IncidenciaRO.class
 })
 
 public class RinsegModule {

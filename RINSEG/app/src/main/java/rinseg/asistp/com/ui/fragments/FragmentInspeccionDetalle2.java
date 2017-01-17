@@ -16,10 +16,9 @@ import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
-import rinseg.asistp.com.models.Incidencia;
+import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
-import rinseg.asistp.com.ui.activities.ActivityMain;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +43,7 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
     private RecyclerView recyclerIncidencias;
     private RecyclerView.Adapter incidenciaAdapter;
     private RecyclerView.LayoutManager lManager;
-    private List<Incidencia> listaIncidencias = new ArrayList<>();
+    private List<IncidenciaRO> listaIncidencias = new ArrayList<>();
 
 
 
@@ -89,10 +88,10 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
 
 
 
-        listaIncidencias.add(new Incidencia("nombre 1","desc"));
-        listaIncidencias.add(new Incidencia("nombre 2","descripcion"));
-        listaIncidencias.add(new Incidencia("nombre 3","descripcion"));
-        listaIncidencias.add(new Incidencia("nombre 4","desc"));
+        listaIncidencias.add(new IncidenciaRO("nombre 1","desc"));
+        listaIncidencias.add(new IncidenciaRO("nombre 2","descripcion"));
+        listaIncidencias.add(new IncidenciaRO("nombre 3","descripcion"));
+        listaIncidencias.add(new IncidenciaRO("nombre 4","desc"));
 
         setUpElements(view);
         setUpActions();
@@ -111,7 +110,7 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
         lManager =  new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerIncidencias.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias,this);
+        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias,activityMain.getApplicationContext(),this);
         recyclerIncidencias.setAdapter(incidenciaAdapter);
     }
 

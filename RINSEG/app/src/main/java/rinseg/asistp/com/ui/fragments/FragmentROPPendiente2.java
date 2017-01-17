@@ -459,8 +459,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         try {
             realm.beginTransaction();
             AccionPreventiva mAccion = realm.createObject(AccionPreventiva.class);
-            mAccion.setResponsable(mEditResponsable.getText().toString());
-            mAccion.setAccion(mEditAccion.getText().toString());
+            mAccion.setResponsable(mEditResponsable.getText().toString().trim());
+            mAccion.setAccion(mEditAccion.getText().toString().trim());
             mAccion.setFecha(newCalendar.getTime());
             mAccion.setFechaString();
 

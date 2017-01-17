@@ -1,6 +1,6 @@
 package rinseg.asistp.com.ui.fragments;
 
-import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,17 +14,22 @@ import android.view.ViewGroup;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
-import rinseg.asistp.com.models.Incidencia;
-import rinseg.asistp.com.models.ROP;
+import rinseg.asistp.com.models.IncidenciaRO;
+import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,7 +39,9 @@ import rinseg.asistp.com.ui.activities.ActivityMain;
  * Use the {@link FragmentInspeccionNuevo4#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
+public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick {
+
+    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -49,14 +56,20 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
     private RecyclerView recyclerIncidencias;
     private RecyclerView.Adapter incidenciaAdapter;
     private RecyclerView.LayoutManager lManager;
-    private List<Incidencia> listaIncidencias = new ArrayList<>();
+    private List<IncidenciaRO> listaIncidencias = new ArrayList<>();
 
     private FloatingActionButton btnAgregarIncidente;
 
 
-
     ActivityMain activityMain;
 
+    InspeccionRO mInspc;
+
+    RealmConfiguration myConfig;
+    Bundle bundle;
+
+
+    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTOR :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     public FragmentInspeccionNuevo4() {
         // Required empty public constructor
     }
@@ -79,6 +92,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
         return fragment;
     }
 
+    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,23 +108,28 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_inspeccion_nuevo4, container, false);
 
-        listaIncidencias.add(new Incidencia("nombre 1","desc"));
-        listaIncidencias.add(new Incidencia("nombre 2","descripcion"));
-        listaIncidencias.add(new Incidencia("nombre 3","descripcion"));
-        listaIncidencias.add(new Incidencia("nombre 4","desc"));
+        listaIncidencias.add(new IncidenciaRO("nombre 1", "desc"));
+        listaIncidencias.add(new IncidenciaRO("nombre 2", "descripcion"));
+        listaIncidencias.add(new IncidenciaRO("nombre 3", "descripcion"));
+        listaIncidencias.add(new IncidenciaRO("nombre 4", "desc"));
 
         setUpElements(view);
         setUpActions();
 
+        LoadInspeccion();
+
         return view;
     }
-
 
 
     @Override
     public void onResume() {
         super.onResume();
         activityMain.toolbar.setTitle(R.string.title_incidentes);
+        activityMain.ShowButtonsBottom(true);
+        activityMain.actualPaginaRop = 4;
+        activityMain.ShowNumPagina();
+        LoadIncidencias();
 
     }
 
@@ -154,23 +173,30 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
     }
 
     @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position){
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
     }
+
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position){}
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+    }
+
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position){}
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
+
     @Override
     public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
     }
 
 
-
     @Override
     public void onDestroyView() {
         activityMain.ButtonBottomSetDefault();
+        activityMain.HideNumPagina();
         super.onDestroyView();
     }
+
+/// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
     //Proceso para cargar las vistas
@@ -179,32 +205,49 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
         activityMain.btnRight.setText(R.string.btn_terminar);
         activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check, 0);
 
+        bundle = getArguments();
+
         btnAgregarIncidente = (FloatingActionButton) v.findViewById(R.id.btn_agregar_incidente);
 
         //configuracion para el recicler
         recyclerIncidencias = (RecyclerView) v.findViewById(R.id.recycler_view_i4_incidencias);
         recyclerIncidencias.setHasFixedSize(true);
         // usar administrador para linearLayout
-        lManager =  new LinearLayoutManager(this.getActivity().getApplicationContext());
+        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerIncidencias.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias,this);
+        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias, activityMain.getApplicationContext(), this);
         recyclerIncidencias.setAdapter(incidenciaAdapter);
+
+        //configuramos Realm
+        Realm.init(this.getActivity().getApplicationContext());
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
     }
 
     //cargamos los eventos
     private void setUpActions() {
-        btnAgregarIncidente.setOnClickListener(new View.OnClickListener(){
+        btnAgregarIncidente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentIncidenciaNuevo1(), true,0,0,0,0);
+                //activityMain.replaceFragment(new FragmentIncidenciaNuevo1(), true, 0, 0, 0, 0);
+                launchActivityGenerarIncidencia(mInspc);
             }
         });
 
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentInspeccionNuevo3(), true,R.anim.enter_from_right,R.anim.exit_to_right,R.anim.enter_from_left,R.anim.exit_to_left);
+                Fragment fInspPendiente3 = new FragmentInspeccionNuevo3();
+                Bundle args = new Bundle();
+                args.putString("InspTmpId", mInspc.getTmpId());
+                args.putInt("InspId", mInspc.getId());
+                fInspPendiente3.setArguments(args);
+                activityMain.replaceFragment(fInspPendiente3, true, R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_left);
             }
         });
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
@@ -214,4 +257,64 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick{
             }
         });
     }
+
+    private void LoadInspeccion() {
+        String tmpIdInsp = null;
+        int id = 0;
+        if (bundle != null) {
+            tmpIdInsp = bundle.getString("InspTmpId", null);
+            id = bundle.getInt("InspId", 0);
+
+            final Realm realm = Realm.getInstance(myConfig);
+            try {
+                if (id != 0) {
+                    mInspc = realm.where(InspeccionRO.class).equalTo("id", id).findFirst();
+                } else if (tmpIdInsp != null) {
+                    mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
+                }
+
+                if (mInspc == null) {
+                    return;
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                realm.close();
+            } finally {
+                realm.close();
+            }
+
+
+        }
+    }
+
+    public void launchActivityGenerarIncidencia(InspeccionRO insp) {
+
+        Intent GenerarIncidenciaIntent = new Intent().setClass(activityMain, ActivityGenerarIncidencia.class);
+        GenerarIncidenciaIntent.putExtra("InspId", insp.getId());
+        GenerarIncidenciaIntent.putExtra("InspTmpId", insp.getTmpId());
+        startActivity(GenerarIncidenciaIntent);
+    }
+
+    private void LoadIncidencias() {
+
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            listaIncidencias.clear();
+
+            for (int i = 0; i < mInspc.listaIncidencias.size(); i++) {
+                IncidenciaRO tIncidencia = mInspc.listaIncidencias.get(i);
+                listaIncidencias.add(tIncidencia);
+                incidenciaAdapter.notifyDataSetChanged();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            realm.close();
+        }
+    }
+
+
 }

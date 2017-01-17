@@ -3,7 +3,6 @@ package rinseg.asistp.com.listener;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
-import rinseg.asistp.com.models.Incidencia;
 
 /**
  * @author Carlos Ramos

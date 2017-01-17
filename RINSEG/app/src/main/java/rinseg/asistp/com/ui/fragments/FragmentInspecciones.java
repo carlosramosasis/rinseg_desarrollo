@@ -293,7 +293,8 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     public void launchActivityInspeccionDetalle(InspeccionRO insp) {
 
         Intent InspeccionDetalleIntent = new Intent().setClass(activityMain, ActivityInspeccionDetalle.class);
-        InspeccionDetalleIntent.putExtra("InspeccionId",insp.getId());
+        InspeccionDetalleIntent.putExtra("InspId",insp.getId());
+        InspeccionDetalleIntent.putExtra("InspTmpId",insp.getTmpId());
         startActivity(InspeccionDetalleIntent );
     }
     private void LoadInsoeccionesCerradas() {

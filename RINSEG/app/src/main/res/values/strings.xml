@@ -151,15 +151,25 @@
     <string name="insp_nuevo1_hint_nombre">Nombre</string>
     <string name="insp_nuevo1_hint_gerencia">Gerencia</string>
     <string name="insp_nuevo1_btn_agregar_inspector">Agregar Inspector</string>
+    <string name="error_dni_insp1">ingrese número de DNI</string>
+    <string name="error_area_insp3">ingrese área</string>
+    <string name="error_fecha_insp3">ingrese fecha</string>
+    <string name="error_empresa_insp3">ingrese empresa inspeccionada</string>
+    <string name="error_nombre_insp1">ingrese el nombre del inspector</string>
+    <string name="msg_lista_inspectores">Agregar por lo menos un inspector</string>
+    <string name="msg_lista_responsable_area">Agregar por lo menos un responsable de área</string>
+
+
     <!--inspeccion nuevo 2-->
     <string name="insp_nuevo2_lista_responsables">Lista de responsables:</string>
     <string name="insp_nuevo2_btn_agregar_responsable">Agregar Responsable</string>
+    <string name="error_nombre_resp_insp2">ingrese el nombre del responsable</string>
     <!--inspeccion nuevo 3-->
     <string name="insp_nuevo3_datos_generales">Datos generales del SSMA:</string>
     <string name="insp_nuevo3_hint_area">Área</string>
     <string name="insp_nuevo3_hint_tipo_insp">Tipo de inspección</string>
     <string name="insp_nuevo3_hint_empresa_inspeccionada">Empresa inspeccionada</string>
-    <!--Incidencia nuevo 1-->
+    <!--IncidenciaRO nuevo 1-->
     <string name="inscidencia_nuevo1_hint_tipo">Tipo de incidencia</string>
     <string name="inscidencia_nuevo1_hint_frecuencia">Frecuencia</string>
     <string name="inscidencia_nuevo1_hint_severidad">Severidad</string>
@@ -167,13 +177,18 @@
     <string name="inscidencia_nuevo1_hint_nivel_riesgo">Nivel de riesgo</string>
     <string name="inscidencia_nuevo1_hint_campo_afectacion">Campo de afectación (Blanco)</string>
     <string name="inscidencia_nuevo1_hint_fecha_limite">Fecha límite</string>
-    <!--Incidencia nuevo 2-->
-    <string name="inscidencia_nuevo2_hint_tipo_acto">Tipo de acto sub estándar</string>
+    <string name="error_fecha_inci11">ingrese fecha del evento</string>
+    <string name="error_desc_inci1">ingrese descripción</string>
+    <!--IncidenciaRO nuevo 2-->
+    <string name="inscidencia_nuevo2_hint_tipo_acto">Tipo de acto o condicion sub estándar</string>
     <string name="inscidencia_nuevo2_hint_tipo_condicion">Tipo de condición sub estándar</string>
     <string name="inscidencia_nuevo2_hint_rac_relacionado">RAC relacionado</string>
     <string name="inscidencia_nuevo2_hint_reportante">Reportante</string>
     <string name="inscidencia_nuevo2_hint_responsable_lev">Responsable levantamiento</string>
     <string name="inscidencia_nuevo2_hint_supervisor_cmmm">Supervisor CMMM del reportante</string>
+    <string name="error_resp_inci2">ingrese responsabke de levantamiento</string>
+    <string name="error_supervisor_inci2">ingrese supervisor</string>
+    <string name="confirmar_agregar_inccidente">Se agregará el incidente a la inspección.</string>
 
     <!--Dialog Terminar SSMA -->
     <string name="dialog_terminar_ssma_titulo">Terminar SSMA</string>
@@ -186,7 +201,7 @@
     <string name="inspeccion_detalle1_inspectores">Inspectores:</string>
     <string name="inspeccion_detalle1_responsables">Responsables:</string>
 
-    <!--Inspeccion detalle - Incidencia detalle-->
+    <!--Inspeccion detalle - IncidenciaRO detalle-->
     <string name="incidencia_detalle_acto_inseguro">ACTO INSEGURO</string>
     <string name="incidencia_detalle_condicion_inseguro">CONDICIÓN INSEGURA</string>
     <string name="incidencia_detalle_frec">Frecuencia:</string>
@@ -203,6 +218,8 @@
     <string name="incidencia_detalle_empresa_pertenece">Empresa que pertenece:</string>
     <string name="incidencia_detalle_supervisor_cmmm_reportante">Supervisor CMMM del reportante:</string>
     <string name="incidencia_detalle_reportante">Reportante:</string>
+
+
 
     <!--Levantar incidencia-->
     <string name="lev_incidencia_datos_levantamiento">DATOS DE LEVANTAMIENTO</string>
