@@ -23,10 +23,12 @@ import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -74,6 +76,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     private TextView txtNombreUsuario;
     private TextView txtCorreoUsuario;
     private RelativeLayout relativeContentMain;
+    private CircleImageView mImageProfile;
 
     private NavigationView navigationView;
     View header;
@@ -298,6 +301,12 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 String nombreUsu = (usuarioLogueado.getName() != null && usuarioLogueado.getLastname() != null) ? (Generic.Mayus(usuarioLogueado.getName()) + " " + Generic.Mayus(usuarioLogueado.getLastname())) : "";
                 txtNombreUsuario = (TextView) header.findViewById(R.id.txt_nombre_usuario);
                 txtNombreUsuario.setText(nombreUsu);
+
+                mImageProfile = (CircleImageView) header.findViewById(R.id.img_profile_image);
+                Picasso.with(this).load(usuarioLogueado.getPhoto())
+                        .error(R.drawable.profile_default)
+                        .into(mImageProfile);
+
                 String correoUsu = (usuarioLogueado.getEmail() != null) ? usuarioLogueado.getEmail() : "";
                 txtCorreoUsuario = (TextView) header.findViewById(R.id.txt_correo_usuario);
                 txtCorreoUsuario.setText(correoUsu);
