@@ -15,6 +15,7 @@
 
 
     <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_incidencia_tomar_foto"
         app:fabSize="mini"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
         app:rippleColor="@color/colorTertiary" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_incidencia_importar"
         app:fabSize="mini"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,7 +37,7 @@
         app:rippleColor="@color/colorTertiary" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_set_dir"
+        android:id="@+id/fab_incidencia_galeria"
         android:layout_width="wrap_content"
         app:fabSize="mini"
         android:layout_height="wrap_content"

@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +35,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private final ListenerClickImage mListener;
     private File mFileAPP;
     private String mCarpetaRop;
+    private String mPathImageGallery;
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
         public TextView txtComentario;
         public ImageView imageFotoGaleria;
         public final RelativeLayout vLayout;
-
-
 
 
         public ImageViewHolder(View v) {
@@ -53,11 +54,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         }
     }
 
-    public ImageAdapter(List<ImagenRO> imagenes, File fileAPP, String carpertaRop, ListenerClickImage listener) {
+    public ImageAdapter(List<ImagenRO> imagenes, File fileAPP, String pathImageGallery, String carpertaRop, ListenerClickImage listener) {
         this.ListaImagenes = imagenes;
         mListener = listener;
         mFileAPP = fileAPP;
         mCarpetaRop = carpertaRop;
+        mPathImageGallery = pathImageGallery;
     }
 
     @Override
@@ -76,19 +78,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(final ImageViewHolder viewHolder, final int i) {
         viewHolder.txtComentario.setText(ListaImagenes.get(i).getDescripcion());
         String nombreImagen = ListaImagenes.get(i).getName();
-        final FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mCarpetaRop, nombreImagen);
+        final FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
 
         if (fotoModel != null) {
-            viewHolder.imageFotoGaleria.setImageBitmap(fotoModel.bitmap);
+            viewHolder.imageFotoGaleria.setImageURI(fotoModel.uri);
         }
 
         viewHolder.vLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String nombreImagen = ListaImagenes.get(i).getName();
-                FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mCarpetaRop, nombreImagen);
+                FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
 
-                mListener.onItemClicked(viewHolder, i,fotoModel);
+                mListener.onItemClicked(viewHolder, i, fotoModel);
             }
         });
 

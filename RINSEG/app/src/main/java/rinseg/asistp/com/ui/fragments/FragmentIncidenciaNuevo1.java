@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.SecuencialRO;
 import rinseg.asistp.com.models.SeveritiesRO;
 import rinseg.asistp.com.models.TargetRO;
@@ -66,6 +68,9 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     Spinner spinnerBlanco;
     TextView txtFecha;
     ImageButton btnFecha;
+
+    TextView txtCatRiesgo;
+    TextView txtNivelRiesgo;
 
     ArrayAdapter<EventRO> adapterTipoIncidencia;
     ArrayAdapter<FrecuencieRO> adapterFrecuencia;
@@ -202,6 +207,9 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         txtFecha = (TextView) v.findViewById(R.id.txt_incidencia_1_fecha);
         btnFecha = (ImageButton) v.findViewById(R.id.btn_incidencia_1_calendar);
 
+        txtCatRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_categoria_riesgo);
+        txtNivelRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_nivel_riesgo);
+
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
         myConfig = new RealmConfiguration.Builder()
@@ -229,6 +237,31 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 ShowDatepicker();
             }
         });
+
+        spinnerFrecuencia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CalcularRiesgo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        spinnerSveridad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CalcularRiesgo();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
 
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -303,8 +336,11 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             mIncidencia.setFechalimite(calendarFechaLimite.getTime());
             mIncidencia.setFechalimiteString(Generic.dateFormatterMySql.format(mIncidencia.getFechalimite()));
 
-
             realm.commitTransaction();
+
+            //Creamos la carpeta que contendra las imagenes
+            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorIncidencia(getActivity().getApplicationContext(), mIncidencia.getTmpId());
+
 
 
         } catch (Exception e) {
@@ -326,11 +362,6 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             adapterFrecuencia = new ArrayAdapter<FrecuencieRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.frecuencies);
             adapterFrecuencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerFrecuencia.setAdapter(adapterFrecuencia);
-
-            //cargar Severidad
-            adapterTipoSeveridad = new ArrayAdapter<SeveritiesRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
-            adapterTipoSeveridad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSveridad.setAdapter(adapterTipoSeveridad);
 
             //cargar Severidad
             adapterTipoSeveridad = new ArrayAdapter<SeveritiesRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
@@ -409,6 +440,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 calendarFechaLimite.setTime(mIncidencia.getFechalimite());
                 txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
 
+                CalcularRiesgo();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 realm.close();
@@ -468,6 +501,30 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
 
         return resu;
+    }
+
+    void CalcularRiesgo() {
+        txtCatRiesgo.setText(getString(R.string.rop_c1_texto_default));
+        txtNivelRiesgo.setText(getString(R.string.rop_c1_texto_default));
+
+        FrecuencieRO frecuenciaSelect = (FrecuencieRO) spinnerFrecuencia.getSelectedItem();
+        SeveritiesRO severitiesSelect = (SeveritiesRO) spinnerSveridad.getSelectedItem();
+
+        int valorFrecuencia = frecuenciaSelect.getValue();
+        int valorSeveridad = severitiesSelect.getValue();
+
+        int resultado = valorSeveridad * valorFrecuencia;
+        txtNivelRiesgo.setText(String.valueOf(resultado));
+
+        for (int i = 0; i < activityMain.sIns.risks.size(); i++) {
+            RiskRO riesgo = activityMain.sIns.risks.get(i);
+            if (resultado >= riesgo.getMinValue() && resultado <= riesgo.getMaxValue() && resultado != 0) {
+                txtCatRiesgo.setText(riesgo.getDisplayName());
+                break;
+            }
+        }
+
+
     }
 
 

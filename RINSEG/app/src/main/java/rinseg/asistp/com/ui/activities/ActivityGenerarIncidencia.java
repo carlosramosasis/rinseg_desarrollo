@@ -41,6 +41,11 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
 
     Bundle bundle;
 
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    //tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

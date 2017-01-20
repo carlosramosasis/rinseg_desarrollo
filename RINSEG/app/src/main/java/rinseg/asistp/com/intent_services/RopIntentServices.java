@@ -192,7 +192,7 @@ public class RopIntentServices extends IntentService {
                 RestClient restClient = new RestClient(Services.URL_ROPS);
 
                 File myDir = getApplicationContext().getFilesDir();
-                File file = new File(myDir, Constants.PATH_IMAGE_GALERY + tmpIdRop + "/" + imagenRop.getName());
+                File file = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + tmpIdRop + "/" + imagenRop.getName());
 
                 // create RequestBody instance from file
                 RequestBody requestFile =

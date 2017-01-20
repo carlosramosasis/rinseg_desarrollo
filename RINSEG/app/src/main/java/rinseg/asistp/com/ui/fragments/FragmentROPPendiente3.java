@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -62,10 +64,15 @@ public class FragmentROPPendiente3 extends Fragment {
 
     Bundle bundle;
 
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    //tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
 
     ActivityMain activityMain;
     Button btnContinuar;
 
+    static Uri capturedImageUri = null;
     public FragmentROPPendiente3() {
         // Required empty public constructor
     }
@@ -176,8 +183,29 @@ public class FragmentROPPendiente3 extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            launchActivityFotoComentario(data.getData());
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imagen = null;
+                if (data != null) {
+                    if (data.getData() != null) {
+                        imagen = data.getData();
+                    }
+                } else if (capturedImageUri != null) {
+                    imagen = capturedImageUri;
+                    capturedImageUri = null;
+                }
+
+                //Bitmap bitmap = MediaStore.Images.Media.getBitmap(activityMain.getApplicationContext().getContentResolver(), capturedImageUri);
+
+                if (imagen != null) {
+                    launchActivityFotoComentario(imagen);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 
@@ -244,7 +272,7 @@ public class FragmentROPPendiente3 extends Fragment {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), activityMain.PICK_IMAGE_REQUEST);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
 
@@ -253,33 +281,39 @@ public class FragmentROPPendiente3 extends Fragment {
             public void onClick(View view) {
 
                 int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
-                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED || permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
                     Permissions();
                 }
 
-                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED){
-                    // Here, the counter will be incremented each time, and the
-                    // picture taken by camera will be stored as 1.jpg,2.jpg
-                    // and likewise.    CODIGO PARA LLAMAR A CAMARA
-                  /*  count++;
-                    String file = count + ".jpg";
-                    File newfile = new File(file);
-                    try {
-                        newfile.createNewFile();
-                    } catch (IOException e) {
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED || permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                    Calendar cal = Calendar.getInstance();
+                    File file = new File(Environment.getExternalStorageDirectory(), (cal.getTimeInMillis() + ".jpg"));
+                    if (!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        file.delete();
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                     }
-
-                    Uri outputFileUri = Uri.fromFile(newfile);*/
+                    capturedImageUri = Uri.fromFile(file);
 
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                     if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-                        startActivityForResult(cameraIntent, activityMain.REQUEST_IMAGE_CAPTURE);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                     }
-
                 }
-
             }
 
 
@@ -347,18 +381,22 @@ public class FragmentROPPendiente3 extends Fragment {
         permisos = especificacionPermisos.toArray(permisos);
 
         if (especificacionPermisos.size() > 0) {
-            this.requestPermissions(permisos, activityMain.REQUEST_IMAGE_CAPTURE);
+            this.requestPermissions(permisos, REQUEST_IMAGE_CAPTURE);
         }
 
     }
 
-    public void launchActivityFotoComentario(Uri uri) {
-        FotoModel fotoModel =  new FotoModel();
-        fotoModel.uri = uri ;
+    public void launchActivityFotoComentario(Uri uriImagen) {
+        FotoModel fotoMd = new FotoModel();
+
+        Uri uri = uriImagen;
+        fotoMd.uri = uri;
+        fotoMd.bitmap = null;
+
         Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
-        FotoComentarioIntent.putExtra("imagen_rop", fotoModel);
+        FotoComentarioIntent.putExtra("imagen", fotoMd);
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
-        startActivity(FotoComentarioIntent );
+        startActivity(FotoComentarioIntent);
     }
 
     public void launchActivityGaleria() {

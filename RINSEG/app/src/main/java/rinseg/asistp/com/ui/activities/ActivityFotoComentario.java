@@ -1,6 +1,7 @@
 package rinseg.asistp.com.ui.activities;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,11 +15,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.ImagenRO;
+import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.utils.Constants;
@@ -39,8 +42,10 @@ public class ActivityFotoComentario extends AppCompatActivity {
     ImageButton btnGuardar;
 
     ROP mRop;
+    IncidenciaRO mIncidencia;
     ImagenRO imagenRO;
     String tmpIdRop = null;
+    String tmpIdInci = null;
     Boolean puedeEditar;
     String comentario = null;
     RealmConfiguration myConfig;
@@ -55,8 +60,9 @@ public class ActivityFotoComentario extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                fotoModel = (FotoModel) extras.getSerializable("imagen_rop");
+                fotoModel = (FotoModel) extras.getSerializable("imagen");
                 tmpIdRop = extras.getString("ROPtmpId", null);
+                tmpIdInci = extras.getString("IncidenciatmpId", null);
                 puedeEditar = extras.getBoolean("puedeEditar", true);
                 comentario = extras.getString("comentario", null);
             }
@@ -64,7 +70,13 @@ public class ActivityFotoComentario extends AppCompatActivity {
 
         setUpElements();
 
-        LoadRopPendiente();
+        if (tmpIdRop != null) {
+            LoadRopPendiente();
+        }
+        if (tmpIdInci != null) {
+            LoadIncidente();
+        }
+
         MostrarImagen();
 
         setUpActions();
@@ -138,7 +150,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
 
     private void MostrarImagen() {
 
-        if (fotoModel.bitmap != null) {
+        /* if (fotoModel.bitmap != null) {
             try {
                 bitmap = fotoModel.bitmap;
                 imageView.setImageBitmap(bitmap);
@@ -150,12 +162,30 @@ public class ActivityFotoComentario extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }  else if (fotoModel.uri != null) {
+        }  else*/
+
+        if (fotoModel.uri != null) {
             Uri uri = fotoModel.uri;
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                imageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
+                while (bitmap == null) {
+                    if (puedeEditar) {
+                        //bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                        InputStream imageStream = null;
+                        imageStream = getContentResolver().openInputStream(uri);
+                        bitmap = BitmapFactory.decodeStream(imageStream);
+                    } else {
+                        bitmap = BitmapFactory.decodeFile(uri.getPath());
+                    }
+                }
+
+
+                imageView.setImageURI(uri);
+
+                if (comentario != null) {
+                    txtComentario.setText(comentario);
+                }
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -186,9 +216,33 @@ public class ActivityFotoComentario extends AppCompatActivity {
         }
     }
 
+    private void LoadIncidente() {
+
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            mIncidencia = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdInci).findFirst();
+            if (mIncidencia == null) {
+                return;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+    }
+
+
     private void SaveImagenComentario() {
         String nombreImagen = Generic.randomString(Constants.CHARSET_AZ_09, Constants.LEN_IMAGEN);
-        Boolean result = Generic.GuardarImagenCarpeta(this.getApplicationContext(), mRop.getTmpId(), bitmap, nombreImagen);
+        Boolean result = false;
+        if (mRop != null) {
+            result = Generic.GuardarImagenCarpeta(this.getApplicationContext(), Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), bitmap, nombreImagen);
+        } else if (mIncidencia != null) {
+            result = Generic.GuardarImagenCarpeta(this.getApplicationContext(), Constants.PATH_IMAGE_GALERY_INCIDENCIA, mIncidencia.getTmpId(), bitmap, nombreImagen);
+        }
+
+
         if (result) {
             Realm realm = Realm.getInstance(myConfig);
             try {
@@ -197,7 +251,11 @@ public class ActivityFotoComentario extends AppCompatActivity {
                 imagenRO = realm.createObject(ImagenRO.class);
                 imagenRO.setName(nombreImagen + ".jpg");
                 imagenRO.setDescripcion(txtComentario.getText().toString().trim());
-                mRop.listaImgComent.add(imagenRO);
+                if (mRop != null) {
+                    mRop.listaImgComent.add(imagenRO);
+                } else if (mIncidencia != null) {
+                    mIncidencia.listaImgComent.add(imagenRO);
+                }
 
                 realm.commitTransaction();
                 Messages.showToast(rootLayout, getString(R.string.guardo_ok));

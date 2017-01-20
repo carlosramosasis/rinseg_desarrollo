@@ -1,8 +1,15 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,16 +19,27 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.models.RacRO;
 import rinseg.asistp.com.models.SecuencialRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.utils.Constants;
@@ -38,6 +56,8 @@ import rinseg.asistp.com.utils.RinsegModule;
  * create an instance of this fragment.
  */
 public class FragmentIncidenciaNuevo2 extends Fragment {
+
+    ///todo:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -51,6 +71,11 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
 
 
     ActivityGenerarIncidencia activityMain;
+
+    public FloatingActionsMenu btnFabMenu;
+    public FloatingActionButton btnGaleriaFotos;
+    public FloatingActionButton btnImportarFotos;
+    public FloatingActionButton btnTomarFoto;
 
     ArrayAdapter<EventItemsRO> adapterActoCondicionSubStndr;
     ArrayAdapter<RacRO> adapterRac;
@@ -68,7 +93,9 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
 
     Bundle bundle;
 
+    static Uri capturedImageUri = null;
 
+    ///todo:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTOR ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     public FragmentIncidenciaNuevo2() {
         // Required empty public constructor
     }
@@ -91,6 +118,7 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         return fragment;
     }
 
+    ///todo:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +152,8 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         activityMain.btnLeft.setText(R.string.btn_atras);
         activityMain.btnRight.setText(R.string.btn_agreagar);
         activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_plus_circle, 0);
+
+        MostrarCantidadImagenesRop(mIncidencia.getTmpId());
 
         activityMain.actualPagina = 2;
         activityMain.ShowNumPagina();
@@ -177,9 +207,44 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
     }
 
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imagen = null;
+                if (data != null) {
+                    if (data.getData() != null) {
+                        imagen = data.getData();
+                    }
+                } else if (capturedImageUri != null) {
+                    imagen = capturedImageUri;
+                    capturedImageUri = null;
+                }
+
+                if (imagen != null) {
+                    launchActivityFotoComentario(imagen);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+    ///todo:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
         activityMain = ((ActivityGenerarIncidencia) getActivity());
+
+        btnFabMenu = (FloatingActionsMenu) v.findViewById(R.id.fab_menu_incidente_nuevo);
+        btnGaleriaFotos = (FloatingActionButton) v.findViewById(R.id.fab_incidencia_galeria);
+        btnImportarFotos = (FloatingActionButton) v.findViewById(R.id.fab_incidencia_importar);
+        btnTomarFoto = (FloatingActionButton) v.findViewById(R.id.fab_incidencia_tomar_foto);
 
         spinnerActoCondicionSubStndr = (Spinner) v.findViewById(R.id.spinner_incidencia_2_tipo_acto_condicion);
         spinnerRac = (Spinner) v.findViewById(R.id.spinner_incidencia_2_rac);
@@ -224,8 +289,96 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
                 ConfirmarAgregarIncidente(getString(R.string.confirmar_agregar_inccidente));
             }
         });
+        btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                launchActivityGaleria();
+
+            }
+        });
+
+        btnImportarFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), activityMain.PICK_IMAGE_REQUEST);
+            }
+        });
+
+        btnTomarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED || permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+                    Permissions();
+                }
+
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED || permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                    Calendar cal = Calendar.getInstance();
+                    File file = new File(Environment.getExternalStorageDirectory(), (cal.getTimeInMillis() + ".jpg"));
+                    if (!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        file.delete();
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    capturedImageUri = Uri.fromFile(file);
+
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, activityMain.REQUEST_IMAGE_CAPTURE);
+                    }
+                }
+
+
+            }
+
+
+        });
     }
 
+    public void Permissions() {
+
+        ArrayList<String> especificacionPermisos = new ArrayList<>();
+
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+
+        String[] permisos = new String[especificacionPermisos.size()];
+        permisos = especificacionPermisos.toArray(permisos);
+
+        if (especificacionPermisos.size() > 0) {
+            this.requestPermissions(permisos, activityMain.REQUEST_IMAGE_CAPTURE);
+        }
+    }
 
     private boolean ValidarFormulario() {
         boolean resu = true;
@@ -403,6 +556,31 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
             }
         });
 
+    }
+
+    public void launchActivityFotoComentario(Uri uriImagen) {
+        FotoModel fotoMd = new FotoModel();
+
+        Uri uri = uriImagen;
+        fotoMd.uri = uri;
+        fotoMd.bitmap = null;
+
+        Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
+        FotoComentarioIntent.putExtra("imagen", fotoMd);
+        FotoComentarioIntent.putExtra("IncidenciatmpId", mIncidencia.getTmpId());
+        startActivity(FotoComentarioIntent);
+    }
+
+    public void launchActivityGaleria() {
+
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("IncidentetmpId", mIncidencia.getTmpId());
+        startActivity(GaleriaIntent);
+    }
+
+    public void MostrarCantidadImagenesRop(String nombreCarpeta) {
+        int cant = Generic.CantidadImagenesPorIncidente(activityMain.getApplicationContext(), nombreCarpeta);
+        this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
     }
 
 }

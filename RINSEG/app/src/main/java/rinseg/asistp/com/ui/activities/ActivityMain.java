@@ -120,11 +120,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public FloatingActionButton btnTomarFoto;
     public FloatingActionButton btnGenerarPDF;
 
-    //import foto
-    public int PICK_IMAGE_REQUEST = 1;
-    //tomar foto
-    public int REQUEST_IMAGE_CAPTURE = 1;
-
 
     ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
@@ -525,6 +520,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 FrecuencieRO realmFrecuencie = realm.createObject(FrecuencieRO.class);
                 realmFrecuencie.setId(f.getInt("id"));
                 realmFrecuencie.setDisplayName(f.getString("display_name"));
+                realmFrecuencie.setValue(f.getInt("value"));
                 insp.frecuencies.add(realmFrecuencie);
 
             } catch (Exception e) {
@@ -546,6 +542,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 SeveritiesRO realmSeverities = realm.createObject(SeveritiesRO.class);
                 realmSeverities.setId(f.getInt("id"));
                 realmSeverities.setDisplayName(f.getString("display_name"));
+                realmSeverities.setValue(f.getInt("value"));
                 insp.severities.add(realmSeverities);
 
             } catch (Exception e) {

@@ -28,6 +28,7 @@ public class SeveritiesRO extends RealmObject {
         displayName = _displayName;
     }
 
+
     public int getValue() {
         return value;
     }
@@ -35,6 +36,7 @@ public class SeveritiesRO extends RealmObject {
     public void setValue(int value) {
         this.value = value;
     }
+
 
     @Override
     public String toString() {

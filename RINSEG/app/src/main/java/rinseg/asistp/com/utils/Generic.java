@@ -95,7 +95,7 @@ public class Generic {
         boolean result = false;
 
         File myDir = context.getFilesDir();
-        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop + "/");
+        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + carpertaRop + "/");
 
         if (!folder.exists()) {
             result = folder.mkdirs();
@@ -105,11 +105,25 @@ public class Generic {
         return result;
     }
 
-    public static boolean GuardarImagenCarpeta(Context context, String carpertaRop, Bitmap bmp, String nombreImagen) {
+    public static boolean CrearCarpetaImagenesPorIncidencia(Context context, String carpertaIncidencia) {
         boolean result = false;
 
         File myDir = context.getFilesDir();
-        File path = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop + "/" + nombreImagen + ".jpg");
+        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + carpertaIncidencia + "/");
+
+        if (!folder.exists()) {
+            result = folder.mkdirs();
+        }
+        Log.e("resultSaveImageGalery", String.valueOf(result));
+
+        return result;
+    }
+
+    public static boolean GuardarImagenCarpeta(Context context, String pathImageGallery, String carperta, Bitmap bmp, String nombreImagen) {
+        boolean result = false;
+
+        File myDir = context.getFilesDir();
+        File path = new File(myDir, pathImageGallery + carperta + "/" + nombreImagen + ".jpg");
 
         FileOutputStream out = null;
         try {
@@ -131,18 +145,22 @@ public class Generic {
         return result;
     }
 
-    public static FotoModel DevolverImagendeCarpeta(File fcarpetaPrincipalApp, String carpertaRop, String nombreImagen) {
+    public static FotoModel DevolverImagendeCarpeta(File fcarpetaPrincipalApp, String pathImageGallery, String carpertaRop, String nombreImagen) {
         FotoModel result = new FotoModel();
 
         try {
-            File folderRop = new File(fcarpetaPrincipalApp, Constants.PATH_IMAGE_GALERY + carpertaRop + "/");
+            File folderRop = new File(fcarpetaPrincipalApp, pathImageGallery + carpertaRop + "/");
             if (folderRop.exists()) {
                 File[] files = folderRop.listFiles();
                 for (int i = 0; i < files.length; i++) {
                     Log.e("getName", files[i].getName());
                     if (files[i].getName().equals(nombreImagen)) {
-                        result.bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
-                        nombreImagen = nombreImagen.replaceFirst("[.][^.]+$", "");
+                        //result.bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
+                        result.bitmap = null;
+
+                        // nombreImagen = nombreImagen.replaceFirst("[.][^.]+$", "");
+
+
                         result.uri = Uri.parse(folderRop + "/" + nombreImagen);
                         break;
                     }
@@ -160,7 +178,7 @@ public class Generic {
         boolean result = false;
 
         File myDir = context.getFilesDir();
-        File myDirGaleria = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop);
+        File myDirGaleria = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + carpertaRop);
 
         try {
 
@@ -184,7 +202,7 @@ public class Generic {
         int resu = 0;
 
         File myDir = context.getFilesDir();
-        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY + carpertaRop + "/");
+        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + carpertaRop + "/");
 
 
         if (folder.exists()) {
@@ -194,7 +212,24 @@ public class Generic {
                 resu += 1;
             }
         }
+        return resu;
+    }
 
+    public static int CantidadImagenesPorIncidente(Context context, String carpertaIncidente) {
+        boolean existeCarpeta = false;
+        int resu = 0;
+
+        File myDir = context.getFilesDir();
+        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA+ carpertaIncidente + "/");
+
+
+        if (folder.exists()) {
+            File[] files = folder.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                Log.d("Files", "FileName:" + files[i].getName());
+                resu += 1;
+            }
+        }
         return resu;
     }
 

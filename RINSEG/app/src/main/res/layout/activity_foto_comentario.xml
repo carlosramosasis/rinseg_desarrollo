@@ -29,7 +29,7 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -37,8 +37,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:background="@color/colorPrimaryDark"
                 >
@@ -55,9 +54,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="75dp"
                 android:orientation="horizontal"
-                android:background="@color/colorSecondary"
+                android:background="@color/colorSecondaryTransparent"
+                android:layout_alignParentBottom="true"
                 >
 
                 <EditText
@@ -66,16 +66,19 @@
                     android:layout_height="match_parent"
                     android:layout_margin="7dp"
                     android:layout_weight="1"
-                    android:background="@drawable/backgorund_white"
+                    android:background="@drawable/backgorund_black_transparent"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorSecondary0"
                     android:gravity="top|left"
                     android:inputType="textMultiLine"
                     android:lines="8"
                     android:maxLines="10"
-                    android:minLines="6"
+                    android:minLines="8"
                     android:padding="4dp"
                     android:scrollbars="vertical"
                     android:hint="@string/hint_comentario"
                     android:elevation="1dp"
+                    android:textSize="19dp"
                     />
 
                 <ImageButton
@@ -90,7 +93,7 @@
                     >
                 </ImageButton>
             </LinearLayout>
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -2,6 +2,7 @@ package rinseg.asistp.com.models;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -26,6 +27,8 @@ public class IncidenciaRO extends RealmObject{
     private String responsable;
     private String supervisor;
     private IncidenciaLevantadaRO incidenciaLevantadaRO;
+
+    public RealmList<ImagenRO> listaImgComent;
 
 
     public IncidenciaRO(String nombre, String detalle) {

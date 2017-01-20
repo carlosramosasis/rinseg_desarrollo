@@ -62,8 +62,14 @@ public class InspeccionAdapter extends RecyclerView.Adapter<InspeccionAdapter.In
     @Override
     public void onBindViewHolder(final InspeccionViewHolder viewHolder, final int i) {
 
-        InspeccionRO in = ListaInspecciones.get(i);
-        viewHolder.txtCodigo.setText("" + ListaInspecciones.get(i).getId());
+        InspeccionRO insp = ListaInspecciones.get(i);
+        if (insp.getId() != 0) {
+            viewHolder.txtCodigo.setText("" + insp.getId());
+        } else {
+            viewHolder.txtCodigo.setText(insp.getTmpId());
+        }
+
+
         viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaInspecciones.get(i).getDate()));
 
 

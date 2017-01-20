@@ -23,8 +23,10 @@ import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClickImage;
 import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.ImagenRO;
+import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.RinsegModule;
 
 public class ActivityGaleria extends AppCompatActivity implements ListenerClickImage {
@@ -35,6 +37,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
     Toolbar toolbar;
 
     String tmpIdRop = null;
+    String tmpIdIncidente = null;
 
     private RecyclerView recyclerImage;
     private ImageAdapter imageAdapter;
@@ -42,6 +45,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
     private List<ImagenRO> listaImagenes = new ArrayList<>();
 
     ROP mRop;
+    IncidenciaRO mIncidente;
 
     private File fileApp;
 
@@ -57,6 +61,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 tmpIdRop = extras.getString("ROPtmpId", null);
+                tmpIdIncidente = extras.getString("IncidentetmpId", null);
             }
         }
 
@@ -64,22 +69,32 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         setUpElements();
         setUpActions();
 
-        LoadImagenesDeRop();
+        if (mRop != null) {
+            LoadImagenesDeRop();
+        } else if (mIncidente != null) {
+            LoadImagenesDeIncidente();
+        }
+
 
     }
 
     @Override
-    public void  onResume(){
+    public void onResume() {
         super.onResume();
         toolbar.setTitle("Galería de imágenes");
     }
 
     @Override
     public void onItemClicked(ImageAdapter.ImageViewHolder holder, int position, FotoModel fotoModel) {
-        if(fotoModel.uri != null){
+        if (fotoModel.uri != null) {
             Intent FotoComentarioIntent = new Intent().setClass(this, ActivityFotoComentario.class);
-            FotoComentarioIntent.putExtra("imagen_rop", fotoModel);
-            FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
+            FotoComentarioIntent.putExtra("imagen", fotoModel);
+            if (mRop != null) {
+                FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
+            } else if (mIncidente != null) {
+                FotoComentarioIntent.putExtra("IncidentetmpId", mIncidente.getTmpId());
+            }
+
             FotoComentarioIntent.putExtra("puedeEditar", false);
             FotoComentarioIntent.putExtra("comentario", listaImagenes.get(position).getDescripcion());
             startActivity(FotoComentarioIntent);
@@ -107,13 +122,19 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         recyclerImage.setHasFixedSize(true);
         // usar administrador para linearLayout
         //lManager = new LinearLayoutManager(this.getApplicationContext());
-        RecyclerView.LayoutManager lm = new GridLayoutManager(this,2);
+        RecyclerView.LayoutManager lm = new GridLayoutManager(this, 2);
         recyclerImage.setLayoutManager(lm);
         // Crear un nuevo Adaptador
         fileApp = getApplicationContext().getFilesDir();
 
-        LoadRopPendiente();
-        imageAdapter = new ImageAdapter(listaImagenes,fileApp, mRop.getTmpId(),this);
+        if(tmpIdRop!= null){
+            LoadRopPendiente();
+            imageAdapter = new ImageAdapter(listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), this);
+        }else if(tmpIdIncidente != null){
+            LoadIncidente();
+            imageAdapter = new ImageAdapter(listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_INCIDENCIA,mIncidente.getTmpId(), this);
+        }
+
         recyclerImage.setAdapter(imageAdapter);
     }
 
@@ -145,6 +166,23 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         }
     }
 
+    private void LoadIncidente() {
+        if (tmpIdIncidente != null) {
+            final Realm realm = Realm.getInstance(myConfig);
+            try {
+                mIncidente = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdIncidente).findFirst();
+                if (mIncidente == null) {
+                    return;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                realm.close();
+            }
+        }
+    }
+
     private void LoadImagenesDeRop() {
         Realm realm = Realm.getInstance(myConfig);
         try {
@@ -158,6 +196,31 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
 
                 for (int i = 0; i < RopRealm.listaImgComent.size(); i++) {
                     ImagenRO img = RopRealm.listaImgComent.get(i);
+                    listaImagenes.add(img);
+                    imageAdapter.notifyDataSetChanged();
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            realm.close();
+        }
+    }
+
+    private void LoadImagenesDeIncidente() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            IncidenciaRO incidenteRealm = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdIncidente).findFirst();
+
+            if (incidenteRealm == null) {
+                return;
+            }
+
+            if (incidenteRealm.listaImgComent.size() > 0) {
+
+                for (int i = 0; i < incidenteRealm.listaImgComent.size(); i++) {
+                    ImagenRO img = incidenteRealm.listaImgComent.get(i);
                     listaImagenes.add(img);
                     imageAdapter.notifyDataSetChanged();
                 }

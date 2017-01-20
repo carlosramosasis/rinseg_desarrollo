@@ -31,6 +31,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -82,6 +83,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     private OnFragmentInteractionListener mListener;
 
+    static Uri capturedImageUri = null;
 
     ActivityMain activityMain;
     ImageButton btnActoCondicion;
@@ -109,6 +111,11 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     private String nameEvent;
 
     Bundle bundle;
+
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    //tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
 
     public FragmentROPPendiente2() {
         // Required empty public constructor
@@ -203,7 +210,10 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     }
 
     //@SuppressWarnings("TryFinallyCanBeTryWithResources")
-    /** Evento para eliminar acción preventiva agregada */
+
+    /**
+     * Evento para eliminar acción preventiva agregada
+     */
     @Override
     public void onItemClicked(AccionPreventivaAdapter.AccionViewHolder holder, int position) {
 
@@ -226,15 +236,38 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//<<<<<<< Updated upstream
-        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            launchActivityFotoComentario(data);
-/*=======
 
-        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode ==
-                Activity.RESULT_OK && data != null && data.getData() != null) {
-            launchActivityFotoComentario(data.getData());
->>>>>>> Stashed changes*/
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imagen = null;
+                if (data != null) {
+                    if (data.getData() != null) {
+                        imagen = data.getData();
+                    }
+                } else if (capturedImageUri != null) {
+                    imagen = capturedImageUri;
+                    capturedImageUri = null;
+                }
+
+                //Bitmap bitmap = MediaStore.Images.Media.getBitmap(activityMain.getApplicationContext().getContentResolver(), capturedImageUri);
+
+                if (imagen != null) {
+                    launchActivityFotoComentario(imagen);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }*/
+
+
         }
     }
 
@@ -377,7 +410,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), activityMain.PICK_IMAGE_REQUEST);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
 
@@ -386,36 +419,41 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
             public void onClick(View view) {
 
                 int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
-                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED || permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
                     Permissions();
                 }
 
-//<<<<<<< Updated upstream
-                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED) {
-/*=======
-                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED){
-                    // Here, the counter will be incremented each time, and the
-                    // picture taken by camera will be stored as 1.jpg,2.jpg
-                    // and likewise.    CODIGO PARA LLAMAR A CAMARA
-                    count++;
-                    String file = count + ".jpg";
-                    File newfile = new File(file);
-                    try {
-                        newfile.createNewFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED || permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                    Calendar cal = Calendar.getInstance();
+                    File file = new File(Environment.getExternalStorageDirectory(), (cal.getTimeInMillis() + ".jpg"));
+                    if (!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        file.delete();
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                     }
-
-                    Uri outputFileUri = Uri.fromFile(newfile);
->>>>>>> Stashed changes*/
+                    capturedImageUri = Uri.fromFile(file);
 
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                     if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                        //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-                        startActivityForResult(cameraIntent, activityMain.REQUEST_IMAGE_CAPTURE);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
+
+
             }
 
 
@@ -451,7 +489,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     private void AgregarAccion() {
 
-        if ( !Validarformulario() ) {
+        if (!Validarformulario()) {
             return;
         }
 
@@ -531,20 +569,15 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 //    }
 
 
-    public void launchActivityFotoComentario(Intent data) {
+    public void launchActivityFotoComentario(Uri uriImagen) {
         FotoModel fotoMd = new FotoModel();
-        if (data.getData() != null) {
-            Uri uri = data.getData();
-            fotoMd.uri = uri;
-        }
-        if (data.getExtras() != null) {
-            Bitmap bmp = (Bitmap) data.getExtras().get("data");
-            fotoMd.bitmap = bmp;
-        }
 
+        Uri uri = uriImagen;
+        fotoMd.uri = uri;
+        fotoMd.bitmap = null;
 
         Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
-        FotoComentarioIntent.putExtra("imagen_rop", fotoMd);
+        FotoComentarioIntent.putExtra("imagen", fotoMd);
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
         startActivity(FotoComentarioIntent);
     }
@@ -560,17 +593,23 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
         ArrayList<String> especificacionPermisos = new ArrayList<>();
 
-        int permissionCheckCamera = ContextCompat.checkSelfPermission(
-                this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
         }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
 
         String[] permisos = new String[especificacionPermisos.size()];
         permisos = especificacionPermisos.toArray(permisos);
 
         if (especificacionPermisos.size() > 0) {
-            this.requestPermissions(permisos, activityMain.REQUEST_IMAGE_CAPTURE);
+            this.requestPermissions(permisos, REQUEST_IMAGE_CAPTURE);
         }
     }
 
