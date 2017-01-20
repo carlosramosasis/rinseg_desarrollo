@@ -229,6 +229,10 @@
     <string name="lev_incidencia_potencial_residual">POTENCIAL RESIDUAL</string>
     <string name="lev_incidencia_cat_nivel_riesgo">Categoría y nivel de riesgo:</string>
     <string name="btn_grabar">GRABAR</string>
+    <string name="error_fix_incident_display_date">Asigne la fecha de levantamiento</string>
+    <string name="error_fix_incident_description">Ingrese el detalle de la acción correctiva</string>
+    <string name="error_fix_incident_frequency">La frecuencia no ha sido modificada</string>
+    <string name="error_fix_incident_severity">La severidad no ha sido modificada</string>
 
     <!--Cerrar Sesion-->
     <string name="cerrar_sesion_titulo">Cerrar Sesión</string>

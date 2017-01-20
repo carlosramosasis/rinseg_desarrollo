@@ -4,10 +4,13 @@ import io.realm.RealmObject;
 
 /**
  * Created by Carlos Ramos on 27/10/2016.
+ * Clase Realm de Severidades
  */
 public class SeveritiesRO extends RealmObject {
+
     private int id ;
     private String displayName;
+    private int value;
 
     public int getId() {
         return id;
@@ -25,10 +28,17 @@ public class SeveritiesRO extends RealmObject {
         displayName = _displayName;
     }
 
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return this.displayName; // Value to be displayed in the Spinner
     }
-
 
 }

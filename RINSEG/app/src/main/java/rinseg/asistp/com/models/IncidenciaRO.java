@@ -25,6 +25,7 @@ public class IncidenciaRO extends RealmObject{
     private int reportanteId;
     private String responsable;
     private String supervisor;
+    private IncidenciaLevantadaRO incidenciaLevantadaRO;
 
 
     public IncidenciaRO(String nombre, String detalle) {
@@ -32,9 +33,7 @@ public class IncidenciaRO extends RealmObject{
         this.detalle = detalle;
     }
 
-    public IncidenciaRO() {
-
-    }
+    public IncidenciaRO() { }
 
     public int getId() {
         return id;
@@ -163,5 +162,13 @@ public class IncidenciaRO extends RealmObject{
 
     public void setSupervisor(String supervisor) {
         this.supervisor = supervisor;
+    }
+
+    public IncidenciaLevantadaRO getIncidenciaLevantadaRO() {
+        return incidenciaLevantadaRO;
+    }
+
+    public void setIncidenciaLevantadaRO(IncidenciaLevantadaRO incidenciaLevantadaRO) {
+        this.incidenciaLevantadaRO = incidenciaLevantadaRO;
     }
 }

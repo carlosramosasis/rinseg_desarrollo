@@ -1,7 +1,5 @@
 package rinseg.asistp.com.services;
 
-import java.util.ArrayList;
-
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -14,11 +12,14 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import rinseg.asistp.com.models.IncidenciaLevantadaRO;
 import rinseg.asistp.com.models.ROP;
 
 /**
  * Created by Carlos Ramos on 20/10/2016.
+ * Interface de métodos REST
  */
+
 public interface IServices {
 
     @FormUrlEncoded
@@ -48,5 +49,7 @@ public interface IServices {
     @POST(Services.LOGOUT)
     Call<ResponseBody> setLogout(@Query("api_token") String api_token);
 
-
+    @POST(Services.FIX_INCIDENT)
+    Call<ResponseBody> setFixIncident(@Body IncidenciaLevantadaRO icidencia,
+                                      @Query("api_token") String api_token);
 }

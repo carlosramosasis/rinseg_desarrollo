@@ -10,9 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-
-        >
+        android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -21,15 +19,14 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="vertical"
                 android:scrollbars="vertical"
-                android:paddingBottom="10dp"
-                >
+                android:paddingBottom="10dp">
 
                 <TextView
                     android:gravity="center"
@@ -38,10 +35,7 @@
                     android:text="@string/lev_incidencia_datos_levantamiento"
                     android:textColor="@color/colorGray"
                     android:textSize="18dp"
-                    android:layout_marginBottom="8dp"
-                    />
-
-
+                    android:layout_marginBottom="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -55,9 +49,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginBottom="8dp"
-                    android:elevation="2dp"
-                    >
+                    android:elevation="2dp">
+
                     <TextView
+                        android:id="@+id/text_fix_incident_display_date"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_weight="1"
@@ -70,16 +65,17 @@
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17dp" />
+
                     <ImageButton
-                        android:id="@+id/btn_lev_calendar"
+                        android:id="@+id/btn_fix_incident_calendar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:background="@color/colorSecondary"
-                        android:src="@drawable/ic_calendar">
+                        android:src="@drawable/ic_calendar" />
 
-                    </ImageButton>
                 </LinearLayout>
-                <TextView
+
+                <!--<TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lev_incidencia_estatus"
@@ -96,30 +92,30 @@
                     android:hint="@string/lev_incidencia_estatus"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp"
-                    app:ms_arrow_tint="@color/colorPrimaryDark" />
-
+                    app:ms_arrow_tint="@color/colorPrimaryDark" />-->
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/lev_incidencia_control_operacional"
+                    android:hint="@string/lev_incidencia_control_operacional"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
+
                 <EditText
-                    android:id="@+id/text_input_usuariod"
+                    android:id="@+id/edit_fix_incident_description"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
                     android:height="100dp"
                     android:background="@color/colorWhite"
-                    android:drawableRight="@drawable/ic_pencil"
+                    android:drawableEnd="@drawable/ic_pencil"
                     android:elevation="2dp"
                     android:hint="@string/lev_incidencia_control_operacional"
                     android:inputType="textMultiLine"
                     android:maxLines="10"
                     android:paddingBottom="7dp"
-                    android:paddingLeft="23dp"
-                    android:paddingRight="15dp"
+                    android:paddingStart="23dp"
+                    android:paddingEnd="15dp"
                     android:paddingTop="11dp"
                     android:scrollbars="vertical"
                     android:textColorHint="@color/colorSecondary0"
@@ -128,11 +124,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-
                     android:layout_marginBottom="10dp"
-                    android:background="@color/colorAccentDark2">
-
-                </LinearLayout>
+                    android:background="@color/colorAccentDark2" />
 
                 <TextView
                     android:gravity="center"
@@ -141,21 +134,21 @@
                     android:text="@string/lev_incidencia_potencial_residual"
                     android:textColor="@color/colorGray"
                     android:textSize="18dp"
-                    android:layout_marginBottom="8dp"
-                    />
+                    android:layout_marginBottom="8dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:baselineAligned="false"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="8dp"
-                    >
+                    android:layout_marginBottom="8dp">
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        >
+                        android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -164,6 +157,7 @@
                             android:textSize="12dp" />
 
                         <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinner_fix_incident_frequency"
                             android:layout_width="match_parent"
                             android:layout_height="45dp"
                             android:layout_marginBottom="8dp"
@@ -175,13 +169,14 @@
                             app:ms_arrow_tint="@color/colorPrimaryDark" />
 
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:layout_marginLeft="10dp"
-                        >
+                        android:layout_marginStart="10dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -190,6 +185,7 @@
                             android:textSize="12dp" />
 
                         <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinner_fix_incident_severity"
                             android:layout_width="match_parent"
                             android:layout_height="45dp"
                             android:layout_marginBottom="8dp"
@@ -201,6 +197,7 @@
                             app:ms_arrow_tint="@color/colorPrimaryDark" />
 
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <TextView
@@ -209,42 +206,41 @@
                     android:text="@string/lev_incidencia_cat_nivel_riesgo"
                     android:textColor="@color/colorGray"
                     android:textSize="14dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:layout_marginBottom="4dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_gravity="center_horizontal"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="15dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
                     android:paddingLeft="25dp"
                     android:paddingRight="25dp"
                     android:background="@drawable/border_cat_nivel_riesgo"
-                    android:elevation="3dp"
-                    >
+                    android:elevation="3dp">
+
                     <TextView
+                        android:id="@+id/textview_fix_incident_category"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="MEDIO"
                         android:gravity="center"
                         android:paddingBottom="3dp"
-                        android:textSize="14dp"
-                        />
+                        android:textSize="14dp" />
+
                     <TextView
+                        android:id="@+id/textview_fix_incident_level"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="123"
                         android:gravity="center"
-                        android:textSize="13dp"
-                        />
+                        android:textSize="13dp" />
 
                 </LinearLayout>
 
             </LinearLayout>
+
         </ScrollView>
 
         <LinearLayout
@@ -252,23 +248,21 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/background_buttons_bottom"
-
             android:layout_gravity="bottom"
             android:orientation="vertical"
             android:layout_marginBottom="0dp"
-            android:visibility="visible"
-            >
+            android:visibility="visible">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/colorAccent"
-                >
-            </LinearLayout>
+                android:background="@color/colorAccent" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/btn_cancelar"
                     android:background="@drawable/ripple_buttons_bottom"
@@ -276,12 +270,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_cancelar"
-                    android:drawableLeft="@drawable/ic_chevron_left_black_24dp"
+                    android:drawableStart="@drawable/ic_chevron_left_black_24dp"
                     android:textColor="@color/colorPrimaryDark"
                     android:paddingLeft="35dp"
                     android:paddingRight="35dp"
-                    android:textSize="15dp"
-                    />
+                    android:textSize="15dp"/>
 
                 <Button
                     android:id="@+id/btn_grabar"
@@ -290,17 +283,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_grabar"
-                    android:drawableRight="@drawable/ic_save"
+                    android:drawableEnd="@drawable/ic_save"
                     android:textColor="@color/colorPrimaryDark"
                     android:paddingLeft="35dp"
                     android:paddingRight="35dp"
-                    android:textSize="15dp"
-                    />
+                    android:textSize="15dp"/>
+
             </LinearLayout>
 
-
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
 
 </FrameLayout>
