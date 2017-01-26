@@ -144,19 +144,7 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         mListener = null;
     }
 
-<<<<<<< Updated upstream
-=======
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
->>>>>>> Stashed changes
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
@@ -167,37 +155,32 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         super.onDestroyView();
     }
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if ( requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK ) {
+        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             try {
                 Uri imagen = null;
-<<<<<<< Updated upstream
-                if ( data != null ) {
-                    if ( data.getData() != null ) {
-=======
                 if (data != null) {
                     if (data.getData() != null) {
-
->>>>>>> Stashed changes
                         imagen = data.getData();
                     }
-                } else if ( capturedImageUri != null ) {
+                } else if (capturedImageUri != null) {
                     imagen = capturedImageUri;
                     capturedImageUri = null;
                 }
+
                 if (imagen != null) {
                     launchActivityFotoComentario(imagen);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
         }
     }
 

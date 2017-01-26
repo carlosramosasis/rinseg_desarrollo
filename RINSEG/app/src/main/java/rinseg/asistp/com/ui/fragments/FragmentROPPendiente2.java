@@ -483,14 +483,6 @@ public class FragmentROPPendiente2 extends Fragment
 
         });
 
-        activityMain.btnGenerarPDF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                GenerarPDF();
-
-            }
-        });
     }
 
     private boolean Validarformulario() {
@@ -662,7 +654,7 @@ public class FragmentROPPendiente2 extends Fragment
         dialogActoCondicion.show();
     }
 
-<<<<<<< Updated upstream
+
     /** Implementación de método para setear texto al campo de acto o condición sub estándar */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
@@ -688,7 +680,7 @@ public class FragmentROPPendiente2 extends Fragment
             realm.close();
         }
     }
-=======
+
     void GenerarPDF() {
         try {
 
@@ -721,5 +713,4 @@ public class FragmentROPPendiente2 extends Fragment
         }
     }
 
->>>>>>> Stashed changes
 }

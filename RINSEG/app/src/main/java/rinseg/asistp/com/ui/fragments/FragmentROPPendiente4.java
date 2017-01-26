@@ -380,12 +380,7 @@ public class FragmentROPPendiente4 extends Fragment {
 
         });
 
-        activityMain.btnGenerarPDF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Messages.showToast(getView(),String.valueOf(Generic.isOnline()));
-            }
-        });
+
     }
 
     private void LoadFormDefault(View v) {

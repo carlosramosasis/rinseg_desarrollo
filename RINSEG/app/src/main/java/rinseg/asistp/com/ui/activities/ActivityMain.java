@@ -118,7 +118,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public FloatingActionButton btnGaleriaFotos;
     public FloatingActionButton btnImportarFotos;
     public FloatingActionButton btnTomarFoto;
-    public FloatingActionButton btnGenerarPDF;
+
 
 
     ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -267,7 +267,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         btnGaleriaFotos = (FloatingActionButton) findViewById(R.id.fab_set_dir);
         btnImportarFotos = (FloatingActionButton) findViewById(R.id.fab_import_foto);
         btnTomarFoto = (FloatingActionButton) findViewById(R.id.fab_tomar_foto);
-        btnGenerarPDF = (FloatingActionButton) findViewById(R.id.fab_generar_pdf);
+        //btnGenerarPDF = (FloatingActionButton) findViewById(R.id.fab_generar_pdf);
 
         //configuramos Realm
         Realm.init(thiss.getApplicationContext());

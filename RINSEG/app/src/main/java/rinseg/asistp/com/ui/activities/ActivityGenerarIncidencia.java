@@ -66,12 +66,9 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
 
         LoadInspeccion();
 
-<<<<<<< Updated upstream
         FragmentIncidenciaNuevo1 fragment = FragmentIncidenciaNuevo1.newInstance(idIncidencia);
         replaceFragment(fragment, true, 0, 0, 0, 0);
-=======
-        replaceFragment(new FragmentIncidenciaNuevo1(), true, 0, 0, 0, 0);
->>>>>>> Stashed changes
+
     }
 
     @Override
