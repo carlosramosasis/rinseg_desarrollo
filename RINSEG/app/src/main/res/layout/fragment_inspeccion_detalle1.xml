@@ -1,5 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,153 +6,145 @@
     android:scrollbars="vertical"
     tools:context="rinseg.asistp.com.ui.fragments.FragmentInspeccionDetalle1">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="match_parent">
 
-        >
-
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical"
+            android:paddingBottom="80dp"
+            android:scrollbars="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:background="@drawable/backgorund_white"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_detalle1_area"
+                android:textColor="@color/colorGray"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/text_incident_detail_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="15dp"
+                android:text="@string/rop_c1_texto_default"
+                android:textColor="@color/colorGray"
+                android:textSize="17dp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp"
-                android:orientation="vertical"
-                android:paddingBottom="80dp"
-                android:scrollbars="vertical"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="5dp"
-                android:background="@drawable/backgorund_white"
-                android:elevation="4dp"
-                >
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/inspeccion_detalle1_area"
+                    android:text="@string/rop_c1_fecha"
                     android:textColor="@color/colorGray"
                     android:textSize="16dp" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/text_incident_detail_fecha"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/rop_c1_fecha"
-                        android:textColor="@color/colorGray"
-                        android:textSize="16dp" />
-
-                    <TextView
-                        android:id="@+id/insp_det_txt_fecha"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:text="@string/rop_c1_texto_default"
-                        android:textColor="@color/colorGray"
-                        android:textSize="17dp"
-                        android:textStyle="bold"
-
-                        />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inspeccion_detalle1_tipo_insp"
-                    android:textColor="@color/colorGray"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="15dp"
-                    android:text="@string/rop_c1_texto_default"
-                    android:textColor="@color/colorGray"
-                    android:textSize="17dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inspeccion_detalle1_empr_insp"
-                    android:textColor="@color/colorGray"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="15dp"
-                    android:text="@string/rop_c1_texto_default"
-                    android:textColor="@color/colorGray"
-                    android:textSize="17dp"
-                    android:textStyle="bold" />
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inspeccion_detalle1_inspectores"
-                    android:textColor="@color/colorGray"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="15dp"
-                    android:text="@string/rop_c1_texto_default"
-                    android:textColor="@color/colorGray"
-                    android:textSize="17dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/inspeccion_detalle1_responsables"
-                    android:textColor="@color/colorGray"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="15dp"
-                    android:text="@string/rop_c1_texto_default"
-                    android:textColor="@color/colorGray"
-                    android:textSize="17dp"
-                    android:textStyle="bold" />
             </LinearLayout>
-        </ScrollView>
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_detalle1_tipo_insp"
+                android:textColor="@color/colorGray"
+                android:textSize="16dp" />
 
-    <include layout="@layout/button_menu_inspeccion_detalle">
+            <TextView
+                android:id="@+id/text_incident_detail_tipo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="15dp"
+                android:text="@string/rop_c1_texto_default"
+                android:textColor="@color/colorGray"
+                android:textSize="17dp"
+                android:textStyle="bold" />
 
-    </include>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_detalle1_empr_insp"
+                android:textColor="@color/colorGray"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/text_incident_detail_empresa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="15dp"
+                android:text="@string/rop_c1_texto_default"
+                android:textColor="@color/colorGray"
+                android:textSize="17dp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_detalle1_inspectores"
+                android:textColor="@color/colorGray"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/text_incident_detail_inspectores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="15dp"
+                android:text="@string/rop_c1_texto_default"
+                android:textColor="@color/colorGray"
+                android:textSize="17dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_detalle1_responsables"
+                android:textColor="@color/colorGray"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/text_incident_detail_responsables"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="15dp"
+                android:text="@string/rop_c1_texto_default"
+                android:textColor="@color/colorGray"
+                android:textSize="17dp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <include layout="@layout/button_menu_inspeccion_detalle" />
 
 </FrameLayout>

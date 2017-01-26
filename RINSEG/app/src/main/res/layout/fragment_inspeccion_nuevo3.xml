@@ -10,9 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-
-        >
+        android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -28,8 +26,7 @@
                 android:layout_marginBottom="10dp"
                 android:orientation="vertical"
                 android:scrollbars="vertical"
-                android:paddingBottom="10dp"
-                >
+                android:paddingBottom="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -37,47 +34,50 @@
                     android:text="@string/insp_nuevo3_datos_generales"
                     android:textColor="@color/colorGray"
                     android:textSize="14dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:layout_marginBottom="4dp"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/insp_nuevo3_hint_area"
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
+
                     <EditText
                         android:id="@+id/txt_inpeccion_3_area"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
                         android:background="@color/colorWhite"
-                        android:drawableRight="@drawable/ic_pencil"
+                        android:drawableEnd="@drawable/ic_pencil"
                         android:elevation="2dp"
                         android:hint="@string/insp_nuevo3_hint_area"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:paddingLeft="23dp"
-                        android:paddingRight="15dp"
+                        android:paddingStart="23dp"
+                        android:paddingEnd="15dp"
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17.3dp" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/hint_fecha"
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
+
                         <TextView
                             android:id="@+id/txt_inpeccion_3_fecha"
                             android:elevation="2dp"
@@ -94,6 +94,7 @@
                             android:textColor="@color/colorPrimary"
                             android:textColorHint="@color/colorSecondary0"
                             android:textSize="17dp" />
+
                         <ImageButton
                             android:id="@+id/btn_inpeccion_3_fecha"
                             android:elevation="2dp"
@@ -101,9 +102,10 @@
                             android:layout_height="45dp"
                             android:background="@color/colorSecondary"
                             android:src="@drawable/ic_calendar">
-
                         </ImageButton>
+
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -118,19 +120,16 @@
                         android:background="@color/colorWhite"
                         android:elevation="2dp"
                         android:paddingRight="12dp"
-                        android:orientation="vertical"
-                        >
+                        android:orientation="vertical">
+
                         <Spinner
                             android:id="@+id/spinner_inspeccion_3_tipo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:backgroundTint="@color/colorPrimaryDark"
-                            android:textSize="17.3dp"
-                            >
-                        </Spinner>
+                            android:textSize="17.3dp"/>
 
                     </LinearLayout>
-
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -138,6 +137,7 @@
                         android:text="@string/insp_nuevo3_hint_empresa_inspeccionada"
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
+
                     <EditText
                         android:id="@+id/txt_inpeccion_3_empresa"
                         android:layout_width="match_parent"

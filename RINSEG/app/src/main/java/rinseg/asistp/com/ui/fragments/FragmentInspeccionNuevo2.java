@@ -44,7 +44,8 @@ import rinseg.asistp.com.utils.RinsegModule;
  * create an instance of this fragment.
  */
 public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickInspector {
-    ///// TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    ///// TODO: :::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -102,11 +103,11 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         return fragment;
     }
 
-    ///// TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ///// TODO: :::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if ( getArguments() != null ) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -128,7 +129,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         return view;
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -136,8 +136,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         activityMain.ShowButtonsBottom(true);
         activityMain.actualPaginaRop = 2;
         activityMain.ShowNumPagina();
-
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -146,17 +144,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             mListener.onFragmentInteraction(uri);
         }
     }
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -203,8 +190,7 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         void onFragmentInteraction(Uri uri);
     }
 
-
-    ///// TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ///// TODO: :::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
         activityMain = ((ActivityMain) getActivity());
@@ -224,7 +210,8 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerResponsables.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        inspectorAdapter = new InspectorAdapter(activityMain.getApplicationContext(), listaResponsables, this);
+        inspectorAdapter = new InspectorAdapter(activityMain.getApplicationContext(),
+                listaResponsables, this);
         recyclerResponsables.setAdapter(inspectorAdapter);
 
         //configuramos Realm
@@ -235,9 +222,7 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
                 .modules(new RinsegModule())
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
     }
-
 
     //cargamos los eventos
     private void setUpActions() {
@@ -251,14 +236,14 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fInspPendiente1 = new FragmentInspeccionNuevo1();
-                Bundle args = new Bundle();
-                args.putString("InspTmpId", mInspc.getTmpId());
-                args.putInt("InspId", mInspc.getId());
-                fInspPendiente1.setArguments(args);
-                activityMain.replaceFragment(fInspPendiente1, true,R.anim.enter_from_right,R.anim.exit_to_right,R.anim.enter_from_left,R.anim.exit_to_left);
+                FragmentInspeccionNuevo1 fragment = FragmentInspeccionNuevo1
+                        .newInstance(mInspc.getTmpId());
+                activityMain.replaceFragment(fragment, true,
+                        R.anim.enter_from_right, R.anim.exit_to_right,
+                        R.anim.enter_from_left, R.anim.exit_to_left);
             }
         });
+
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,18 +252,17 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
                     Messages.showSB(v, getString(R.string.msg_lista_responsable_area), "ok");
                     return;
                 }
-
-
                 Fragment fInspPendiente3 = new FragmentInspeccionNuevo3();
                 Bundle args = new Bundle();
                 args.putString("InspTmpId", mInspc.getTmpId());
                 args.putInt("InspId", mInspc.getId());
                 fInspPendiente3.setArguments(args);
-                activityMain.replaceFragment(fInspPendiente3, true, R.anim.enter_from_left, R.anim.exit_to_left, R.anim.enter_from_right, R.anim.exit_to_right);
+                activityMain.replaceFragment(fInspPendiente3, true,
+                        R.anim.enter_from_left, R.anim.exit_to_left,
+                        R.anim.enter_from_right, R.anim.exit_to_right);
             }
         });
     }
-
 
     private void LoadFormDefault(View v) {
         final Realm realm = Realm.getInstance(myConfig);
@@ -317,7 +301,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             txtGerencia.setError("");
             resu = false;
         }
-
         return resu;
     }
 
@@ -326,10 +309,8 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             return;
         }
 
-
         Realm realm = Realm.getInstance(myConfig);
         try {
-
             ManagementRO empresa = ((ManagementRO) spinnerGerencia.getSelectedItem());
 
             realm.beginTransaction();
@@ -337,7 +318,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             mInspector.setDni(txtDni.getText().toString().trim());
             mInspector.setName(txtNombreResponsable.getText().toString().trim());
             mInspector.setManagementId(empresa.getId());
-
 
             mInspc.listaResponsables.add(0,mInspector);
             realm.commitTransaction();
@@ -371,7 +351,6 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
                     mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
                 }
 
-
                 if (mInspc == null) {
                     return;
                 }
@@ -382,17 +361,11 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
                     listaResponsables.add(insp);
                     inspectorAdapter.notifyDataSetChanged();
                 }
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 realm.close();
             }
-
-
         }
     }
-
-
 }

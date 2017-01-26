@@ -3,23 +3,33 @@ package rinseg.asistp.com.ui.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.clans.fab.FloatingActionMenu;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
-import io.realm.Sort;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
@@ -27,27 +37,22 @@ import rinseg.asistp.com.listener.ListenerClick;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.services.RestClient;
+import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.utils.DialogLoading;
+import rinseg.asistp.com.utils.DialogRINSEG;
+import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentInspeccionNuevo4.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentInspeccionNuevo4#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick {
 
-    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_INCIDENT = "idIncident";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -55,11 +60,12 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
     private RecyclerView recyclerIncidencias;
     private RecyclerView.Adapter incidenciaAdapter;
-    private RecyclerView.LayoutManager lManager;
     private List<IncidenciaRO> listaIncidencias = new ArrayList<>();
 
     private FloatingActionButton btnAgregarIncidente;
+    private FloatingActionsMenu btnMenu;
 
+    DialogRINSEG dialogConfirm;
 
     ActivityMain activityMain;
 
@@ -68,21 +74,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     RealmConfiguration myConfig;
     Bundle bundle;
 
+    public FragmentInspeccionNuevo4() { }
 
-    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTOR :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    public FragmentInspeccionNuevo4() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPPendiente1.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FragmentInspeccionNuevo4 newInstance(String param1, String param2) {
         FragmentInspeccionNuevo4 fragment = new FragmentInspeccionNuevo4();
         Bundle args = new Bundle();
@@ -92,7 +85,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         return fragment;
     }
 
-    /// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,12 +107,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
         setUpElements(view);
         setUpActions();
-
         LoadInspeccion();
-
         return view;
     }
-
 
     @Override
     public void onResume() {
@@ -130,26 +119,13 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         activityMain.actualPaginaRop = 4;
         activityMain.ShowNumPagina();
         LoadIncidencias();
-
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -157,37 +133,24 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
+    /** Método sobre escrito para manejar el click sobre una incidencia */
     @Override
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
+        launchActivityGenerarIncidencia(mInspc, listaIncidencias.get(position).getTmpId());
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
-    }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
 
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
-    }
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
-    }
-
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
 
     @Override
     public void onDestroyView() {
@@ -195,9 +158,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         activityMain.HideNumPagina();
         super.onDestroyView();
     }
-
-/// todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
@@ -208,15 +168,18 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         bundle = getArguments();
 
         btnAgregarIncidente = (FloatingActionButton) v.findViewById(R.id.btn_agregar_incidente);
+        btnMenu = (FloatingActionsMenu) v.findViewById(R.id.fab_menu_incidencias);
 
         //configuracion para el recicler
         recyclerIncidencias = (RecyclerView) v.findViewById(R.id.recycler_view_i4_incidencias);
         recyclerIncidencias.setHasFixedSize(true);
         // usar administrador para linearLayout
-        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
+        RecyclerView.LayoutManager lManager = new LinearLayoutManager(
+                this.getActivity().getApplicationContext());
         recyclerIncidencias.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias, activityMain.getApplicationContext(), this);
+        incidenciaAdapter = new IncidenciaAdapter(listaIncidencias,
+                activityMain.getApplicationContext(), this);
         recyclerIncidencias.setAdapter(incidenciaAdapter);
 
         //configuramos Realm
@@ -234,8 +197,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         btnAgregarIncidente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //activityMain.replaceFragment(new FragmentIncidenciaNuevo1(), true, 0, 0, 0, 0);
-                launchActivityGenerarIncidencia(mInspc);
+                launchActivityGenerarIncidencia(mInspc, "");
+                btnMenu.collapse();
             }
         });
 
@@ -247,17 +210,22 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 args.putString("InspTmpId", mInspc.getTmpId());
                 args.putInt("InspId", mInspc.getId());
                 fInspPendiente3.setArguments(args);
-                activityMain.replaceFragment(fInspPendiente3, true, R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_left);
+                activityMain.replaceFragment(fInspPendiente3, true,
+                        R.anim.enter_from_right, R.anim.exit_to_right,
+                        R.anim.enter_from_left, R.anim.exit_to_left);
             }
         });
+
+        // Evento para finalizar la inspección :
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showDialogConfirm();
             }
         });
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadInspeccion() {
         String tmpIdInsp = null;
         int id = 0;
@@ -276,45 +244,118 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 if (mInspc == null) {
                     return;
                 }
-
-
             } catch (Exception e) {
                 e.printStackTrace();
                 realm.close();
             } finally {
                 realm.close();
             }
-
-
         }
     }
 
-    public void launchActivityGenerarIncidencia(InspeccionRO insp) {
-
-        Intent GenerarIncidenciaIntent = new Intent().setClass(activityMain, ActivityGenerarIncidencia.class);
+    public void launchActivityGenerarIncidencia(InspeccionRO insp, String idIncident) {
+        Intent GenerarIncidenciaIntent = new Intent().setClass(
+                activityMain, ActivityGenerarIncidencia.class);
         GenerarIncidenciaIntent.putExtra("InspId", insp.getId());
         GenerarIncidenciaIntent.putExtra("InspTmpId", insp.getTmpId());
+        GenerarIncidenciaIntent.putExtra(ARG_INCIDENT, idIncident);
         startActivity(GenerarIncidenciaIntent);
     }
 
     private void LoadIncidencias() {
+        listaIncidencias.clear();
+        listaIncidencias.addAll(mInspc.listaIncidencias);
+        incidenciaAdapter.notifyDataSetChanged();
+    }
 
+    private void showDialogConfirm() {
+        dialogConfirm = new DialogRINSEG(activityMain);
+        //dialogConfirm.setContentView(R.layout.dialog_terminar_inspeccion);
+        dialogConfirm.show();
+        dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
+        dialogConfirm.setBody("¿Está seguro de finalizar la inspección? \n" +
+                "Una vez finalizada se enviará hacia el servidor y no podrá modificarse");
+        dialogConfirm.setTextBtnAceptar("FINALIZAR");
+
+        dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveInspection();
+                dialogConfirm.dismiss();
+            }
+        });
+    }
+
+    /** Módulo para almacenar la inspección */
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void saveInspection() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            listaIncidencias.clear();
-
-            for (int i = 0; i < mInspc.listaIncidencias.size(); i++) {
-                IncidenciaRO tIncidencia = mInspc.listaIncidencias.get(i);
-                listaIncidencias.add(tIncidencia);
-                incidenciaAdapter.notifyDataSetChanged();
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            realm.beginTransaction();
+            Calendar currentDate = Calendar.getInstance();
+            mInspc.setDateClose(currentDate.getTime());
+            //mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
         } finally {
             realm.close();
+            sendInspection();
         }
     }
 
+    /** Módulo para enviar la inspección al servidor */
+    private void sendInspection() {
+        // Obtenemos el token :
+        //String token = activityMain.usuarioLogueado.getApi_token();
+        String token = "MGDvV2OLt3ZTl91uVJSdlmoifhUgENiJqnTgvDJDzOq70xVhbvU3IGepK5oe";
 
+        // Mostramos dialog mientras se procese :
+        final DialogLoading dialog = new DialogLoading(activityMain);
+        dialog.show();
+
+        /*Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                String json = gson.toJson(mInspc);
+                Log.d("object", json);
+            }
+        });*/
+
+        RestClient restClient = new RestClient(Services.INSPECTION);
+        Call<ResponseBody> call = restClient.iServices.sendInspection(mInspc, token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if ( response.isSuccessful() ) {
+                    // Intentaremos castear la respuesta :
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        String status = jsonObject.getString("status");
+
+                        Log.e("jsonObject", jsonObject.toString());
+
+                    } catch (Exception e) {
+                        dialog.dismiss();
+                        e.printStackTrace();
+                    }
+                } else {
+                    dialog.dismiss();
+                    Messages.showSB(
+                            getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
+                }
+                Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                        response.message() + "code :" + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                dialog.dismiss();
+                t.printStackTrace();
+            }
+        });
+    }
 }

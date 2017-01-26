@@ -7,17 +7,18 @@
     card_view:cardCornerRadius="2dp"
     card_view:cardElevation="2dp"
     card_view:cardUseCompatPadding="true"
-    android:background="@color/colorWhite"
-    >
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:background="@color/colorWhite">
 
     <RelativeLayout
         android:id="@+id/linearlayout_card_rop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="left|center_vertical"
-        android:padding="5dp"
-        >
+        android:gravity="start|center_vertical"
+        android:padding="5dp">
+
         <TextView
             android:id="@+id/txt_card_view_cod_rop"
             android:layout_width="wrap_content"
@@ -25,32 +26,32 @@
             android:text="nombre"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@color/colorAccent"
-            />
+            android:textColor="@color/colorAccent" />
+
         <LinearLayout
             android:id="@+id/linear_fecha_evento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_below="@+id/txt_card_view_tipo_evento_rop"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="2dp"
-            >
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="2dp">
+
             <TextView
                 android:id="@+id/txt_card_view_fec_crea_rop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rop_c1_texto_default"
                 android:textSize="13sp"
-                android:layout_marginRight="7dp"
-                />
+                android:layout_marginEnd="7dp" />
+
             <TextView
                 android:id="@+id/txt_card_view_hora_crea_rop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rop_c1_texto_default"
-                android:textSize="13sp"
-                />
+                android:textSize="13sp" />
+
         </LinearLayout>
 
         <TextView
@@ -60,9 +61,9 @@
             android:text="tipo evento"
             android:textSize="15sp"
             android:textColor="@color/colorAccent"
-            android:layout_alignParentRight="true"
-            android:lines="1"
-            />
+            android:layout_alignParentEnd="true"
+            android:lines="1" />
+
         <TextView
             android:id="@+id/txt_card_view_empresa_rop"
             android:layout_width="wrap_content"
@@ -71,10 +72,8 @@
             android:textSize="15sp"
             android:textColor="@color/colorPrimary"
             android:layout_below="@+id/txt_card_view_tipo_evento_rop"
-            android:lines="1"
-            />
-
-
+            android:lines="1" />
 
     </RelativeLayout>
+
 </android.support.v7.widget.CardView>

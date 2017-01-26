@@ -3,6 +3,7 @@ package rinseg.asistp.com.ui.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,7 +36,7 @@ import rinseg.asistp.com.utils.RinsegModule;
  */
 
 public class DialogActoCondicionSubestandar extends Dialog
-        implements View.OnClickListener, ListenerClickActoCondicion {
+        implements View.OnClickListener {
 
     ///// TODO: :::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::
     public Activity activity;
@@ -52,14 +53,20 @@ public class DialogActoCondicionSubestandar extends Dialog
     RealmConfiguration myConfig;
     private ROP currentROP;
 
+    ListenerClickActoCondicion mListener;
+
     private static String keyIdRop = "tmpId";
 
     ///// TODO: ::::::::::::::::::::::::::::::: CONSTRUCTOR ::::::::::::::::::::::::::::::::::::::::
-    DialogActoCondicionSubestandar(Activity a, String pNameActoCondicion, String idROP) {
+    DialogActoCondicionSubestandar(Activity a,
+                                   String pNameActoCondicion,
+                                   String idROP,
+                                   ListenerClickActoCondicion mListener) {
         super(a, R.style.CustomDialogTheme);
         this.activity = a;
         this.nameActoCondicion = pNameActoCondicion;
         this.idROP = idROP;
+        this.mListener = mListener;
     }
 
     ///// TODO: ::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::
@@ -96,7 +103,7 @@ public class DialogActoCondicionSubestandar extends Dialog
         setUpData();
 
         // Creamos el adapter:
-        itemsAdapter = new AccionCondicionSubestandarAdapter(listaItems, this, currentItems);
+        itemsAdapter = new AccionCondicionSubestandarAdapter(listaItems, currentItems);
         recyclerViewItems.setAdapter(itemsAdapter);
     }
 
@@ -117,6 +124,7 @@ public class DialogActoCondicionSubestandar extends Dialog
                 realm.beginTransaction();
                 currentROP.setListaEventItems(itemsChecked);
                 realm.commitTransaction();
+                mListener.onAcceptItems();
                 dismiss();
                 break;
             case R.id.btn_dialog_cancelar:
@@ -139,6 +147,7 @@ public class DialogActoCondicionSubestandar extends Dialog
         mTextTitle.setText(pTitle);
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void setUpData() {
         Realm realm = Realm.getInstance(myConfig);
 
@@ -160,8 +169,4 @@ public class DialogActoCondicionSubestandar extends Dialog
             realm.close();
         }
     }
-
-    @Override
-    public void onItemClicked(AccionCondicionSubestandarAdapter.AccionViewHolder holder,
-                              int position) { }
 }

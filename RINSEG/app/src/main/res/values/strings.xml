@@ -4,8 +4,10 @@
 
     <!--Sincronizando datos -->
     <string name="sincronizando_datos_titulo">Sincronizando Datos</string>
-    <string name="sincronizando_datos_texto">Estamos obteniendo los parámetros de la aplicación. Espere por favor.</string>
-    <string name="sincronizando_error">No se ha logrado obtener los parámetros, intentelo más tarde.</string>
+    <string name="sincronizando_datos_texto">Estamos obteniendo los parámetros de la aplicación.
+        Espere por favor.</string>
+    <string name="sincronizando_error">No se ha logrado obtener los parámetros, intentelo más
+        tarde.</string>
     <string name="sincronizando_ok">Sincronización exitosa.</string>
 
     <!--Tabs Rops-->
@@ -14,8 +16,10 @@
     <string name="dialog_title_rop_pendiente_eliminar">Eliminar</string>
     <string name="dialog_body_rop_pendiente_eliminar">Eliminar al rop temporarl</string>
     <string name="dialog_body_rop_pendiente_eliminar_ok">Se eliminó el rop pendiente</string>
-    <string name="dialog_body_rop_pendiente_eliminar_error">Ocurrió un error al eliminar el rop pendiente</string>
-    <string name="dialog_body_rop_pendiente_eliminar_fail_cerrado">No se ha podido eliminar el rop porque ya fué cerrado.</string>
+    <string name="dialog_body_rop_pendiente_eliminar_error">Ocurrió un error al eliminar el rop
+        pendiente</string>
+    <string name="dialog_body_rop_pendiente_eliminar_fail_cerrado">No se ha podido eliminar el
+        rop porque ya fué cerrado.</string>
     <string name="msg_rop_recuperado_ok">Se recupero el rop con éxito</string>
     <string name="msg_rop_recuperado_fail">Ocurió un error al recuperar el rop</string>
 
@@ -42,6 +46,7 @@
     <string name="title_levantamiento">Levantamiento</string>
     <string name="title_ssma">SSMA</string>
     <string name="title_add_imagen">Adjuntando imagen</string>
+    <string name="title_incident_detail">Detalle de inspección</string>
 
 
     <!--Navigation drawer -->
@@ -100,7 +105,11 @@
 
     <!--Nuevo ROP 3-->
     <string name="compromisos_trabajador_title">Compromisos del trabajador</string>
-    <string name="compromisos_trabajador_body">Yo ________________________ , afirmo haber entendido las posibles consecuencias del acto sub estándar que he cometido y me comprometo a no incurrir en este tipo de faltas, porque soy sonciente que estas pueden provocar pérdidas en perjuicio de mi integridad, la de mis compañeros, el proceso productivo de la empresa o el medio ambiente.</string>
+    <string name="compromisos_trabajador_body">Yo ________________________ , afirmo haber entendido
+        las posibles consecuencias del acto sub estándar que he cometido y me comprometo a
+        no incurrir en este tipo de faltas, porque soy sonciente que estas pueden provocar pérdidas
+        en perjuicio de mi integridad, la de mis compañeros, el proceso productivo de la empresa o
+        el medio ambiente.</string>
     <string name="firma">FIRMA:</string>
     <string name="empresa">EMPRESA:</string>
     <string name="nota">Nota: el observado no está obligado a firmar el presente documento.</string>
@@ -115,7 +124,8 @@
     <string name="no">No</string>
     <string name="btn_terminar">TERMINAR</string>
     <string name="msg_cerrar_rop_ok">El rop cerrado se envió con éxito.</string>
-    <string name="msg_error_guardar_rop">Ocurrió un error al enviar el rop cerrado al servidor(se enviará cuando se recupere la conexión a internet).</string>
+    <string name="msg_error_guardar_rop">Ocurrió un error al enviar el rop cerrado al servidor
+        (se enviará cuando se recupere la conexión a internet).</string>
     <string name="msg_error_cerrar_rop">Ocurrió un error al cerrar el rop.</string>
     <string name="error_supervisor_rp4">ingrese nombre de supervisor</string>
     <string name="label_nompre_rop4">Nombre Supervisor</string>
@@ -139,7 +149,8 @@
     <string name="rop_c1_desc">Descripción:</string>
     <string name="rop_c1_acto_sub">Acto sub estándar:</string>
     <!--ROP Cerrado 2-->
-    <string name="rop_c2_acciones_preventivas">Acciones preventivas o creativas inmediatas realizadas:</string>
+    <string name="rop_c2_acciones_preventivas">Acciones preventivas o creativas inmediatas
+        realizadas:</string>
     <string name="rop_c2_compromiso">Compromiso del trabajador:</string>
     <string name="rop_c2_reportante">Reportante:</string>
     <string name="rop_c2_supervisor_a_cargo">Supervisor a cargo de levantar la observación:</string>
@@ -190,9 +201,13 @@
     <string name="error_supervisor_inci2">ingrese supervisor</string>
     <string name="confirmar_agregar_inccidente">Se agregará el incidente a la inspección.</string>
 
-    <!--Dialog Terminar SSMA -->
-    <string name="dialog_terminar_ssma_titulo">Terminar SSMA</string>
-    <string name="dialog_terminar_ssma_confirmacion">¿Está seguro que desea terminar el reporte SSMA?</string>
+    <string name="msg_error_guardar_inspeccion">Ocurrió un error al enviar la inspección.
+        (se enviará cuando se recupere la conexión a internet).</string>
+
+    <!--Dialog Terminar Inpsección -->
+    <string name="dialog_terminar_ssma_titulo">Terminar Inspección</string>
+    <string name="dialog_terminar_ssma_confirmacion">¿Está seguro que desea terminar el reporte
+        SSMA?</string>
 
     <!--Inspeccion detalle 1-->
     <string name="inspeccion_detalle1_area">Área:</string>
@@ -225,7 +240,8 @@
     <string name="lev_incidencia_datos_levantamiento">DATOS DE LEVANTAMIENTO</string>
     <string name="lev_incidencia_fecha">Fecha de levantamiento</string>
     <string name="lev_incidencia_estatus">Estatus</string>
-    <string name="lev_incidencia_control_operacional">Control operacinoal aplicado (detalle de la acción)</string>
+    <string name="lev_incidencia_control_operacional">Control operacinoal aplicado
+        (detalle de la acción)</string>
     <string name="lev_incidencia_potencial_residual">POTENCIAL RESIDUAL</string>
     <string name="lev_incidencia_cat_nivel_riesgo">Categoría y nivel de riesgo:</string>
     <string name="btn_grabar">GRABAR</string>
@@ -236,7 +252,8 @@
 
     <!--Cerrar Sesion-->
     <string name="cerrar_sesion_titulo">Cerrar Sesión</string>
-    <string name="cerrar_sesion_confirmacion">¿Desea salir de la aplicación? \nSe perderá la información de formatos pendientes de cierre.</string>
+    <string name="cerrar_sesion_confirmacion">¿Desea salir de la aplicación? \nSe perderá la
+        información de formatos pendientes de cierre.</string>
     <string name="btn_cerrar_sesion_salir">SALIR</string>
 
     <!--fab menu rop-->

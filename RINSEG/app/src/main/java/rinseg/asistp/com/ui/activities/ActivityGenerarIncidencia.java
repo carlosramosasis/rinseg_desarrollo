@@ -24,18 +24,25 @@ import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
 public class ActivityGenerarIncidencia extends AppCompatActivity {
+
+    private final static String ARG_INCIDENT = "idIncident";
+
     public Toolbar toolbarGenerarIncidencia;
     private ActivityGenerarIncidencia thiss = (ActivityGenerarIncidencia) this;
-    public Button btnLeft;public Button btnRight;
+    public Button btnLeft;
+    public Button btnRight;
 
     public LinearLayout linearButtonsBottom;
     TextView txtNumPagina ;
+
+    String idIncidencia;
 
     RealmConfiguration myConfig;
 
     public static SettingsInspectionRO sIns;
 
     public static InspeccionRO mInspeccion;
+
     public short totalPaginas = 0;
     public short actualPagina = 0;
 
@@ -59,22 +66,18 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
 
         LoadInspeccion();
 
-        //Llamamos al fragment ROPS pendientes para que sea el primero que se muestre
-        replaceFragment(new FragmentIncidenciaNuevo1(), true, 0, 0, 0, 0);
+        FragmentIncidenciaNuevo1 fragment = FragmentIncidenciaNuevo1.newInstance(idIncidencia);
+        replaceFragment(fragment, true, 0, 0, 0, 0);
     }
 
     @Override
-    public void onBackPressed() {
-
-    }
+    public void onBackPressed() { }
 
     @Override
     protected void onResume() {
         super.onResume();
         linearButtonsBottom.setVisibility(View.VISIBLE);
-
     }
-
 
     //Proceso para cargar las vistas
     private void setUpElements() {
@@ -97,7 +100,6 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
                 .modules(new RinsegModule())
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
     }
 
     //cargamos los eventos
@@ -135,35 +137,28 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
         }
     }
 
-
     private void LoadInspeccion() {
-        String tmpIdInsp = null;
-        int id = 0;
-        if (bundle != null) {
-            tmpIdInsp = bundle.getString("InspTmpId", null);
-            id  = bundle.getInt("InspId", 0);
+        if ( bundle != null ) {
+            String tmpIdInsp = bundle.getString("InspTmpId", null);
+            int id = bundle.getInt("InspId", 0);
+            idIncidencia = bundle.getString(ARG_INCIDENT, "");
 
             final Realm realm = Realm.getInstance(myConfig);
             try {
-                if(id  != 0){
+                if ( id != 0 ) {
                     mInspeccion = realm.where(InspeccionRO.class).equalTo("id", id ).findFirst();
-                }else if(tmpIdInsp != null){
+                } else if ( tmpIdInsp != null ) {
                     mInspeccion = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
                 }
-
-                if (mInspeccion == null) {
+                if ( mInspeccion == null ) {
                     return;
                 }
-
-
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 e.printStackTrace();
                 realm.close();
             } finally {
                 realm.close();
             }
-
-
         }
     }
 
@@ -171,7 +166,4 @@ public class ActivityGenerarIncidencia extends AppCompatActivity {
         txtNumPagina.setText("" + actualPagina + "/" + totalPaginas);
         txtNumPagina.setVisibility(View.VISIBLE);
     }
-
-
-
 }

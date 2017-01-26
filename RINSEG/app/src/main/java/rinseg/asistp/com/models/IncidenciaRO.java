@@ -1,5 +1,7 @@
 package rinseg.asistp.com.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -7,29 +9,56 @@ import io.realm.RealmObject;
 
 /**
  * Created by Carlos on 10/10/2016.
+ * Clase Incidencia perteneciente a una inspección
  */
-public class IncidenciaRO extends RealmObject{
+
+public class IncidenciaRO extends RealmObject {
+
+    @SerializedName("event_id")
     private int id;
+
     private String nombre;
     private String detalle;
     private String tmpId;
 
     private int eventId;
     private int eventItemId;
+
+    @SerializedName("description")
     private String descripcion;
+
+    @SerializedName("frequency_id")
     private int frecuenciaId;
+
+    @SerializedName("severity_id")
     private int severidadId;
+
+    @SerializedName("risk_level")
+    private int riesgo;
+
+    @SerializedName("target_id")
     private int blancoId;
+
     private Date fechalimite;
+
+    @SerializedName("deadline")
     private String fechalimiteString;
+
+    @SerializedName("rac_id")
     private int racId;
+
+    @SerializedName("inspector_id")
     private int reportanteId;
+
+    @SerializedName("responsible")
     private String responsable;
+
+    @SerializedName("supervisor")
     private String supervisor;
+
     private IncidenciaLevantadaRO incidenciaLevantadaRO;
 
     public RealmList<ImagenRO> listaImgComent;
-
 
     public IncidenciaRO(String nombre, String detalle) {
         this.nombre = nombre;
@@ -173,5 +202,30 @@ public class IncidenciaRO extends RealmObject{
 
     public void setIncidenciaLevantadaRO(IncidenciaLevantadaRO incidenciaLevantadaRO) {
         this.incidenciaLevantadaRO = incidenciaLevantadaRO;
+    }
+
+    @Override
+    public String toString() {
+        return "IncidenciaRO{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", detalle='" + detalle + '\'' +
+                ", tmpId='" + tmpId + '\'' +
+                ", eventId=" + eventId +
+                ", eventItemId=" + eventItemId +
+                ", descripcion='" + descripcion + '\'' +
+                ", frecuenciaId=" + frecuenciaId +
+                ", severidadId=" + severidadId +
+                ", riesgo=" + riesgo +
+                ", blancoId=" + blancoId +
+                ", fechalimite=" + fechalimite +
+                ", fechalimiteString='" + fechalimiteString + '\'' +
+                ", racId=" + racId +
+                ", reportanteId=" + reportanteId +
+                ", responsable='" + responsable + '\'' +
+                ", supervisor='" + supervisor + '\'' +
+                ", incidenciaLevantadaRO=" + incidenciaLevantadaRO +
+                ", listaImgComent=" + listaImgComent +
+                '}';
     }
 }

@@ -25,7 +25,7 @@ public class AccionCondicionSubestandarAdapter
 
     public List<EventItemsRO> ListaActosCondiciones;
     public List<Boolean> listCheckedActos;
-    private final ListenerClickActoCondicion mListener;
+
     private int selectedPosition = -1;
 
     public static class AccionViewHolder extends RecyclerView.ViewHolder {
@@ -41,7 +41,6 @@ public class AccionCondicionSubestandarAdapter
     }
 
     public AccionCondicionSubestandarAdapter(List<EventItemsRO> actosCondiciones,
-                                             ListenerClickActoCondicion listener,
                                              Object[] currentItems) {
         this.ListaActosCondiciones = actosCondiciones;
         listCheckedActos = new ArrayList<>();
@@ -58,7 +57,6 @@ public class AccionCondicionSubestandarAdapter
                 listCheckedActos.add(false);
             }
         }
-        this.mListener = listener;
     }
 
     @Override

@@ -9,18 +9,17 @@
         android:id="@+id/linearlayour_history"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_inspecciones"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="6dp"
+            android:clipToPadding="false"
             android:background="@drawable/backgorund_login"
-            android:scrollbars="vertical"
-            android:paddingRight="12dp"
-            android:paddingLeft="12dp"
-            />
+            android:scrollbars="vertical"/>
+
     </LinearLayout>
 
     <com.github.clans.fab.FloatingActionButton

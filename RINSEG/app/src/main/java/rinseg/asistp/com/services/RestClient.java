@@ -9,6 +9,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -25,6 +26,11 @@ public class RestClient {
     public IServices iServices;
 
     public RestClient(String uri){
+
+        // Intercpetor pintando el log
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
         OkHttpClient okClient = new OkHttpClient.Builder()
                 .addInterceptor(
                         new Interceptor() {
@@ -43,6 +49,7 @@ public class RestClient {
                                 return chain.proceed(request);
                             }
                         })
+                .addInterceptor(logging)
                 .build();
 
         try {

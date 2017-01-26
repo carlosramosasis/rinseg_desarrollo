@@ -18,6 +18,7 @@
         android:layout_above="@+id/espacio_button_bottom">
 
     </FrameLayout>
+
     <LinearLayout
         android:id="@+id/espacio_button_bottom"
         android:layout_width="match_parent"

@@ -15,25 +15,23 @@
             android:id="@+id/recycler_view_rops_pendientes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingTop="6dp"
+            android:clipToPadding="false"
             android:background="@drawable/backgorund_login"
-            android:scrollbars="vertical"
-            android:paddingRight="12dp"
-            android:paddingLeft="12dp"
-            />
-    </LinearLayout>
+            android:scrollbars="vertical" />
 
+    </LinearLayout>
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/btn_agregar_rop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:src="@drawable/ic_add"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccentDark"
-        app:fab_colorRipple="@color/colorTertiary"/>
-
+        app:fab_colorRipple="@color/colorTertiary" />
 
 </FrameLayout>

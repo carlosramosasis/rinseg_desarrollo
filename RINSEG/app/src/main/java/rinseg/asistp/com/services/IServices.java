@@ -13,6 +13,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 import rinseg.asistp.com.models.IncidenciaLevantadaRO;
+import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ROP;
 
 /**
@@ -48,6 +49,10 @@ public interface IServices {
 
     @POST(Services.LOGOUT)
     Call<ResponseBody> setLogout(@Query("api_token") String api_token);
+
+    @POST(Services.CLOSE)
+    Call<ResponseBody> sendInspection(@Body InspeccionRO incidencia,
+                                      @Query("api_token") String token);
 
     @POST(Services.FIX_INCIDENT)
     Call<ResponseBody> setFixIncident(@Body IncidenciaLevantadaRO icidencia,

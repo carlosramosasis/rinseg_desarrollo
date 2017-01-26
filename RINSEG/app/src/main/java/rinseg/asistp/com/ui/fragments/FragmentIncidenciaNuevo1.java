@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,43 +20,26 @@ import java.util.Calendar;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.IncidenciaRO;
-import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.SecuencialRO;
 import rinseg.asistp.com.models.SeveritiesRO;
 import rinseg.asistp.com.models.TargetRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
-import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentIncidenciaNuevo1.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentIncidenciaNuevo1#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentIncidenciaNuevo1 extends Fragment {
-    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_ID = "idIncidencia";
+
+    private String idIncidencia = "";
 
     private OnFragmentInteractionListener mListener;
-
 
     ActivityGenerarIncidencia activityMain;
 
@@ -84,39 +66,23 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     IncidenciaRO mIncidencia;
     RealmConfiguration myConfig;
 
-    Bundle bundle;
+    Boolean isNewInc = false;
 
-    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTORES :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    public FragmentIncidenciaNuevo1() {
-        // Required empty public constructor
-    }
+    public FragmentIncidenciaNuevo1() { }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPPendiente1.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentIncidenciaNuevo1 newInstance(String param1, String param2) {
+    public static FragmentIncidenciaNuevo1 newInstance(String idIncidencia) {
         FragmentIncidenciaNuevo1 fragment = new FragmentIncidenciaNuevo1();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_ID, idIncidencia);
         fragment.setArguments(args);
         return fragment;
     }
 
-
-    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        if ( getArguments() != null ) {
+            idIncidencia = getArguments().getString(ARG_ID, "");
         }
     }
 
@@ -126,17 +92,13 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_incidencia_nuevo1, container, false);
 
-
         setUpElements(view);
         setUpActions();
-
         LoadFormDefault();
-
         LoadIncidencia();
 
         return view;
     }
-
 
     @Override
     public void onResume() {
@@ -144,30 +106,19 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         activityMain.toolbarGenerarIncidencia.setTitle(R.string.title_nuevo_incidente);
         activityMain.btnLeft.setText(R.string.btn_cancelar);
         activityMain.btnRight.setText(R.string.btn_ccontinuar);
-        activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_chevron_right_black_24dp, 0);
+        activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, R.drawable.ic_chevron_right_black_24dp, 0);
 
         activityMain.actualPagina = 1;
         activityMain.totalPaginas = 2;
         activityMain.ShowNumPagina();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -175,24 +126,11 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    /// // TODO: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    //Proceso para cargar las vistas
+    /** Proceso para cargar las vistas */
     private void setUpElements(View v) {
         activityMain = ((ActivityGenerarIncidencia) getActivity());
 
@@ -210,7 +148,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         txtCatRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_categoria_riesgo);
         txtNivelRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_nivel_riesgo);
 
-        //configuramos Realm
+        // Configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
         myConfig = new RealmConfiguration.Builder()
                 .name("rinseg.realm")
@@ -218,12 +156,9 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 .modules(new RinsegModule())
                 .deleteRealmIfMigrationNeeded()
                 .build();
-
-        bundle = getArguments();
-
     }
 
-    //cargamos los eventos
+    /** Múdulo para escuchar las accoiones */
     private void setUpActions() {
         txtFecha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,9 +180,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
         spinnerSveridad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -257,11 +190,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
-
 
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,38 +199,45 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 activityMain.finish();
             }
         });
+
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!ValidarFormulario()) {
                     return;
                 }
-
                 saveIncidencia();
-                Fragment fIncidencia2 = new FragmentIncidenciaNuevo2();
+
+                Fragment f = FragmentIncidenciaNuevo2.newInstance(mIncidencia.getTmpId(), isNewInc);
+                activityMain.replaceFragment(f, true, 0, 0, 0, 0);
+
+                /*Fragment fIncidencia2 = new FragmentIncidenciaNuevo2();
                 Bundle args = new Bundle();
                 args.putString("InciTmpId", mIncidencia.getTmpId());
                 args.putInt("InciId", mIncidencia.getId());
                 fIncidencia2.setArguments(args);
-                activityMain.replaceFragment(fIncidencia2, true, 0, 0, 0, 0);
+                activityMain.replaceFragment(fIncidencia2, true, 0, 0, 0, 0);*/
             }
         });
     }
 
     private void ShowDatepicker() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 calendarFechaLimite = Calendar.getInstance();
                 calendarFechaLimite.set(year, monthOfYear, dayOfMonth);
                 txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
                 txtFecha.setError(null);
-
             }
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        }, newCalendar.get(Calendar.YEAR),
+                newCalendar.get(Calendar.MONTH),
+                newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void saveIncidencia() {
         Realm realm = Realm.getInstance(myConfig);
         try {
@@ -310,12 +247,15 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             TargetRO blanco = ((TargetRO) spinnerBlanco.getSelectedItem());
 
             realm.beginTransaction();
-            if (mIncidencia == null) {
+
+            if ( mIncidencia == null ) {
+                isNewInc = true;
                 mIncidencia = realm.createObject(IncidenciaRO.class);
 
                 // Obtener id Secuencial para id temporal
                 int codigoSecuencial = 0;
-                RealmResults<SecuencialRO> resultsSecuancial = realm.where(SecuencialRO.class).equalTo("tagTabla", Constants.tagIncidentes).findAll();
+                RealmResults<SecuencialRO> resultsSecuancial = realm.where(SecuencialRO.class)
+                        .equalTo("tagTabla", Constants.tagIncidentes).findAll();
                 if (resultsSecuancial.isEmpty() && resultsSecuancial.size() < 1) {
                     codigoSecuencial += 1;
                     mIncidencia.setTmpId(Generic.FormatTmpId(codigoSecuencial));
@@ -327,7 +267,6 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 mSecuencial.setCodigo(codigoSecuencial);
                 mSecuencial.setTagTabla(Constants.tagIncidentes);
             }
-
             mIncidencia.setEventId(tipoIncidente.getId());
             mIncidencia.setDescripcion(txtDescripcion.getText().toString().trim());
             mIncidencia.setFrecuenciaId(frecuencia.getId());
@@ -336,13 +275,14 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             mIncidencia.setFechalimite(calendarFechaLimite.getTime());
             mIncidencia.setFechalimiteString(Generic.dateFormatterMySql.format(mIncidencia.getFechalimite()));
 
+            if (isNewInc) {
+                activityMain.mInspeccion.listaIncidencias.add(mIncidencia);
+            }
             realm.commitTransaction();
 
             //Creamos la carpeta que contendra las imagenes
-            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorIncidencia(getActivity().getApplicationContext(), mIncidencia.getTmpId());
-
-
-
+            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorIncidencia(getActivity()
+                    .getApplicationContext(), mIncidencia.getTmpId());
         } catch (Exception e) {
             e.printStackTrace();
             realm.close();
@@ -354,22 +294,26 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     private void LoadFormDefault() {
         try {
             //cargar Tipo de incidencia  (Events)
-            adapterTipoIncidencia = new ArrayAdapter<EventRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.events);
+            adapterTipoIncidencia = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, activityMain.sIns.events);
             adapterTipoIncidencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerTipoIncidencia.setAdapter(adapterTipoIncidencia);
 
             //cargar Frecuencia
-            adapterFrecuencia = new ArrayAdapter<FrecuencieRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.frecuencies);
+            adapterFrecuencia = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, activityMain.sIns.frecuencies);
             adapterFrecuencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerFrecuencia.setAdapter(adapterFrecuencia);
 
             //cargar Severidad
-            adapterTipoSeveridad = new ArrayAdapter<SeveritiesRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
+            adapterTipoSeveridad = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, activityMain.sIns.severities);
             adapterTipoSeveridad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerSveridad.setAdapter(adapterTipoSeveridad);
 
             //cargar Blanco (Target)
-            adapterBlanco = new ArrayAdapter<TargetRO>(getActivity(), R.layout.spinner_item, activityMain.sIns.targets);
+            adapterBlanco = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, activityMain.sIns.targets);
             adapterBlanco.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerBlanco.setAdapter(adapterBlanco);
 
@@ -378,78 +322,58 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         }
     }
 
+    /** Módulo para recuperar la incidencia seleccionada */
     private void LoadIncidencia() {
-        String tmpIdInsp = null;
-        int id = 0;
-        if (bundle != null) {
-            tmpIdInsp = bundle.getString("InciTmpId", null);
-            id = bundle.getInt("InciId", 0);
-
-            final Realm realm = Realm.getInstance(myConfig);
+        if ( !idIncidencia.equals("") ) {
+            Realm realm = Realm.getInstance(myConfig);
             try {
-                if (id != 0) {
-                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("id", id).findFirst();
-                } else if (tmpIdInsp != null) {
-                    mIncidencia = realm.where(IncidenciaRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
-                }
-                if (mIncidencia == null) {
-                    return;
-                }
-
-                // recuperar tipo incidencia
-                for (int i = 0; i < activityMain.sIns.events.size(); i++) {
-                    EventRO tmpEvent = activityMain.sIns.events.get(i);
-                    if (tmpEvent.getId() == mIncidencia.getEventId()) {
-                        spinnerTipoIncidencia.setSelection(i);
-                        break;
+                mIncidencia = realm.where(IncidenciaRO.class)
+                        .equalTo("tmpId", idIncidencia).findFirst();
+                if ( mIncidencia != null ) {
+                    // Recuperamos el tipo de incidencia :
+                    for ( int i = 0; i < activityMain.sIns.events.size(); i++ ) {
+                        if (activityMain.sIns.events.get(i).getId() == mIncidencia.getEventId()) {
+                            spinnerTipoIncidencia.setSelection(i);
+                            break;
+                        }
                     }
-                }
-
-                // recuperar Descripcion
-                txtDescripcion.setText(mIncidencia.getDescripcion());
-
-                // recuperar frecuancia
-                for (int i = 0; i < activityMain.sIns.frecuencies.size(); i++) {
-                    FrecuencieRO tmpFrec = activityMain.sIns.frecuencies.get(i);
-                    if (tmpFrec.getId() == mIncidencia.getFrecuenciaId()) {
-                        spinnerFrecuencia.setSelection(i);
-                        break;
+                    // Recuperamos descripción :
+                    txtDescripcion.setText(mIncidencia.getDescripcion());
+                    // Recuperamos el tipo de frecuencia :
+                    for (int i = 0; i < activityMain.sIns.frecuencies.size(); i++) {
+                        if (activityMain.sIns.frecuencies.get(i).getId() ==
+                                mIncidencia.getFrecuenciaId()) {
+                            spinnerFrecuencia.setSelection(i);
+                            break;
+                        }
                     }
-                }
-
-
-                // recuperar severidad
-                for (int i = 0; i < activityMain.sIns.severities.size(); i++) {
-                    SeveritiesRO tmpSev = activityMain.sIns.severities.get(i);
-                    if (tmpSev.getId() == mIncidencia.getSeveridadId()) {
-                        spinnerSveridad.setSelection(i);
-                        break;
+                    // recuperar severidad
+                    for (int i = 0; i < activityMain.sIns.severities.size(); i++) {
+                        SeveritiesRO tmpSev = activityMain.sIns.severities.get(i);
+                        if (tmpSev.getId() == mIncidencia.getSeveridadId()) {
+                            spinnerSveridad.setSelection(i);
+                            break;
+                        }
                     }
-                }
-
-                // recuperar Blanco
-                for (int i = 0; i < activityMain.sIns.targets.size(); i++) {
-                    TargetRO tmpBlanco = activityMain.sIns.targets.get(i);
-                    if (tmpBlanco.getId() == mIncidencia.getBlancoId()) {
-                        spinnerBlanco.setSelection(i);
-                        break;
+                    // recuperar Blanco
+                    for (int i = 0; i < activityMain.sIns.targets.size(); i++) {
+                        TargetRO tmpBlanco = activityMain.sIns.targets.get(i);
+                        if (tmpBlanco.getId() == mIncidencia.getBlancoId()) {
+                            spinnerBlanco.setSelection(i);
+                            break;
+                        }
                     }
+                    newCalendar.setTime(mIncidencia.getFechalimite());
+                    calendarFechaLimite.setTime(mIncidencia.getFechalimite());
+                    txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
+
+                    CalcularRiesgo();
                 }
-
-                newCalendar.setTime(mIncidencia.getFechalimite());
-                calendarFechaLimite.setTime(mIncidencia.getFechalimite());
-                txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
-
-                CalcularRiesgo();
-
-            } catch (Exception e) {
+            } catch ( Exception e ) {
                 e.printStackTrace();
-                realm.close();
             } finally {
                 realm.close();
             }
-
-
         }
     }
 
@@ -485,7 +409,6 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             resu = false;
         }
 
-
         TargetRO blancoSelect;
         blancoSelect = ((TargetRO) spinnerBlanco.getSelectedItem());
         if (blancoSelect.getId() == 0) {
@@ -498,8 +421,6 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             txtFecha.setError(getString(R.string.error_fecha_inci11));
             resu = false;
         }
-
-
         return resu;
     }
 
@@ -523,9 +444,5 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 break;
             }
         }
-
-
     }
-
-
 }

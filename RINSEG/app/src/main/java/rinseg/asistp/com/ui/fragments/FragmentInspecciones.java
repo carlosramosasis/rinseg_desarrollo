@@ -60,9 +60,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     private String mParam1;
     private String mParam2;
 
-
     private OnFragmentInteractionListener mListener;
-
 
     private FloatingActionButton btnAgregar;
     ActivityMain activityMain;
@@ -104,7 +102,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
+        if ( getArguments() != null ) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -114,17 +112,15 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_inspecciones, container, false);
-
 
         setUpElements(view);
         setUpActions();
 
         Permissions();
 
-        LoadInsoeccionesCerradas();
+        LoadInspeccionesCerradas();
 
         // Here, we are making a folder named picFolder to store
         // pics taken by the camera using this application.
@@ -132,12 +128,8 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         File newdir = new File(dir);
         newdir.mkdirs();
 
-
         return view;
-
     }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -162,17 +154,6 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         }
     }
 
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -195,26 +176,31 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder,int position){
-      //  FragmentInspeccionDetalle1 inspeccionDetalle1 = FragmentInspeccionDetalle1.newInstance(listaInspeccinoes.get(position));
-        launchActivityInspeccionDetalle(listaInspeccinoes.get(position));
-
-        /*activityMain.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_main_content,inspeccionDetalle1)
-                .addToBackStack(null)
-                .commit();*/
-    }
-    @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position){}
-    @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position){}
-    @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+        // Si la inspección está cerrada, lanzamos Inspección detalle :
+        if ( listaInspeccinoes.get(position).getDateCloseString() != null ) {
+            launchActivityInspeccionDetalle(listaInspeccinoes.get(position));
+        } else {
+            // La inspección aún se puede editar :
+            FragmentInspeccionNuevo1 fragment = FragmentInspeccionNuevo1
+                    .newInstance(listaInspeccinoes.get(position).getTmpId());
+            activityMain.replaceFragment(fragment, true,
+                    R.anim.enter_from_left, R.anim.exit_to_left,
+                    R.anim.enter_from_right, R.anim.exit_to_right);
+        }
     }
 
+    @Override
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
 
-    //Proceso para cargar las vistas
+    @Override
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) { }
+
+    @Override
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
+
+
+    // Proceso para cargar las vistas
     private void setUpElements(View v) {
         btnAgregar = (FloatingActionButton) v.findViewById(R.id.btn_agregar_inspeccion);
         activityMain = ((ActivityMain) getActivity());
@@ -243,27 +229,8 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         btnAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Here, the counter will be incremented each time, and the
-                // picture taken by camera will be stored as 1.jpg,2.jpg
-                // and likewise.    CODIGO PARA LLAMAR A CAMARA
-               /* count++;
-                String file = dir + count + ".jpg";
-                File newfile = new File(file);
-                try {
-                    newfile.createNewFile();
-                } catch (IOException e) {
-                }
-
-                Uri outputFileUri = Uri.fromFile(newfile);
-
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-
-                startActivityForResult(cameraIntent, TAKE_PHOTO_CODE);*/
-
                 activityMain.ShowButtonsBottom(true);
-                activityMain.replaceFragment(new FragmentInspeccionNuevo1(), true,0,0,0,0);
-
+                activityMain.replaceFragment(new FragmentInspeccionNuevo1(), true, 0, 0, 0, 0);
             }
         });
     }
@@ -272,7 +239,8 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
 
         ArrayList<String> especificacionPermisos = new ArrayList<String>();
 
-        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.CAMERA);
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
         }
@@ -283,7 +251,6 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         if (especificacionPermisos.size() > 0) {
             this.requestPermissions(permisos, TAKE_PHOTO_CODE);
         }
-
     }
 
     /**
@@ -292,28 +259,28 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
      */
     public void launchActivityInspeccionDetalle(InspeccionRO insp) {
 
-        Intent InspeccionDetalleIntent = new Intent().setClass(activityMain, ActivityInspeccionDetalle.class);
-        InspeccionDetalleIntent.putExtra("InspId",insp.getId());
-        InspeccionDetalleIntent.putExtra("InspTmpId",insp.getTmpId());
+        Intent InspeccionDetalleIntent = new Intent().setClass(
+                activityMain, ActivityInspeccionDetalle.class);
+        InspeccionDetalleIntent.putExtra("InspId", insp.getId());
+        InspeccionDetalleIntent.putExtra("InspTmpId", insp.getTmpId());
         startActivity(InspeccionDetalleIntent );
     }
-    private void LoadInsoeccionesCerradas() {
+
+    private void LoadInspeccionesCerradas() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<InspeccionRO> InspeccionesRealm = realm.where(InspeccionRO.class).findAll().sort("dateClose", Sort.DESCENDING);
+            RealmResults<InspeccionRO> InspeccionesRealm =
+                    realm.where(InspeccionRO.class).findAll().sort("dateClose", Sort.DESCENDING);
 
             for (int i = 0; i < InspeccionesRealm.size(); i++) {
                 InspeccionRO tInsp = InspeccionesRealm.get(i);
                 listaInspeccinoes.add(tInsp);
                 inspeccionAdapter.notifyDataSetChanged();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             realm.close();
         }
     }
-
-
 }

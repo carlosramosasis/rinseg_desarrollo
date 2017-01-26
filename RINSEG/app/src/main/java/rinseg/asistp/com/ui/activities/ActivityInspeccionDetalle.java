@@ -1,6 +1,5 @@
 package rinseg.asistp.com.ui.activities;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +11,12 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.fragments.FragmentInspeccionDetalle1;
 
 public class ActivityInspeccionDetalle extends AppCompatActivity {
+
     public Toolbar toolbarInspeccionDet;
     private ActivityInspeccionDetalle thiss = (ActivityInspeccionDetalle) this;
+
+    int id;
+    String idTemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,19 +25,25 @@ public class ActivityInspeccionDetalle extends AppCompatActivity {
 
         setUpElements();
         setUpActions();
-        //Llamamos al fragment ROPS pendientes para que sea el primero que se muestre
-        replaceFragment(new FragmentInspeccionDetalle1(), true, 0, 0, 0, 0);
+
+        // Instanciamos el fragment con los parámetros :
+        FragmentInspeccionDetalle1 fragment = FragmentInspeccionDetalle1.newInstance(id, idTemp);
+        replaceFragment(fragment, true, 0, 0, 0, 0);
     }
 
     @Override
-    public void onBackPressed() {
-
-    }
+    public void onBackPressed() { }
 
     //Proceso para cargar las vistas
     private void setUpElements() {
         toolbarInspeccionDet = (Toolbar) findViewById(R.id.toolbarInspeccionDetalle);
         toolbarInspeccionDet.setNavigationIcon(R.drawable.ic_arrow_left);
+
+        Bundle bundle = getIntent().getExtras();
+        if ( bundle != null ) {
+            id = bundle.getInt("InspId", 0);
+            idTemp = bundle.getString("InspTmpId", "tmp");
+        }
     }
 
     //cargamos los eventos
@@ -47,7 +56,8 @@ public class ActivityInspeccionDetalle extends AppCompatActivity {
         });
     }
 
-    public void replaceFragment(Fragment fragment, boolean addToBackStack,
+    public void replaceFragment(Fragment fragment,
+                                boolean addToBackStack,
                                 int animIdIn1,
                                 int animIdOut1,
                                 int animIdIn2,
@@ -60,6 +70,4 @@ public class ActivityInspeccionDetalle extends AppCompatActivity {
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
     }
-
-
 }

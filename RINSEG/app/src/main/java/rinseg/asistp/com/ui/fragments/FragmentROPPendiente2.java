@@ -41,9 +41,11 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rinseg.asistp.com.listener.ListenerClickAccionPreventiva;
+import rinseg.asistp.com.listener.ListenerClickActoCondicion;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.CompanyRO;
+import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.Inspeccion;
@@ -71,7 +73,8 @@ import rinseg.asistp.com.utils.RinsegModule;
  * Use the {@link FragmentROPPendiente2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentROPPendiente2 extends Fragment implements ListenerClickAccionPreventiva {
+public class FragmentROPPendiente2 extends Fragment
+        implements ListenerClickAccionPreventiva, ListenerClickActoCondicion {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -90,6 +93,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     EditText mEditResponsable;
     EditText mEditAccion;
     TextView txtFecha;
+    TextView textActoCondicion;
     ImageButton btnCalendar;
     Button btnAgregar;
     ImageButton btnDelete;
@@ -209,11 +213,10 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         super.onDestroyView();
     }
 
-    //@SuppressWarnings("TryFinallyCanBeTryWithResources")
-
     /**
      * Evento para eliminar acción preventiva agregada
      */
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
     public void onItemClicked(AccionPreventivaAdapter.AccionViewHolder holder, int position) {
 
@@ -249,7 +252,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                     capturedImageUri = null;
                 }
 
-                //Bitmap bitmap = MediaStore.Images.Media.getBitmap(activityMain.getApplicationContext().getContentResolver(), capturedImageUri);
+                //Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                // activityMain.getApplicationContext().getContentResolver(), capturedImageUri);
 
                 if (imagen != null) {
                     launchActivityFotoComentario(imagen);
@@ -300,6 +304,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         mEditResponsable = (EditText) v.findViewById(R.id.txt_rop2_responsable);
         mEditAccion = (EditText) v.findViewById(R.id.txt_rop2_accion);
         txtFecha = (TextView) v.findViewById(R.id.txt_rop2_fecha);
+        textActoCondicion = (TextView) v.findViewById(R.id.txt_rop2_acto_condicion_subestandar);
         btnCalendar = (ImageButton) v.findViewById(R.id.btn_rop2_calendar);
 
         btnAgregar = (Button) v.findViewById(R.id.btn_rop2_agregar);
@@ -368,7 +373,9 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                     Bundle args = new Bundle();
                     args.putString("ROPtmpId", mRop.getTmpId());
                     fRopPendiente1.setArguments(args);
-                    activityMain.replaceFragment(fRopPendiente1, true, R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_left);
+                    activityMain.replaceFragment(fRopPendiente1, true,
+                            R.anim.enter_from_right, R.anim.exit_to_right,
+                            R.anim.enter_from_left, R.anim.exit_to_left);
                     dialogLoading.hide();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -390,7 +397,9 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 Bundle args = new Bundle();
                 args.putString("ROPtmpId", mRop.getTmpId());
                 fRopPendiente3.setArguments(args);
-                activityMain.replaceFragment(fRopPendiente3, true, R.anim.enter_from_left, R.anim.exit_to_left, R.anim.enter_from_right, R.anim.exit_to_right);
+                activityMain.replaceFragment(fRopPendiente3, true,
+                        R.anim.enter_from_left, R.anim.exit_to_left,
+                        R.anim.enter_from_right, R.anim.exit_to_right);
             }
         });
 
@@ -418,15 +427,20 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
             @Override
             public void onClick(View view) {
 
-                int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
-                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED || permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+                int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.CAMERA);
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED ||
+                        permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
                     Permissions();
                 }
 
-                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED || permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED ||
+                        permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
                     Calendar cal = Calendar.getInstance();
-                    File file = new File(Environment.getExternalStorageDirectory(), (cal.getTimeInMillis() + ".jpg"));
+                    File file = new File(Environment.getExternalStorageDirectory(),
+                            (cal.getTimeInMillis() + ".jpg"));
                     if (!file.exists()) {
                         try {
                             file.createNewFile();
@@ -486,7 +500,7 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         return resu;
     }
 
-
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void AgregarAccion() {
 
         if (!Validarformulario()) {
@@ -518,7 +532,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
     }
 
     public void ShowDatepicker() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
@@ -526,12 +541,15 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                 txtFecha.setText(Generic.dateFormatter.format(newDate.getTime()));
                 txtFecha.setError(null);
             }
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        }, newCalendar.get(Calendar.YEAR),
+                newCalendar.get(Calendar.MONTH),
+                newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
 
     }
 
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopPendiente() {
 
         String tmpIdRop = null;
@@ -554,6 +572,18 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
                         listaAccionPreventiva.add(ap);
                         accionAdapter.notifyDataSetChanged();
                     }
+
+                    // Recuperando la lista de actos o condiciones :
+                    if ( mRop.getListaEventItems() != null ) {
+                        String s = "";
+                        for ( EventItemsRO e : mRop.getListaEventItems() ) {
+                            s = s + e.getName() + " - ";
+                        }
+                        if (s.length() > 2) {
+                            s = s.substring(0, s.length() - 2);
+                        }
+                        textActoCondicion.setText(s);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -563,12 +593,6 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         }
     }
 
-//    private void MostrarCantidadImagenesRop() {
-//        int cant = Generic.CantidadImagenesPorRop(getActivity().getApplicationContext(), mRop.getTmpId());
-//        activityMain.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
-//    }
-
-
     public void launchActivityFotoComentario(Uri uriImagen) {
         FotoModel fotoMd = new FotoModel();
 
@@ -576,7 +600,8 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
         fotoMd.uri = uri;
         fotoMd.bitmap = null;
 
-        Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
+        Intent FotoComentarioIntent =
+                new Intent().setClass(activityMain, ActivityFotoComentario.class);
         FotoComentarioIntent.putExtra("imagen", fotoMd);
         FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
         startActivity(FotoComentarioIntent);
@@ -593,8 +618,10 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
         ArrayList<String> especificacionPermisos = new ArrayList<>();
 
-        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
-        int permissionCheckWrite = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
@@ -619,7 +646,33 @@ public class FragmentROPPendiente2 extends Fragment implements ListenerClickAcci
 
     private void MostrarAccionCondicionSubestandar() {
         final DialogActoCondicionSubestandar dialogActoCondicion =
-                new DialogActoCondicionSubestandar(getActivity(), nameEvent, mRop.getTmpId());
+                new DialogActoCondicionSubestandar(getActivity(), nameEvent, mRop.getTmpId(), this);
         dialogActoCondicion.show();
+    }
+
+    /** Implementación de método para setear texto al campo de acto o condición sub estándar */
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    @Override
+    public void onAcceptItems() {
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            mRop = realm.where(ROP.class).equalTo("tmpId", mRop.getTmpId()).findFirst();
+            if ( mRop != null ) {
+                if ( mRop.getListaEventItems() != null ) {
+                    String s = "";
+                    for ( EventItemsRO e : mRop.getListaEventItems() ) {
+                        s = s + e.getName() + " - ";
+                    }
+                    if ( s.length() > 2 ) {
+                        s = s.substring(0, s.length() - 2);
+                    }
+                    textActoCondicion.setText(s);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
     }
 }

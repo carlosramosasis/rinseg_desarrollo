@@ -27,15 +27,17 @@ import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * Created by Usuario on 30/09/2016.
+ * Adapter para el recycler de incidentes
  */
+
 public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.IncidenciaViewHolder> {
+
     private List<IncidenciaRO> ListaIncidencias;
     private final ListenerClick mListener;
     private RealmList<EventRO> mEvents = new RealmList<>();
     private RealmList<RiskRO> mRisks = new RealmList<>();
     private RealmList<FrecuencieRO> mFrecuencies = new RealmList<>();
     private RealmList<SeveritiesRO> mSeverities = new RealmList<>();
-
 
     public static class IncidenciaViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
@@ -101,9 +103,7 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
             }
         }
 
-
-        viewHolder.txtDesc.setText(ListaIncidencias.get(i).getDescripcion().toString());
-
+        viewHolder.txtDesc.setText(ListaIncidencias.get(i).getDescripcion());
 
         FrecuencieRO frecuencia = new FrecuencieRO();
         int idFrec = ListaIncidencias.get(i).getFrecuenciaId();
@@ -127,25 +127,30 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
 
         int resultado = severidad.getValue() * frecuencia.getValue();
 
-        for (int j = 0; i < mRisks.size(); j++) {
+        for (int j = 0; j < mRisks.size(); j++) {
             RiskRO riesgo = mRisks.get(j);
-            if (resultado >= riesgo.getMinValue() && resultado <= riesgo.getMaxValue() && resultado != 0) {
+            if (resultado >= riesgo.getMinValue()
+                    && resultado <= riesgo.getMaxValue()
+                    && resultado != 0) {
                 if (j == 1) {
-                    viewHolder.imgRiesgo.setBackgroundResource(R.drawable.backgorund_circle_gradient_green);
+                    viewHolder.imgRiesgo.setBackgroundResource(
+                            R.drawable.backgorund_circle_gradient_green);
                 }
                 else if(j  == 2){
-                    viewHolder.imgRiesgo.setBackgroundResource(R.drawable.backgorund_circle_gradient_amarillo);
+                    viewHolder.imgRiesgo.setBackgroundResource(
+                            R.drawable.backgorund_circle_gradient_amarillo);
                 }
                 else if(j== 3){
-                    viewHolder.imgRiesgo.setBackgroundResource(R.drawable.backgorund_circle_gradient_naranja);
+                    viewHolder.imgRiesgo.setBackgroundResource(
+                            R.drawable.backgorund_circle_gradient_naranja);
                 }
                 else if(j  == 4){
-                    viewHolder.imgRiesgo.setBackgroundResource(R.drawable.backgorund_circle_gradient);
+                    viewHolder.imgRiesgo.setBackgroundResource(
+                            R.drawable.backgorund_circle_gradient);
                 }
                 break;
             }
         }
-
 
         viewHolder.vLayout.setOnClickListener(new View.OnClickListener() {
             @Override

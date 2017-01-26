@@ -18,8 +18,9 @@ import rinseg.asistp.com.rinseg.R;
 
 /**
  * Created by Carlos Ramos  on 25/11/2016.
+ * Dialog personalizado para la aplicación
  */
-public class DialogRINSEG extends Dialog implements android.view.View.OnClickListener{
+public class DialogRINSEG extends Dialog implements android.view.View.OnClickListener {
 
     public Activity activity;
     public Dialog d;
@@ -30,13 +31,12 @@ public class DialogRINSEG extends Dialog implements android.view.View.OnClickLis
         super(a, R.style.CustomDialogTheme);
         // TODO Auto-generated constructor stub
         this.activity = a;
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.dialog_rinseg);
         btnCancelar = (Button) findViewById(R.id.btn_dialog_cancelar);
         btnAceptar = (Button) findViewById(R.id.btn_dialog_aceptar);
@@ -44,7 +44,7 @@ public class DialogRINSEG extends Dialog implements android.view.View.OnClickLis
         body = (TextView) findViewById(R.id.txt_body_dialog);
         btnAceptar.setOnClickListener(this);
         btnCancelar.setOnClickListener(this);
-
+        super.onCreate(savedInstanceState);
     }
 
     @Override
