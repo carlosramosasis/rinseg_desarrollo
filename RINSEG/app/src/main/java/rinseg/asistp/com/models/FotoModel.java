@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class FotoModel implements Serializable {
     public static  Uri uri;
-    public static  Bitmap bitmap;
+    //public static  Bitmap bitmap;
 
     @Override
     public String toString() {

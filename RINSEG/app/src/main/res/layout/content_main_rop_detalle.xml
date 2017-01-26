@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle"
-    tools:showIn="@layout/activity_inspeccion_detalle">
+    tools:context="rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle"
+    tools:showIn="@layout/activity_rop_cerrado_detalle">
 
     <FrameLayout
         android:id="@+id/frame_main_content_rop_detalle"

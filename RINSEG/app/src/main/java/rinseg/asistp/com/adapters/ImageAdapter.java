@@ -36,6 +36,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     private File mFileAPP;
     private String mCarpetaRop;
     private String mPathImageGallery;
+    private Context mContext;
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
@@ -54,12 +55,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         }
     }
 
-    public ImageAdapter(List<ImagenRO> imagenes, File fileAPP, String pathImageGallery, String carpertaRop, ListenerClickImage listener) {
+    public ImageAdapter(Context pContext, List<ImagenRO> imagenes, File fileAPP, String pathImageGallery, String carpertaRop, ListenerClickImage listener) {
         this.ListaImagenes = imagenes;
         mListener = listener;
         mFileAPP = fileAPP;
         mCarpetaRop = carpertaRop;
         mPathImageGallery = pathImageGallery;
+        mContext = pContext;
     }
 
     @Override
@@ -81,7 +83,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         final FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
 
         if (fotoModel != null) {
-            viewHolder.imageFotoGaleria.setImageURI(fotoModel.uri);
+            Picasso.with(mContext).load("file://" + fotoModel.uri.getPath())
+                    .error(R.drawable.ic_imagen_no_disponible)
+                    .placeholder(R.drawable.ic_image)
+                    .fit()
+                    .centerCrop()
+                    .into(viewHolder.imageFotoGaleria);
+
+            // viewHolder.imageFotoGaleria.setImageURI(fotoModel.uri);
         }
 
         viewHolder.vLayout.setOnClickListener(new View.OnClickListener() {

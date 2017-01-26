@@ -48,6 +48,8 @@ dependencies {
 
     compile 'com.squareup.picasso:picasso:2.5.2'
 
+    compile 'com.itextpdf:itextg:5.5.10'
+
     //compile 'io.realm:android-adapters:1.4.0'
 
 }

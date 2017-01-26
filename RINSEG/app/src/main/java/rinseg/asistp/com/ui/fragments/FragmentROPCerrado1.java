@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,15 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
 import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +47,13 @@ public class FragmentROPCerrado1 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
 
-    ActivityMain activityMain;
+    ActivityRopCerradoDetalle activityMain;
+
+    Bundle bundle;
+
+    ROP mRop;
+    RealmConfiguration myConfig;
+
 
     public FragmentROPCerrado1() {
         // Required empty public constructor
@@ -83,19 +96,13 @@ public class FragmentROPCerrado1 extends Fragment {
         setUpElements(view);
         setUpActions();
 
+        LoadRop();
+
+        Log.e("id", String.valueOf(mRop.getId()));
+
         return view;
     }
 
-    //Proceso para cargar las vistas
-    private void setUpElements(View v) {
-        activityMain = ((ActivityMain) getActivity());
-
-    }
-
-    //cargamos los eventos
-    private void setUpActions() {
-
-    }
 
     @Override
     public void onResume() {
@@ -142,4 +149,55 @@ public class FragmentROPCerrado1 extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+//// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    //Proceso para cargar las vistas
+    private void setUpElements(View v) {
+        activityMain = ((ActivityRopCerradoDetalle) getActivity());
+
+        bundle = getArguments();
+
+        //configuramos Realm
+        Realm.init(this.getActivity().getApplicationContext());
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+    }
+
+    //cargamos los eventos
+    private void setUpActions() {
+
+    }
+
+    private void LoadRop() {
+
+        int idRop = 0;
+        if (bundle != null) {
+            idRop = bundle.getInt("ROPId", 0);
+
+            //ROP tmpRop = new ROP();
+            if (idRop != 0) {
+                final Realm realm = Realm.getInstance(myConfig);
+                try {
+                    mRop = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+                    if (mRop == null) {
+                        return;
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    realm.close();
+                }
+            }
+        }
+    }
+
+
 }

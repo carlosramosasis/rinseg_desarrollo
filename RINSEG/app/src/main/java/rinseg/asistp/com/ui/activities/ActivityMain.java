@@ -299,6 +299,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
                 mImageProfile = (CircleImageView) header.findViewById(R.id.img_profile_image);
                 Picasso.with(this).load(usuarioLogueado.getPhoto())
+                        .fit()
                         .error(R.drawable.profile_default)
                         .into(mImageProfile);
 
@@ -888,15 +889,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                         //User u = gson.fromJson(usur.toString(), User.class);
                         //SaveUserInRealm(u);
                         //launchActivityMain(u);
-                        Realm realm = Realm.getInstance(myConfig);
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                realm.delete(User.class);
-                                launchActivityLogin();
-                                dialogLoading.dismiss();
-                            }
-                        });
+
 
                     } catch (Exception e) {
 
@@ -908,8 +901,20 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                     dialogLoading.dismiss();
 
                     Messages.showSB(v, getString(R.string.msg_login_fail), "ok");
+
+
                 }
 
+                Realm realm = Realm.getInstance(myConfig);
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.delete(User.class);
+                        thiss.finish();
+                        launchActivityLogin();
+                        dialogLoading.dismiss();
+                    }
+                });
 
             }
 
@@ -917,6 +922,17 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 dialogLoading.dismiss();
                 Messages.showSB(v, getString(R.string.msg_servidor_inaccesible), "ok");
+
+                Realm realm = Realm.getInstance(myConfig);
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.delete(User.class);
+                        thiss.finish();
+                        launchActivityLogin();
+                        dialogLoading.dismiss();
+                    }
+                });
             }
         });
     }

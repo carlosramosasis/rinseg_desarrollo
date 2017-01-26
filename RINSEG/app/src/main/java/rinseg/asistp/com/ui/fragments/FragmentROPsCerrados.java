@@ -2,7 +2,9 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.github.clans.fab.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,6 +54,7 @@ import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
+import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
@@ -188,7 +192,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 btnRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       final int codRop =  Integer.parseInt(txtCodigoRecuperar.getText().toString().trim());
+                        final int codRop = Integer.parseInt(txtCodigoRecuperar.getText().toString().trim());
                         RecuperarRopCerrado(codRop);
                     }
                 });
@@ -238,7 +242,6 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
-
         launchActivityRopDetalle(listaRops.get(position));
     }
 
@@ -298,7 +301,6 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     public void launchActivityRopDetalle(ROP rop) {
 
         Intent RopDetalleIntent = new Intent().setClass(activityMain, ActivityRopCerradoDetalle.class);
-        RopDetalleIntent.putExtra("ROPtmpId", rop.getTmpId());
         RopDetalleIntent.putExtra("ROPId", rop.getId());
         startActivity(RopDetalleIntent);
     }
@@ -348,14 +350,21 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         //
                         realm.beginTransaction();
                         ROP ropRecuperado = realm.createObject(ROP.class);
-                        // poblamos las tablas para el ROP
+                        //Poblamos las tablas para el ROP
                         PopulateROP(ropRecuperado, ropJSON);
                         //PopulateCompanieForRop(ropRecuperado, rCompanyJSON, realm);
                         PopulateImagesForRop(ropRecuperado, rImagesJSON, realm);
                         PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
                         realm.commitTransaction();
 
+
                         ROP ropCopy = realm.copyFromRealm(ropRecuperado);
+
+                        String path = activityMain.getFilesDir().getPath();
+                        path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + ropCopy.getTmpId() + "/";
+
+                        GuardarImagenesEnLocal(ropCopy.getTmpId(), ropCopy.listaImgComent, path);
+
                         listaRops.add(0, ropCopy);
                         ropAdapter.notifyDataSetChanged();
 
@@ -366,7 +375,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                     } catch (Exception e) {
                         dialogLoading.dismiss();
                         e.printStackTrace();
-                        Messages.showSB(rootLayout,  getString(R.string.msg_rop_recuperado_fail), "ok");
+                        Messages.showSB(rootLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
                     } finally {
                         realm.close();
                         dialogLoading.dismiss();
@@ -412,17 +421,22 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
             rop.setDateCloseString(ropJson.getString("date_close"));
             rop.setUserId(ropJson.getInt("user_id"));
 
+            rop.setTmpId(String.valueOf(ropJson.getInt("id")));
+
             int research_required = ropJson.getInt("research_required");
-            if(research_required == 1){
+            if (research_required == 1) {
                 rop.setResearch_required(true);
-            }else {
+            } else {
                 rop.setResearch_required(false);
             }
 
 
-            Date eventDate= Generic.dateFormatterMySql.parse(rop.getEventDateString());
+            Date eventDate = Generic.dateFormatterMySql.parse(rop.getEventDateString());
             rop.setEventDate(eventDate);
 
+
+            //Creamos la carpeta que contendra las imagenes
+            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorRop(getActivity().getApplicationContext(), rop.getTmpId());
 
 
         } catch (Exception e) {
@@ -479,5 +493,43 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
             }
         }
     }
+
+
+    public void GuardarImagenesEnLocal(String ropID, RealmList<ImagenRO> listaImagenes, String pathBase) {
+        for (int i = 0; i < listaImagenes.size(); i++) {
+            ImagenRO img = listaImagenes.get(i);
+            String path = pathBase + img.getName();
+            Log.e("path", path);
+            new GuardarImagenRop(img, path);
+        }
+    }
+
+
+    public class GuardarImagenRop extends AsyncTask<String, Integer, Integer> {
+        private ImagenRO imagenRop;
+        private String urlLocal;
+
+        GuardarImagenRop(ImagenRO pImagenRop, String url) {
+            imagenRop = pImagenRop;
+            urlLocal = url;
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            int errorValue = 0;
+            try {
+                Log.e("path", urlLocal);
+                Picasso.with(activityMain)
+                        .load(imagenRop.getPath())
+                        .into(Generic.getTarget(urlLocal));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorValue = 1;
+            }
+            return errorValue;
+        }
+    }
+
 
 }

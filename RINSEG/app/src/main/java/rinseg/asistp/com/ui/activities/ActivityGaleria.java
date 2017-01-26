@@ -120,6 +120,9 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         //configuracion para el recicler
         recyclerImage = (RecyclerView) findViewById(R.id.recycler_galeria);
         recyclerImage.setHasFixedSize(true);
+        recyclerImage.setItemViewCacheSize(20);
+        recyclerImage.setDrawingCacheEnabled(true);
+        recyclerImage.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         // usar administrador para linearLayout
         //lManager = new LinearLayoutManager(this.getApplicationContext());
         RecyclerView.LayoutManager lm = new GridLayoutManager(this, 2);
@@ -129,10 +132,10 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
 
         if(tmpIdRop!= null){
             LoadRopPendiente();
-            imageAdapter = new ImageAdapter(listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), this);
+            imageAdapter = new ImageAdapter(this,listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), this);
         }else if(tmpIdIncidente != null){
             LoadIncidente();
-            imageAdapter = new ImageAdapter(listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_INCIDENCIA,mIncidente.getTmpId(), this);
+            imageAdapter = new ImageAdapter(this,listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_INCIDENCIA,mIncidente.getTmpId(), this);
         }
 
         recyclerImage.setAdapter(imageAdapter);

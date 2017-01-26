@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -164,21 +166,27 @@ public class ActivityFotoComentario extends AppCompatActivity {
             }
         }  else*/
 
-        if (fotoModel.uri != null) {
+        if (fotoModel.uri != null ) {
             Uri uri = fotoModel.uri;
             try {
-                while (bitmap == null) {
-                    if (puedeEditar) {
+                if(puedeEditar){
+                    while (bitmap == null) {
+                        // if (puedeEditar) {
                         //bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                         InputStream imageStream = null;
                         imageStream = getContentResolver().openInputStream(uri);
                         bitmap = BitmapFactory.decodeStream(imageStream);
-                    } else {
-                        bitmap = BitmapFactory.decodeFile(uri.getPath());
+                        //  } else {
+//                        bitmap = BitmapFactory.decodeFile(uri.getPath());
+                        //                  }
                     }
                 }
 
 
+               /* Picasso.with(this).load("file://" + uri.getPath())
+                        .error(R.drawable.ic_imagen_no_disponible)
+                        .placeholder(R.drawable.ic_image)
+                        .into(imageView);*/
                 imageView.setImageURI(uri);
 
                 if (comentario != null) {

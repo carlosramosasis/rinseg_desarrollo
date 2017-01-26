@@ -2,9 +2,11 @@ package rinseg.asistp.com.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -12,6 +14,9 @@ import android.os.Environment;
 import android.os.NetworkOnMainThreadException;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +26,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
@@ -156,7 +164,7 @@ public class Generic {
                     Log.e("getName", files[i].getName());
                     if (files[i].getName().equals(nombreImagen)) {
                         //result.bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
-                        result.bitmap = null;
+                        //result.bitmap = null;
 
                         // nombreImagen = nombreImagen.replaceFirst("[.][^.]+$", "");
 
@@ -220,7 +228,7 @@ public class Generic {
         int resu = 0;
 
         File myDir = context.getFilesDir();
-        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA+ carpertaIncidente + "/");
+        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + carpertaIncidente + "/");
 
 
         if (folder.exists()) {
@@ -244,6 +252,74 @@ public class Generic {
         return new String(result);
     }
 
+    public static String RutaPdfRop(Context context, String nombrePdf) {
+        String resu = "";
+
+        File f = new File(context.getCacheDir() + "/" + nombrePdf);
+        if(f.exists()){
+            f.delete();
+        }
+
+         try {
+
+            InputStream is = context.getAssets().open(nombrePdf);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(buffer);
+            fos.close();
+
+            resu = f.getPath();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return resu;
+    }
+
+    //target to save
+    public static Target getTarget(final String url){
+        Target target = new Target(){
+
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        File file = new File( url);
+                        try {
+                            file.createNewFile();
+                            FileOutputStream ostream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                            ostream.flush();
+                            ostream.close();
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getLocalizedMessage());
+                        }
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                Log.e("load","load ok");
+            }
+        };
+        return target;
+    }
 
 }
 

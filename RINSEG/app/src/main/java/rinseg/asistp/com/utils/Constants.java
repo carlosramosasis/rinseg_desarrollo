@@ -39,4 +39,6 @@ public class Constants {
     public static String NAME_EVENT_CUASI_ACCIDENTE = "cuasi_accidente";
     public static String NAME_EVENT_ACTO_POSITIVO = "acto_positivo";
 
+    public static String NAME_PDF_ROP_BASE = "ejemplo_pdf.pdf";
+
 }

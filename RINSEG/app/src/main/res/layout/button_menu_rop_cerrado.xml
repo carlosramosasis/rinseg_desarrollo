@@ -12,18 +12,7 @@
     app:fab_labelsPosition="left"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:visibility="gone"
     >
-
-<!--    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_generar_pdf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_colorNormal="@color/colorAccent"
-        app:fab_colorPressed="@color/colorAccent"
-        app:fab_icon="@drawable/ic_file_pdf"
-        app:fab_title="@string/label_generar_pdf"
-        app:rippleColor="@color/colorTertiary" />-->
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_tomar_foto"

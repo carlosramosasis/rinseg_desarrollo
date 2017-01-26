@@ -391,7 +391,7 @@ public class FragmentROPPendiente3 extends Fragment {
 
         Uri uri = uriImagen;
         fotoMd.uri = uri;
-        fotoMd.bitmap = null;
+        //fotoMd.bitmap = null;
 
         Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
         FotoComentarioIntent.putExtra("imagen", fotoMd);

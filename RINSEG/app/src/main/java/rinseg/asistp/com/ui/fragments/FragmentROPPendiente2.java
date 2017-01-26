@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -29,10 +30,19 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PRStream;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfObject;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -476,7 +486,9 @@ public class FragmentROPPendiente2 extends Fragment
         activityMain.btnGenerarPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Messages.showToast(getView(),String.valueOf(Generic.isOnline()));
+
+                GenerarPDF();
+
             }
         });
     }
@@ -598,7 +610,7 @@ public class FragmentROPPendiente2 extends Fragment
 
         Uri uri = uriImagen;
         fotoMd.uri = uri;
-        fotoMd.bitmap = null;
+        //fotoMd.bitmap = null;
 
         Intent FotoComentarioIntent =
                 new Intent().setClass(activityMain, ActivityFotoComentario.class);
@@ -650,6 +662,7 @@ public class FragmentROPPendiente2 extends Fragment
         dialogActoCondicion.show();
     }
 
+<<<<<<< Updated upstream
     /** Implementación de método para setear texto al campo de acto o condición sub estándar */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
@@ -675,4 +688,38 @@ public class FragmentROPPendiente2 extends Fragment
             realm.close();
         }
     }
+=======
+    void GenerarPDF() {
+        try {
+
+            final String src = Generic.RutaPdfRop(activityMain, Constants.NAME_PDF_ROP_BASE);
+
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "prueba.pdf");
+            if(file.exists()){
+                file.delete();
+            }
+            file.getParentFile().mkdirs();
+
+            PdfReader reader = new PdfReader(src);
+
+            PdfDictionary dict = reader.getPageN(1);
+            PdfObject object = dict.getDirectObject(PdfName.CONTENTS);
+
+            if (object != null) {
+                PRStream stream = (PRStream)object;
+                byte[] data = PdfReader.getStreamBytes(stream);
+                stream.setData(new String(data).replace("pdf", "CARLOS").getBytes());
+            }
+            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(file.getAbsolutePath()));
+            stamper.close();
+            reader.close();
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+>>>>>>> Stashed changes
 }
