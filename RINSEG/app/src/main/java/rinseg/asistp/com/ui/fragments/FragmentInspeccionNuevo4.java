@@ -13,10 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.github.clans.fab.FloatingActionMenu;
-import com.google.gson.Gson;
+import com.github.clans.fab.FloatingActionButton;
 
 import org.json.JSONObject;
 
@@ -63,7 +60,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     private List<IncidenciaRO> listaIncidencias = new ArrayList<>();
 
     private FloatingActionButton btnAgregarIncidente;
-    private FloatingActionsMenu btnMenu;
 
     DialogRINSEG dialogConfirm;
 
@@ -168,7 +164,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         bundle = getArguments();
 
         btnAgregarIncidente = (FloatingActionButton) v.findViewById(R.id.btn_agregar_incidente);
-        btnMenu = (FloatingActionsMenu) v.findViewById(R.id.fab_menu_incidencias);
 
         //configuracion para el recicler
         recyclerIncidencias = (RecyclerView) v.findViewById(R.id.recycler_view_i4_incidencias);
@@ -198,7 +193,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             @Override
             public void onClick(View v) {
                 launchActivityGenerarIncidencia(mInspc, "");
-                btnMenu.collapse();
             }
         });
 

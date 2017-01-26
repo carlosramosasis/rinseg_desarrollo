@@ -26,15 +26,14 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="15dp"
-                android:orientation="vertical"
-                android:scrollbars="vertical"
-                android:paddingBottom="100dp"
                 android:background="@color/colorWhite"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:paddingBottom="100dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingTop="5dp"
-                android:elevation="4dp"
-                >
+                android:scrollbars="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -50,6 +49,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_codigo"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -73,6 +73,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_aprobado"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -96,6 +97,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_revision"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -127,6 +129,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_potencial_perdida"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -135,6 +138,7 @@
                         android:textSize="17dp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,6 +153,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_tipo_evento"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -157,6 +162,7 @@
                         android:textSize="17dp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -171,6 +177,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_blanco"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -179,6 +186,7 @@
                         android:textSize="17dp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -193,6 +201,7 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/rd_txt_area_responsable"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -211,21 +220,22 @@
                 </LinearLayout>
 
                 <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/rop_c1_potencial_perdida"
-                android:textColor="@color/colorGray"
-                android:textSize="16dp" />
-                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="@string/rop_c1_lugar_exacto"
+                    android:textColor="@color/colorGray"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/rd_txt_lugar_exacto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="15dp"
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -233,21 +243,21 @@
                     android:text="@string/rop_c1_empresa"
                     android:textColor="@color/colorGray"
                     android:textSize="16dp" />
+
                 <TextView
+                    android:id="@+id/rd_txt_empresa"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="15dp"
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="0dp"
@@ -266,23 +276,24 @@
                         android:textSize="16dp" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/rd_txt_fecha"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
                         android:layout_weight="1"
                         android:text="@string/rop_c1_texto_default"
                         android:textColor="@color/colorGray"
                         android:textSize="17dp"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="15dp"
-                        />
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/rd_txt_hora"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -292,22 +303,24 @@
                         android:textStyle="bold" />
 
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/rop_c1_desc"
                     android:textColor="@color/colorGray"
                     android:textSize="16dp" />
+
                 <TextView
+                    android:id="@+id/rd_txt_descripcion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="15dp"
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -323,16 +336,17 @@
                     android:text="@string/rop_c1_acto_sub"
                     android:textColor="@color/colorGray"
                     android:textSize="16dp" />
+
                 <TextView
+                    android:id="@+id/rd_txt_acto_subestandar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="15dp"
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -342,11 +356,11 @@
                     android:textSize="16dp" />
 
                 <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rd_recycler_acciones_realizadas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
                     android:layout_marginBottom="4dp"
-                    >
+                    android:layout_marginLeft="15dp">
 
 
                 </android.support.v7.widget.RecyclerView>
@@ -367,14 +381,14 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_compromiso"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:layout_marginLeft="15dp"
                     android:text="@string/compromisos_trabajador_body"
                     android:textColor="@color/colorGray"
-                    android:textSize="14dp"
-                    />
+                    android:textSize="14dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -392,6 +406,7 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_reportante"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -399,8 +414,7 @@
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -410,6 +424,7 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_empresa_de_reportante"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -417,8 +432,7 @@
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -436,6 +450,7 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_supervisor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -443,8 +458,7 @@
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -454,6 +468,7 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_empresa_de_supervisor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -461,15 +476,13 @@
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:layout_marginBottom="4dp"
-                    android:background="@color/colorAccentDark2">
-                </LinearLayout>
+                    android:background="@color/colorAccentDark2"></LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -479,6 +492,7 @@
                     android:textSize="16dp" />
 
                 <TextView
+                    android:id="@+id/rd_txt_requiere_investigacion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -486,8 +500,7 @@
                     android:text="@string/rop_c1_texto_default"
                     android:textColor="@color/colorGray"
                     android:textSize="17dp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
 
             </LinearLayout>
@@ -495,13 +508,8 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        >
-        <include layout="@layout/button_menu_rop_cerrado"></include>
-    </RelativeLayout>
+
+    <include layout="@layout/button_menu_rop_cerrado"></include>
 
 
 </FrameLayout>

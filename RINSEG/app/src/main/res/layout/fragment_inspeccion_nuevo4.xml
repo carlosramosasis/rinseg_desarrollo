@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorSecondary1"
     android:scrollbars="vertical"
     tools:context="rinseg.asistp.com.ui.fragments.FragmentInspeccionNuevo4">
@@ -55,8 +56,16 @@
 
     </LinearLayout>
 
-  <include layout="@layout/button_menu_lista_incidencias">
-
-  </include>
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/btn_agregar_incidente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_add"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/colorAccentDark"
+        app:fab_colorRipple="@color/colorTertiary" />
 
 </FrameLayout>

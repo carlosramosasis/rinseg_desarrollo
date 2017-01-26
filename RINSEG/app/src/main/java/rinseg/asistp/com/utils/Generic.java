@@ -136,7 +136,7 @@ public class Generic {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(path);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, out); // bmp is your Bitmap instance
+            bmp.compress(Bitmap.CompressFormat.JPEG, 11, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
             result = true;
         } catch (Exception e) {

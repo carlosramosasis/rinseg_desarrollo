@@ -5,6 +5,8 @@ import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +16,25 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import rinseg.asistp.com.adapters.AccionPreventivaAdapter;
+import rinseg.asistp.com.adapters.AccionPreventivaDetalleAdapter;
+import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.AreaRO;
+import rinseg.asistp.com.models.CompanyRO;
+import rinseg.asistp.com.models.EventItemsRO;
+import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.ROP;
+import rinseg.asistp.com.models.RiskRO;
+import rinseg.asistp.com.models.SettingsRopRO;
+import rinseg.asistp.com.models.TargetRO;
+import rinseg.asistp.com.models.User;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
@@ -54,6 +69,34 @@ public class FragmentROPCerrado1 extends Fragment {
     ROP mRop;
     RealmConfiguration myConfig;
 
+    private User usuario;
+    SettingsRopRO sRop;
+
+    TextView txtCodigo;
+    TextView txtAprobado;
+    TextView txtRevision;
+    TextView txtPotencialPerdida;
+    TextView txtTipoEvento;
+    TextView txtBlanco;
+    TextView txtAreaResopnsable;
+    TextView txtLugarExacto;
+    TextView txtEmpresa;
+    TextView txtFecha;
+    TextView txtHora;
+    TextView txtDescripcion;
+    TextView txtActoSubestandar;
+    RecyclerView recyclerAccionesInmediatasRealizadas;
+    private RecyclerView.Adapter accionPreventivaAdapter;
+    private RecyclerView.LayoutManager lManager;
+    private List<AccionPreventiva> listaAccionesPreventivas = new ArrayList<>();
+    TextView txtCompromisoTrabajador;
+    TextView txtReportante;
+    TextView txtEmpresaReportante;
+    TextView txtSupervisor;
+    TextView txtEmpresaSupervisor;
+    TextView txtRequiereInvestigacion;
+
+    Calendar newDateForROP;
 
     public FragmentROPCerrado1() {
         // Required empty public constructor
@@ -96,9 +139,10 @@ public class FragmentROPCerrado1 extends Fragment {
         setUpElements(view);
         setUpActions();
 
-        LoadRop();
+        LoadSettingRop();
+        LoadUser();
 
-        Log.e("id", String.valueOf(mRop.getId()));
+        LoadRop();
 
         return view;
     }
@@ -158,6 +202,41 @@ public class FragmentROPCerrado1 extends Fragment {
 
         bundle = getArguments();
 
+        newDateForROP = Calendar.getInstance();
+
+        txtCodigo = (TextView) v.findViewById(R.id.rd_txt_codigo);
+        txtAprobado = (TextView) v.findViewById(R.id.rd_txt_aprobado);
+        txtRevision = (TextView) v.findViewById(R.id.rd_txt_revision);
+        txtPotencialPerdida = (TextView) v.findViewById(R.id.rd_txt_potencial_perdida);
+        txtTipoEvento = (TextView) v.findViewById(R.id.rd_txt_tipo_evento);
+        txtBlanco = (TextView) v.findViewById(R.id.rd_txt_blanco);
+        txtAreaResopnsable = (TextView) v.findViewById(R.id.rd_txt_area_responsable);
+        txtLugarExacto = (TextView) v.findViewById(R.id.rd_txt_lugar_exacto);
+        txtEmpresa = (TextView) v.findViewById(R.id.rd_txt_empresa);
+        txtFecha = (TextView) v.findViewById(R.id.rd_txt_fecha);
+        txtHora = (TextView) v.findViewById(R.id.rd_txt_hora);
+        txtDescripcion = (TextView) v.findViewById(R.id.rd_txt_descripcion);
+        txtActoSubestandar = (TextView) v.findViewById(R.id.rd_txt_acto_subestandar);
+
+        //configuracion para el recicler
+        recyclerAccionesInmediatasRealizadas = (RecyclerView) v.findViewById(R.id.rd_recycler_acciones_realizadas);
+        recyclerAccionesInmediatasRealizadas.setHasFixedSize(true);
+        // usar administrador para linearLayout
+        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
+        recyclerAccionesInmediatasRealizadas.setLayoutManager(lManager);
+        // Crear un nuevo Adaptador
+        accionPreventivaAdapter = new AccionPreventivaDetalleAdapter(listaAccionesPreventivas);
+        recyclerAccionesInmediatasRealizadas.setAdapter(accionPreventivaAdapter);
+
+
+        txtCompromisoTrabajador = (TextView) v.findViewById(R.id.rd_txt_compromiso);
+        txtReportante = (TextView) v.findViewById(R.id.rd_txt_reportante);
+        txtEmpresaReportante = (TextView) v.findViewById(R.id.rd_txt_empresa_de_reportante);
+        txtSupervisor = (TextView) v.findViewById(R.id.rd_txt_supervisor);
+        txtEmpresaSupervisor = (TextView) v.findViewById(R.id.rd_txt_empresa_de_supervisor);
+        txtRequiereInvestigacion = (TextView) v.findViewById(R.id.rd_txt_requiere_investigacion);
+
+
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
         myConfig = new RealmConfiguration.Builder()
@@ -174,6 +253,31 @@ public class FragmentROPCerrado1 extends Fragment {
 
     }
 
+    private void LoadSettingRop() {
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            sRop = realm.where(SettingsRopRO.class).findFirst();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+
+    }
+
+    private void LoadUser() {
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            usuario = realm.where(User.class).findFirst();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+
+    }
+
+
     private void LoadRop() {
 
         int idRop = 0;
@@ -189,6 +293,117 @@ public class FragmentROPCerrado1 extends Fragment {
                         return;
                     }
 
+
+                    txtCodigo.setText(String.valueOf(mRop.getId()));
+
+
+                    // recuperar potencial de perdida
+                    for (int i = 0; i < sRop.risks.size(); i++) {
+                        RiskRO tmpRisk = sRop.risks.get(i);
+                        if (tmpRisk.getId() == mRop.getRiskId()) {
+                            txtPotencialPerdida.setText(tmpRisk.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    // recuperar tipo de evento
+                    for (int i = 0; i < sRop.events.size(); i++) {
+                        EventRO tmpEvent = sRop.events.get(i);
+                        if (tmpEvent.getId() == mRop.getEventId()) {
+                            txtTipoEvento.setText(tmpEvent.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    // recuperar Blanco
+                    for (int i = 0; i < sRop.targets.size(); i++) {
+                        TargetRO tmpTarget = sRop.targets.get(i);
+                        if (tmpTarget.getId() == mRop.getTargetId()) {
+                            txtBlanco.setText(tmpTarget.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    // recuperar area responsable
+                    for (int i = 0; i < sRop.areas.size(); i++) {
+                        AreaRO tmpArea = sRop.areas.get(i);
+                        if (tmpArea.getId() == mRop.getAreaId()) {
+                            txtAreaResopnsable.setText(tmpArea.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    // recuperar lugar exacto
+                    txtLugarExacto.setText(mRop.getEventPlace());
+
+                    // recuperar Empresa
+                    for (int i = 0; i < sRop.companies.size(); i++) {
+                        CompanyRO tmpCompany = sRop.companies.get(i);
+                        if (tmpCompany.getId() == mRop.getCompanyId()) {
+                            txtEmpresa.setText(tmpCompany.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    // recuperar Fecha y Hora
+                    newDateForROP.setTime(mRop.getEventDate());
+                    txtFecha.setText(Generic.dateFormatter.format(newDateForROP.getTime()));
+                    txtHora.setText(Generic.timeFormatter.format(newDateForROP.getTime()));
+
+                    // recuperar descripcion
+                    txtDescripcion.setText(mRop.getEventDescription());
+
+                    // recuperar acto subestandar
+                    txtActoSubestandar.setText("");
+                    for (int i = 0; i < mRop.listaEventItems.size(); i++) {
+                        String actosSubestandars = txtActoSubestandar.getText().toString();
+                        if (i > 0) {
+                            actosSubestandars += "\n";
+                        }
+
+                        txtActoSubestandar.setText(actosSubestandars + "- " + mRop.listaEventItems.get(i).getName() + ".");
+                    }
+
+
+                    // recuperar accion inmediata realizada
+                    for (int i = 0; i < mRop.listaAccionPreventiva.size(); i++) {
+                        AccionPreventiva tAccionPrev = mRop.listaAccionPreventiva.get(i);
+                        listaAccionesPreventivas.add(tAccionPrev);
+                        accionPreventivaAdapter.notifyDataSetChanged();
+                    }
+
+
+                    // recuperar Reportante
+                    if (usuario != null) {
+                        txtReportante.setText(usuario.getName() + " " + usuario.getLastname());
+
+                        // recuperar Empresa reposrtante
+                        for (int i = 0; i < sRop.companies.size(); i++) {
+                            CompanyRO tmpCompany = sRop.companies.get(i);
+                            if (tmpCompany.getId() == usuario.getCompany_id()) {
+                                txtEmpresaReportante.setText(tmpCompany.getDisplayName());
+                                break;
+                            }
+                        }
+                    }
+
+                    //recuperar datos de supervisor
+                    txtSupervisor.setText(mRop.getSupervisorName());
+                    // recuperar Empresa supervisor
+                    for (int i = 0; i < sRop.companies.size(); i++) {
+                        CompanyRO tmpCompany = sRop.companies.get(i);
+                        if (tmpCompany.getId() == mRop.getSupervisorIdCompany()) {
+                            txtEmpresaSupervisor.setText(tmpCompany.getDisplayName());
+                            break;
+                        }
+                    }
+
+                    //recuperar requiere investigacion
+                    if (mRop.isResearch_required()) {
+                        txtRequiereInvestigacion.setText("Si");
+                    } else {
+                        txtRequiereInvestigacion.setText("No");
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
