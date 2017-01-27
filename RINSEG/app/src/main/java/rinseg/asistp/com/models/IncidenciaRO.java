@@ -14,14 +14,18 @@ import io.realm.RealmObject;
 
 public class IncidenciaRO extends RealmObject {
 
-    @SerializedName("event_id")
     private int id;
 
     private String nombre;
+
     private String detalle;
+
     private String tmpId;
 
+    @SerializedName("event_id")
     private int eventId;
+
+    @SerializedName("event_item_id")
     private int eventItemId;
 
     @SerializedName("description")
@@ -35,6 +39,9 @@ public class IncidenciaRO extends RealmObject {
 
     @SerializedName("risk_level")
     private int riesgo;
+
+    @SerializedName("risk_category")
+    private String categoria;
 
     @SerializedName("target_id")
     private int blancoId;
@@ -58,6 +65,7 @@ public class IncidenciaRO extends RealmObject {
 
     private IncidenciaLevantadaRO incidenciaLevantadaRO;
 
+    @SerializedName("inspection_item_image")
     public RealmList<ImagenRO> listaImgComent;
 
     public IncidenciaRO(String nombre, String detalle) {
@@ -202,6 +210,22 @@ public class IncidenciaRO extends RealmObject {
 
     public void setIncidenciaLevantadaRO(IncidenciaLevantadaRO incidenciaLevantadaRO) {
         this.incidenciaLevantadaRO = incidenciaLevantadaRO;
+    }
+
+    public int getRiesgo() {
+        return riesgo;
+    }
+
+    public void setRiesgo(int riesgo) {
+        this.riesgo = riesgo;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     @Override

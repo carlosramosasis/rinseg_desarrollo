@@ -53,7 +53,6 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
     private static final String ARG_NEW_INC = "newIncident";
 
     private String idIncident = "";
-    private Boolean isNewIncident;
 
     private OnFragmentInteractionListener mListener;
 
@@ -98,7 +97,6 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         super.onCreate(savedInstanceState);
         if ( getArguments() != null ) {
             idIncident = getArguments().getString(ARG_ID, "");
-            isNewIncident = getArguments().getBoolean(ARG_NEW_INC, false);
         }
     }
 
@@ -127,13 +125,12 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         if ( mIncidencia != null ) {
             MostrarCantidadImagenesRop(mIncidencia.getTmpId());
         }
-
         activityMain.actualPagina = 2;
         activityMain.ShowNumPagina();
     }
 
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+        if ( mListener != null ) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -179,8 +176,6 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 

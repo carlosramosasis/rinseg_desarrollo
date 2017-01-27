@@ -122,13 +122,13 @@
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
-                    android:drawableRight="@drawable/ic_pencil"
+                    android:drawableEnd="@drawable/ic_pencil"
                     android:elevation="2dp"
                     android:hint="@string/inscidencia_nuevo2_hint_responsable_lev"
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:maxLines="1"
-                    android:paddingLeft="23dp"
-                    android:paddingRight="15dp"
+                    android:paddingStart="23dp"
+                    android:paddingEnd="15dp"
                     android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp" />
@@ -146,19 +146,19 @@
                     android:layout_height="45dp"
                     android:layout_marginBottom="8dp"
                     android:background="@color/colorWhite"
-                    android:drawableRight="@drawable/ic_pencil"
+                    android:drawableEnd="@drawable/ic_pencil"
                     android:elevation="2dp"
                     android:hint="@string/inscidencia_nuevo2_hint_supervisor_cmmm"
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:maxLines="1"
-                    android:paddingLeft="23dp"
-                    android:paddingRight="15dp"
+                    android:paddingStart="23dp"
+                    android:paddingEnd="15dp"
                     android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp" />
 
-
             </LinearLayout>
+
         </ScrollView>
 
     </LinearLayout>

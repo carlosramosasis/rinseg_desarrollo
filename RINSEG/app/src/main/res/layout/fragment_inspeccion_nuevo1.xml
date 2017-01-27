@@ -10,9 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-
-        >
+        android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -36,55 +34,59 @@
                     android:text="@string/insp_nuevo1_lista_inspectores"
                     android:textColor="@color/colorGray"
                     android:textSize="14dp"
-                    android:layout_marginBottom="4dp"
-                    />
+                    android:layout_marginBottom="4dp"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:orientation="vertical"
-                    >
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/insp_nuevo1_hint_dni"
                         android:textColor="@color/colorGray"
                         android:textSize="12dp"/>
+
                     <EditText
                         android:id="@+id/txt_inpeccion_1_dni"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
                         android:background="@color/colorWhite"
-                        android:drawableRight="@drawable/ic_pencil"
+                        android:drawableEnd="@drawable/ic_pencil"
                         android:elevation="2dp"
                         android:hint="@string/insp_nuevo1_hint_dni"
-                        android:inputType="text"
+                        android:inputType="number"
                         android:maxLines="1"
-                        android:paddingLeft="23dp"
-                        android:paddingRight="15dp"
+                        android:maxLength="8"
+                        android:paddingStart="23dp"
+                        android:paddingEnd="15dp"
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17.3dp" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/insp_nuevo1_hint_nombre"
                         android:textColor="@color/colorGray"
                         android:textSize="12dp" />
+
                     <EditText
                         android:id="@+id/txt_inpeccion_1_nombre"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:layout_marginBottom="8dp"
                         android:background="@color/colorWhite"
-                        android:drawableRight="@drawable/ic_pencil"
+                        android:drawableEnd="@drawable/ic_pencil"
                         android:elevation="2dp"
                         android:hint="@string/insp_nuevo1_hint_nombre"
-                        android:inputType="text"
+                        android:inputType="textPersonName|textCapWords"
                         android:maxLines="1"
-                        android:paddingLeft="23dp"
-                        android:paddingRight="15dp"
+                        android:paddingStart="23dp"
+                        android:paddingEnd="15dp"
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17.3dp" />
@@ -102,43 +104,42 @@
                         android:layout_marginBottom="8dp"
                         android:background="@color/colorWhite"
                         android:elevation="2dp"
-                        android:paddingRight="12dp"
-                        >
+                        android:paddingEnd="12dp">
+
                         <Spinner
                             android:id="@+id/spinner_inpeccion_1_gerencia"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:backgroundTint="@color/colorPrimaryDark"
-                            android:textSize="17.3dp"
-                            >
-                        </Spinner>
+                            android:textSize="17.3dp"/>
+
                     </LinearLayout>
 
                     <Button
                         android:id="@+id/btn_incpeccion_1_agregar_inspector"
                         android:layout_width="170dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_weight="2"
                         android:backgroundTint="@color/colorSecondary0"
-                        android:drawableRight="@drawable/ic_down_bold_circle"
+                        android:drawableEnd="@drawable/ic_down_bold_circle"
                         android:text="@string/insp_nuevo1_btn_agregar_inspector"
                         android:textColor="@color/colorPrimary" />
+
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/recycler_inpeccion_1_inspectores"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:minHeight="250dp"
                         android:background="@drawable/backgorund_login"
-                        android:scrollbars="vertical"
-                        >
+                        android:scrollbars="vertical">
 
                     </android.support.v7.widget.RecyclerView>
 
                 </LinearLayout>
 
             </LinearLayout>
-        </ScrollView>
 
+        </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -146,8 +147,7 @@
             android:layout_gravity="bottom"
             android:gravity="bottom"
             android:orientation="horizontal"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/button"
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:backgroundTint="@color/colorSecondary0"
-                android:drawableLeft="@drawable/ic_left_circle"
+                android:drawableStart="@drawable/ic_left_circle"
                 android:text="@string/btn_cancelar" />
 
             <android.support.v4.widget.Space
@@ -169,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:backgroundTint="@color/colorAccent"
-                android:drawableRight="@drawable/ic_right_circle"
+                android:drawableEnd="@drawable/ic_right_circle"
                 android:text="@string/btn_ccontinuar"
                 android:textColor="@color/colorWhite" />
 

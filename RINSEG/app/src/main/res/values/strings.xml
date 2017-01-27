@@ -163,6 +163,7 @@
     <string name="insp_nuevo1_hint_gerencia">Gerencia</string>
     <string name="insp_nuevo1_btn_agregar_inspector">Agregar Inspector</string>
     <string name="error_dni_insp1">ingrese número de DNI</string>
+    <string name="error_dni_invalid_insp1">Número de DNI no válido</string>
     <string name="error_area_insp3">ingrese área</string>
     <string name="error_fecha_insp3">ingrese fecha</string>
     <string name="error_empresa_insp3">ingrese empresa inspeccionada</string>

@@ -252,9 +252,14 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
 
         boolean resu = true;
 
-        if (txtDni.getText().length() == 0) {
+        if ( txtDni.getText().length() == 0 ) {
             txtDni.setError(getString(R.string.error_dni_insp1));
             resu = false;
+        } else {
+            if ( txtDni.getText().length() != 8 ) {
+                txtDni.setError(getString(R.string.error_dni_invalid_insp1));
+                resu = false;
+            }
         }
 
         if (txtNombreInspector.getText().length() == 0) {
@@ -273,7 +278,8 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     }
 
     private void AgregarInspector() {
-        if (!ValidarFormulario()) {
+        // Validando los campos :
+        if ( !ValidarFormulario() ) {
             return;
         }
 

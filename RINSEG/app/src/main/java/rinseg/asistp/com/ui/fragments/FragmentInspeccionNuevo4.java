@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 
 import com.github.clans.fab.FloatingActionButton;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -23,6 +24,8 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -303,7 +306,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     private void sendInspection() {
         // Obtenemos el token :
         //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "MGDvV2OLt3ZTl91uVJSdlmoifhUgENiJqnTgvDJDzOq70xVhbvU3IGepK5oe";
+        String token = "ugeDBS95yQGxLIdGw9lX30g02BGkew3chqj4MlbVE554ruIkJrz33BaPDpds";
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
@@ -319,8 +322,16 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             }
         });*/
 
+        Realm realm = Realm.getInstance(myConfig);
+        final InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
+
+        /*Gson gson = new Gson();
+        String json = gson.toJson(mInspc);
+
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);*/
+
         RestClient restClient = new RestClient(Services.INSPECTION);
-        Call<ResponseBody> call = restClient.iServices.sendInspection(mInspc, token);
+        Call<ResponseBody> call = restClient.iServices.sendInspection(inspectionToSend, token);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -331,6 +342,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                         String status = jsonObject.getString("status");
 
                         Log.e("jsonObject", jsonObject.toString());
+                        dialog.dismiss();
 
                     } catch (Exception e) {
                         dialog.dismiss();

@@ -19,6 +19,7 @@ import java.util.Calendar;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rinseg.asistp.com.models.AreaRO;
+import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.InspectorRO;
@@ -29,27 +30,15 @@ import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentInspeccionNuevo3.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentInspeccionNuevo3#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentInspeccionNuevo3 extends Fragment {
-    ///Todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: VARIABLES ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
 
     ActivityMain activityMain;
 
@@ -60,9 +49,10 @@ public class FragmentInspeccionNuevo3 extends Fragment {
     TextView txtFecha;
     ImageButton btnFecha;
     Spinner spinnerTipoInspeccion;
-    EditText txtEmpresa;
+    Spinner spinnerEmpresa;
 
     ArrayAdapter<TypesRO> adapterTipoInspeccion;
+    ArrayAdapter<CompanyRO> adapterCompanies;
 
     InspeccionRO mInspc;
     private SettingsInspectionRO settingInsp;
@@ -70,22 +60,10 @@ public class FragmentInspeccionNuevo3 extends Fragment {
     RealmConfiguration myConfig;
     Bundle bundle;
 
-
-    ///Todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: CONSTRUCTORES ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
     public FragmentInspeccionNuevo3() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPPendiente1.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FragmentInspeccionNuevo3 newInstance(String param1, String param2) {
         FragmentInspeccionNuevo3 fragment = new FragmentInspeccionNuevo3();
         Bundle args = new Bundle();
@@ -95,7 +73,6 @@ public class FragmentInspeccionNuevo3 extends Fragment {
         return fragment;
     }
 
-    ///Todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +87,6 @@ public class FragmentInspeccionNuevo3 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_inspeccion_nuevo3, container, false);
-
 
         setUpElements(view);
         setUpActions();
@@ -133,23 +109,11 @@ public class FragmentInspeccionNuevo3 extends Fragment {
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -163,23 +127,9 @@ public class FragmentInspeccionNuevo3 extends Fragment {
         super.onDestroyView();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-
-    ///Todo ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
@@ -192,7 +142,7 @@ public class FragmentInspeccionNuevo3 extends Fragment {
         txtFecha = (TextView) v.findViewById(R.id.txt_inpeccion_3_fecha);
         btnFecha = (ImageButton) v.findViewById(R.id.btn_inpeccion_3_fecha);
         spinnerTipoInspeccion = (Spinner) v.findViewById(R.id.spinner_inspeccion_3_tipo);
-        txtEmpresa = (EditText) v.findViewById(R.id.txt_inpeccion_3_empresa);
+        spinnerEmpresa = (Spinner) v.findViewById(R.id.spinner_inspeccion_3_company);
 
         bundle = getArguments();
 
@@ -229,68 +179,73 @@ public class FragmentInspeccionNuevo3 extends Fragment {
                 args.putString("InspTmpId", mInspc.getTmpId());
                 args.putInt("InspId", mInspc.getId());
                 fInspPendiente2.setArguments(args);
-                activityMain.replaceFragment(fInspPendiente2, true, R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_left);
+                activityMain.replaceFragment(fInspPendiente2, true,
+                        R.anim.enter_from_right, R.anim.exit_to_right,
+                        R.anim.enter_from_left, R.anim.exit_to_left);
             }
         });
+
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!ValidarFormulario()){
+                if ( !ValidarFormulario() ) {
                     return;
                 }
-
                 SaveInspeccion();
-
 
                 Fragment fInspPendiente4 = new FragmentInspeccionNuevo4();
                 Bundle args = new Bundle();
                 args.putString("InspTmpId", mInspc.getTmpId());
                 args.putInt("InspId", mInspc.getId());
                 fInspPendiente4.setArguments(args);
-                activityMain.replaceFragment(fInspPendiente4, true, R.anim.enter_from_left, R.anim.exit_to_left, R.anim.enter_from_right, R.anim.exit_to_right);
+                activityMain.replaceFragment(fInspPendiente4, true,
+                        R.anim.enter_from_left, R.anim.exit_to_left,
+                        R.anim.enter_from_right, R.anim.exit_to_right);
             }
         });
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadFormDefault() {
         final Realm realm = Realm.getInstance(myConfig);
         try {
             settingInsp = realm.where(SettingsInspectionRO.class).findFirst();
 
-            //cargar Tipo de incidencia  (Types)
-            adapterTipoInspeccion = new ArrayAdapter<TypesRO>(getActivity(), R.layout.spinner_item, settingInsp.types);
+            // Cargar Tipo de incidencia (Types)
+            adapterTipoInspeccion = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, settingInsp.types);
             adapterTipoInspeccion.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerTipoInspeccion.setAdapter(adapterTipoInspeccion);
 
+            // Cargar empresas :
+            adapterCompanies = new ArrayAdapter<>(
+                    getActivity(), R.layout.spinner_item, settingInsp.companies);
+            adapterCompanies.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerEmpresa.setAdapter(adapterCompanies);
         } catch (Exception e) {
             e.printStackTrace();
             realm.close();
-        }finally {
+        } finally {
             realm.close();
         }
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadInspeccion() {
-        String tmpIdInsp = null;
-        int id = 0;
         if (bundle != null) {
-            tmpIdInsp = bundle.getString("InspTmpId", null);
-            id = bundle.getInt("InspId", 0);
+            String tmpIdInsp = bundle.getString("InspTmpId", null);
+            int id = bundle.getInt("InspId", 0);
 
             final Realm realm = Realm.getInstance(myConfig);
             try {
-
-
                 if (id != 0) {
                     mInspc = realm.where(InspeccionRO.class).equalTo("id", id).findFirst();
                 } else if (tmpIdInsp != null) {
                     mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
                 }
-
                 if (mInspc == null) {
                     return;
                 }
-
                 txtArea.setText(mInspc.getArea());
 
                 newCalendar.setTime(mInspc.getDate());
@@ -306,23 +261,26 @@ public class FragmentInspeccionNuevo3 extends Fragment {
                     }
                 }
 
-                txtEmpresa.setText(mInspc.getCompanyString());
-
-
-
+                // Recuperar empresa :
+                for (int i = 0; i < settingInsp.companies.size(); i++) {
+                    CompanyRO tmpCompany = settingInsp.companies.get(i);
+                    if (tmpCompany.getId() == mInspc.getCompanyId()) {
+                        spinnerEmpresa.setSelection(i);
+                        break;
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 realm.close();
             } finally {
                 realm.close();
             }
-
-
         }
     }
 
     private void ShowDatepicker() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 calendarFechaLimite = Calendar.getInstance();
@@ -331,13 +289,13 @@ public class FragmentInspeccionNuevo3 extends Fragment {
                 txtFecha.setError(null);
 
             }
-        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        }, newCalendar.get(Calendar.YEAR),
+                newCalendar.get(Calendar.MONTH),
+                newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
 
     private boolean ValidarFormulario() {
-
-
         boolean resu = true;
 
         if (txtArea.getText().length() == 0) {
@@ -350,33 +308,37 @@ public class FragmentInspeccionNuevo3 extends Fragment {
             resu = false;
         }
 
-        TypesRO tipoSelect;
-        tipoSelect = ((TypesRO) spinnerTipoInspeccion.getSelectedItem());
+        TypesRO tipoSelect = ((TypesRO) spinnerTipoInspeccion.getSelectedItem());
         if (tipoSelect.getId() == 0) {
             TextView txtGerencia = (TextView) spinnerTipoInspeccion.getSelectedView();
             txtGerencia.setError("");
             resu = false;
         }
 
-        if (txtEmpresa.getText().length() == 0) {
-            txtEmpresa.setError(getString(R.string.error_empresa_insp3));
+        CompanyRO companySelect = ((CompanyRO) spinnerEmpresa.getSelectedItem());
+        if ( companySelect.getId() == 0 ) {
+            TextView txtCompany = (TextView) spinnerEmpresa.getSelectedView();
+            txtCompany.setError("");
             resu = false;
         }
-
         return resu;
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void SaveInspeccion() {
         Realm realm = Realm.getInstance(myConfig);
         try {
             TypesRO tipoSelect = ((TypesRO) spinnerTipoInspeccion.getSelectedItem());
+            CompanyRO companySelect = ((CompanyRO) spinnerEmpresa.getSelectedItem());
 
             realm.beginTransaction();
+
             mInspc.setArea(txtArea.getText().toString().trim());
             mInspc.setDate(calendarFechaLimite.getTime());
             mInspc.setDateString(Generic.dateFormatterMySql.format(mInspc.getDate()));
             mInspc.setTypeInspectionId(tipoSelect.getId());
-            mInspc.setCompanyString(txtEmpresa.getText().toString().trim());
+            mInspc.setCompanyId(companySelect.getId());
+
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -385,6 +347,4 @@ public class FragmentInspeccionNuevo3 extends Fragment {
             realm.close();
         }
     }
-
-
 }

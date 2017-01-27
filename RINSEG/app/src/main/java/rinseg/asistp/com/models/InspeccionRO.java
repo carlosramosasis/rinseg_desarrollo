@@ -18,8 +18,10 @@ public class InspeccionRO extends RealmObject {
 
     private String area;
 
+    @SerializedName("dateDate")
     private Date date;
 
+    @SerializedName("date")
     private String dateString;
 
     @SerializedName("company_id")

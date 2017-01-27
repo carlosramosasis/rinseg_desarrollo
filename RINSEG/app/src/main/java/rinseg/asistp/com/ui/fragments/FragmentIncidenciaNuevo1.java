@@ -68,6 +68,9 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
     Boolean isNewInc = false;
 
+    int nivelRiesgo;
+    String categoriaRiesgo;
+
     public FragmentIncidenciaNuevo1() { }
 
     public static FragmentIncidenciaNuevo1 newInstance(String idIncidencia) {
@@ -203,7 +206,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!ValidarFormulario()) {
+                if ( !ValidarFormulario() ) {
                     return;
                 }
                 saveIncidencia();
@@ -273,7 +276,10 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             mIncidencia.setSeveridadId(severidad.getId());
             mIncidencia.setBlancoId(blanco.getId());
             mIncidencia.setFechalimite(calendarFechaLimite.getTime());
-            mIncidencia.setFechalimiteString(Generic.dateFormatterMySql.format(mIncidencia.getFechalimite()));
+            mIncidencia.setFechalimiteString(Generic.dateFormatterMySql.format(
+                    mIncidencia.getFechalimite()));
+            mIncidencia.setRiesgo(nivelRiesgo);
+            mIncidencia.setCategoria(categoriaRiesgo);
 
             if (isNewInc) {
                 activityMain.mInspeccion.listaIncidencias.add(mIncidencia);
@@ -434,13 +440,16 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         int valorFrecuencia = frecuenciaSelect.getValue();
         int valorSeveridad = severitiesSelect.getValue();
 
-        int resultado = valorSeveridad * valorFrecuencia;
-        txtNivelRiesgo.setText(String.valueOf(resultado));
+        nivelRiesgo = valorSeveridad * valorFrecuencia;
+        txtNivelRiesgo.setText(String.valueOf(nivelRiesgo));
+
 
         for (int i = 0; i < activityMain.sIns.risks.size(); i++) {
             RiskRO riesgo = activityMain.sIns.risks.get(i);
-            if (resultado >= riesgo.getMinValue() && resultado <= riesgo.getMaxValue() && resultado != 0) {
-                txtCatRiesgo.setText(riesgo.getDisplayName());
+            if (nivelRiesgo >= riesgo.getMinValue()
+                    && nivelRiesgo <= riesgo.getMaxValue() && nivelRiesgo != 0) {
+                categoriaRiesgo = riesgo.getDisplayName();
+                txtCatRiesgo.setText(categoriaRiesgo);
                 break;
             }
         }
