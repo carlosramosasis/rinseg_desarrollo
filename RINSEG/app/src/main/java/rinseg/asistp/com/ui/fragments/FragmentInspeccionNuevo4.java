@@ -19,13 +19,16 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -74,7 +77,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     RealmConfiguration myConfig;
     Bundle bundle;
 
-    public FragmentInspeccionNuevo4() { }
+    public FragmentInspeccionNuevo4() {
+    }
 
     public static FragmentInspeccionNuevo4 newInstance(String param1, String param2) {
         FragmentInspeccionNuevo4 fragment = new FragmentInspeccionNuevo4();
@@ -137,20 +141,25 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         void onFragmentInteraction(Uri uri);
     }
 
-    /** Método sobre escrito para manejar el click sobre una incidencia */
+    /**
+     * Método sobre escrito para manejar el click sobre una incidencia
+     */
     @Override
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
         launchActivityGenerarIncidencia(mInspc, listaIncidencias.get(position).getTmpId());
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
     @Override
     public void onDestroyView() {
@@ -276,12 +285,15 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             @Override
             public void onClick(View view) {
                 saveInspection();
+                sendInspection();
                 dialogConfirm.dismiss();
             }
         });
     }
 
-    /** Módulo para almacenar la inspección */
+    /**
+     * Módulo para almacenar la inspección
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void saveInspection() {
         Realm realm = Realm.getInstance(myConfig);
@@ -296,15 +308,16 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             realm.close();
         } finally {
             realm.close();
-            sendInspection();
         }
     }
 
-    /** Módulo para enviar la inspección al servidor */
+    /**
+     * Módulo para enviar la inspección al servidor
+     */
     private void sendInspection() {
+
         // Obtenemos el token :
-        //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "VtNScpPELM94bsKF4Cn4hWPHEg6UOv1UTUQbzzojepnxE2Pgsc2vZW5iBV0J";
+        String token = activityMain.usuarioLogueado.getApi_token();
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
@@ -313,35 +326,41 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         Realm realm = Realm.getInstance(myConfig);
         final InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
 
+        //Asignar ids temporal segun orden a Incidente(inspection_items), (asi lo requiere el sevicio web)
+        int cantImagenesTotal = 0;
+        for (int i = 0; i < inspectionToSend.listaIncidencias.size(); i++) {
+            inspectionToSend.listaIncidencias.get(i).setId(i);
+            // asignamos el id temporal del incidente a sus respectivas imagenes
+            cantImagenesTotal += inspectionToSend.listaIncidencias.get(i).listaImgComent.size();
+            for (int j = 0; j < inspectionToSend.listaIncidencias.get(i).listaImgComent.size(); j++) {
+                inspectionToSend.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
+
+            }
+
+        }
+
+
         RestClient restClient = new RestClient(Services.INSPECTION);
+
         Call<ResponseBody> call = restClient.iServices.sendInspection(inspectionToSend, token);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if ( response.isSuccessful() ) {
+                if (response.isSuccessful()) {
                     // Mostramos dialog de éxito :
                     try {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        int id = jsonObject.getJSONObject("message")
-                                .getJSONObject("inspection").getInt("id");
-
-                        /*JSONObject incidencias = jsonObject.getJSONObject("message")
-                                .getJSONObject("inspection_items");
-                        ArrayList<IncidenciaRO> items = jsonObject.getJSONObject("message")
-                                .getJSONArray("inspection_items");
-
-                        ArrayList<IncidenciaRO> items = new ArrayList<>();
-                        JSONArray jsonArray = (JSONArray)incidencias;
-                        if (jsonArray != null) {
-                            int len = jsonArray.length();
-                            for (int i=0;i<len;i++){
-                                items.add(jsonArray.get(i));
-                            }
-                        }*/
+                        JSONObject inspeccionResult = jsonObject.getJSONObject("message").getJSONObject("inspection");
+                        JSONArray listaIncidentes = jsonObject.getJSONObject("message").getJSONArray("inspection_items");
 
                         // Actualizar el registro en Realm :
-                        updateLocalInspection(id);
+                        updateLocalInspection(inspeccionResult.getInt("id"));
+
+                        // Actualizar incidentes en Realm :
+                        updateLocalIncidentes(listaIncidentes);
+
+                        Log.e("incidentes",mInspc.listaIncidencias.toString());
 
                         dialog.dismiss();
                         showDialogSuccess();
@@ -398,4 +417,24 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             realm.close();
         }
     }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void updateLocalIncidentes(JSONArray arrayIncidentes) {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            realm.beginTransaction();
+            for (int i = 0; i < arrayIncidentes.length(); i++) {
+                JSONObject incidenteJson = arrayIncidentes.getJSONObject(i);
+                mInspc.listaIncidencias.get(0).setId(incidenteJson.getInt("id"));
+            }
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
+
 }
