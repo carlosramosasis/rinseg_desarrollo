@@ -34,7 +34,7 @@ public class ActivityInspeccionDetalle extends AppCompatActivity {
     @Override
     public void onBackPressed() { }
 
-    //Proceso para cargar las vistas
+    // Proceso para cargar las vistas
     private void setUpElements() {
         toolbarInspeccionDet = (Toolbar) findViewById(R.id.toolbarInspeccionDetalle);
         toolbarInspeccionDet.setNavigationIcon(R.drawable.ic_arrow_left);

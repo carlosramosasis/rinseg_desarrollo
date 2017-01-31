@@ -4,6 +4,8 @@ import io.realm.RealmObject;
 
 /**
  * Created by Carlos Ramos on 28/10/2016.
+ * Tipos de acto o condición sub-estándar
+ * Congestión o acción restringida - Sistemas de advertencia - Peligro...
  */
 public class EventItemsRO  extends RealmObject {
     private int Id;

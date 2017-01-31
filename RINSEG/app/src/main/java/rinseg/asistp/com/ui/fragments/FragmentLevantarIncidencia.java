@@ -35,27 +35,16 @@ import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentLevantarIncidencia.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentLevantarIncidencia#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentLevantarIncidencia extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "idInspeccion";
+    private static final String ARG_PARAM2 = "idIncidencia";
+
+    private int idInspeccion;
+    private int idIncidencia;
 
     private OnFragmentInteractionListener mListener;
-
-    Bundle bundle;
 
     ActivityInspeccionDetalle activityMain;
 
@@ -85,24 +74,13 @@ public class FragmentLevantarIncidencia extends Fragment {
 
     Calendar datePicker;
 
-    public FragmentLevantarIncidencia() {
-        // Required empty public constructor
-    }
+    public FragmentLevantarIncidencia() { }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPPendiente1.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentLevantarIncidencia newInstance(String param1, String param2) {
+    public static FragmentLevantarIncidencia newInstance(int idInspeccion, int idIncidencia) {
         FragmentLevantarIncidencia fragment = new FragmentLevantarIncidencia();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_PARAM1, idInspeccion);
+        args.putInt(ARG_PARAM2, idIncidencia);
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,8 +89,8 @@ public class FragmentLevantarIncidencia extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            idInspeccion = getArguments().getInt(ARG_PARAM1);
+            idIncidencia = getArguments().getInt(ARG_PARAM2);
         }
     }
 
@@ -131,8 +109,6 @@ public class FragmentLevantarIncidencia extends Fragment {
 
     @Override
     public void onDestroyView() {
-        //activityMain.ButtonBottomSetDefault();
-        //activityMain.ShowButtonsBottom(false);
         super.onDestroyView();
     }
 
@@ -140,7 +116,6 @@ public class FragmentLevantarIncidencia extends Fragment {
     public void onResume() {
         super.onResume();
         activityMain.toolbarInspeccionDet.setTitle(R.string.title_levantamiento);
-      // activityMain.ShowButtonsBottom(true);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -156,18 +131,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -217,37 +181,29 @@ public class FragmentLevantarIncidencia extends Fragment {
 
             //Recuperamos desde Realm los riesgos :
             riesgosROs = realm.where(RiskRO.class).findAll();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             realm.close();
         }
 
         // Recuperando la incidencia anfitriona :
-        bundle = getArguments();
-        if (bundle != null) {
-            int idIncidencia = bundle.getInt("id_incidencia", 0);
+        if (idIncidencia != 0) {
+            incidenciaRO = realm.where(IncidenciaRO.class).equalTo("id", idIncidencia).findFirst();
 
-            if (idIncidencia != 0) {
-                incidenciaRO =
-                        realm.where(IncidenciaRO.class).equalTo("id", idIncidencia).findFirst();
-
-                // Seteando la frecuencia de la incidencia al spinner :
-                for ( int i = 0; i < frecuencieROs.size(); i++ ) {
-                    if ( frecuencieROs.get(i).getId() == incidenciaRO.getFrecuenciaId() ) {
-                        spinnerFrequencies.setSelectedIndex(i);
-                        break;
-                    }
+            // Seteando la frecuencia de la incidencia al spinner :
+            for ( int i = 0; i < frecuencieROs.size(); i++ ) {
+                if ( frecuencieROs.get(i).getId() == incidenciaRO.getFrecuenciaId() ) {
+                    spinnerFrequencies.setSelectedIndex(i);
+                    break;
                 }
+            }
 
-                // Seteando la severidad de la incidencia al spinner :
-                for ( int i = 0; i < severitiesROs.size(); i++ ) {
-                    if ( severitiesROs.get(i).getId() == incidenciaRO.getSeveridadId() ) {
-                        spinnerSeverities.setSelectedIndex(i);
-                        break;
-                    }
+            // Seteando la severidad de la incidencia al spinner :
+            for ( int i = 0; i < severitiesROs.size(); i++ ) {
+                if ( severitiesROs.get(i).getId() == incidenciaRO.getSeveridadId() ) {
+                    spinnerSeverities.setSelectedIndex(i);
+                    break;
                 }
             }
         }

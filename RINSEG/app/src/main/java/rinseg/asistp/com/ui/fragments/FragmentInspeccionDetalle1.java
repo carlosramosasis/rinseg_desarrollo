@@ -26,6 +26,7 @@ import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.TargetRO;
 import rinseg.asistp.com.models.TypeInspection;
+import rinseg.asistp.com.models.TypesRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
 import rinseg.asistp.com.ui.activities.ActivityMain;
@@ -58,8 +59,6 @@ public class FragmentInspeccionDetalle1 extends Fragment {
     ActivityInspeccionDetalle activityMain;
     private TextView textArea, textFecha, textTipo, textEmpresa, textInspectores, textResponsables;
     FloatingActionButton btnVerIncidentes;
-
-    Bundle bundle;
 
     RealmConfiguration myConfig;
 
@@ -122,16 +121,6 @@ public class FragmentInspeccionDetalle1 extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
@@ -139,16 +128,14 @@ public class FragmentInspeccionDetalle1 extends Fragment {
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
-        bundle = getArguments();
-
         activityMain = ((ActivityInspeccionDetalle) getActivity());
 
-        textArea = (TextView) v.findViewById(R.id.text_incident_detail_area);
-        textFecha = (TextView) v.findViewById(R.id.text_incident_detail_fecha);
-        textTipo = (TextView) v.findViewById(R.id.text_incident_detail_tipo);
-        textEmpresa = (TextView) v.findViewById(R.id.text_incident_detail_empresa);
-        textInspectores = (TextView) v.findViewById(R.id.text_incident_detail_inspectores);
-        textResponsables = (TextView) v.findViewById(R.id.text_incident_detail_responsables);
+        textArea = (TextView) v.findViewById(R.id.text_inspection_detail_area);
+        textFecha = (TextView) v.findViewById(R.id.text_inspection_detail_fecha);
+        textTipo = (TextView) v.findViewById(R.id.text_inspection_detail_tipo);
+        textEmpresa = (TextView) v.findViewById(R.id.text_inspection_detail_empresa);
+        textInspectores = (TextView) v.findViewById(R.id.text_inspection_detail_inspectores);
+        textResponsables = (TextView) v.findViewById(R.id.text_inspection_detail_responsables);
 
         btnVerIncidentes = (FloatingActionButton) v.findViewById(R.id.btn_ver_incidente);
 
@@ -167,7 +154,8 @@ public class FragmentInspeccionDetalle1 extends Fragment {
         btnVerIncidentes.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                activityMain.replaceFragment(new FragmentInspeccionDetalle2(), true, 0, 0, 0, 0);
+                Fragment fragment = FragmentInspeccionDetalle2.newInstance(inspeccion.getId());
+                activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
             }
         });
 
@@ -191,7 +179,7 @@ public class FragmentInspeccionDetalle1 extends Fragment {
                 textFecha.setText(inspeccion.getDateString());
 
                 // Recuperamos el tipo de inspección por código :
-                TypeInspection type = realm.where(TypeInspection.class)
+                TypesRO type = realm.where(TypesRO.class)
                         .equalTo("id", inspeccion.getTypeInspectionId()).findFirst();
                 if ( type != null ) {
                     textTipo.setText(type.getDisplayName());
@@ -200,8 +188,9 @@ public class FragmentInspeccionDetalle1 extends Fragment {
                 // Recuperamos la compañía por código :
                 CompanyRO company = realm.where(CompanyRO.class)
                         .equalTo("id", inspeccion.getCompanyId()).findFirst();
-                if ( company != null )
-                textEmpresa.setText(company.getDisplayName());
+                if ( company != null ) {
+                    textEmpresa.setText(company.getDisplayName());
+                }
 
                 // Concatenamos datos de inspectores :
                 String inspectores = "";

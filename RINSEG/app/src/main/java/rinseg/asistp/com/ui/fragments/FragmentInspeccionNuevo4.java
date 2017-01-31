@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -224,11 +225,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadInspeccion() {
-        String tmpIdInsp = null;
-        int id = 0;
         if (bundle != null) {
-            tmpIdInsp = bundle.getString("InspTmpId", null);
-            id = bundle.getInt("InspId", 0);
+            String tmpIdInsp = bundle.getString("InspTmpId", null);
+            int id = bundle.getInt("InspId", 0);
 
             final Realm realm = Realm.getInstance(myConfig);
             try {
@@ -237,7 +236,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 } else if (tmpIdInsp != null) {
                     mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
                 }
-
                 if (mInspc == null) {
                     return;
                 }
@@ -291,7 +289,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             realm.beginTransaction();
             Calendar currentDate = Calendar.getInstance();
             mInspc.setDateClose(currentDate.getTime());
-            //mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
+            mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -306,29 +304,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     private void sendInspection() {
         // Obtenemos el token :
         //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "ugeDBS95yQGxLIdGw9lX30g02BGkew3chqj4MlbVE554ruIkJrz33BaPDpds";
+        String token = "VtNScpPELM94bsKF4Cn4hWPHEg6UOv1UTUQbzzojepnxE2Pgsc2vZW5iBV0J";
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
         dialog.show();
 
-        /*Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Gson gson = new Gson();
-                String json = gson.toJson(mInspc);
-                Log.d("object", json);
-            }
-        });*/
-
         Realm realm = Realm.getInstance(myConfig);
         final InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
-
-        /*Gson gson = new Gson();
-        String json = gson.toJson(mInspc);
-
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);*/
 
         RestClient restClient = new RestClient(Services.INSPECTION);
         Call<ResponseBody> call = restClient.iServices.sendInspection(inspectionToSend, token);
@@ -336,14 +319,33 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if ( response.isSuccessful() ) {
-                    // Intentaremos castear la respuesta :
+                    // Mostramos dialog de éxito :
                     try {
+                        // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        String status = jsonObject.getString("status");
+                        int id = jsonObject.getJSONObject("message")
+                                .getJSONObject("inspection").getInt("id");
 
-                        Log.e("jsonObject", jsonObject.toString());
+                        /*JSONObject incidencias = jsonObject.getJSONObject("message")
+                                .getJSONObject("inspection_items");
+                        ArrayList<IncidenciaRO> items = jsonObject.getJSONObject("message")
+                                .getJSONArray("inspection_items");
+
+                        ArrayList<IncidenciaRO> items = new ArrayList<>();
+                        JSONArray jsonArray = (JSONArray)incidencias;
+                        if (jsonArray != null) {
+                            int len = jsonArray.length();
+                            for (int i=0;i<len;i++){
+                                items.add(jsonArray.get(i));
+                            }
+                        }*/
+
+                        // Actualizar el registro en Realm :
+                        updateLocalInspection(id);
+
                         dialog.dismiss();
-
+                        showDialogSuccess();
+                        // Enviar imágenes :
                     } catch (Exception e) {
                         dialog.dismiss();
                         e.printStackTrace();
@@ -352,9 +354,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                     dialog.dismiss();
                     Messages.showSB(
                             getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
+                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                            response.message() + "code :" + response.code());
                 }
-                Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                        response.message() + "code :" + response.code());
             }
 
             @Override
@@ -363,5 +365,37 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 t.printStackTrace();
             }
         });
+    }
+
+    private void showDialogSuccess() {
+        dialogConfirm = new DialogRINSEG(activityMain);
+        dialogConfirm.show();
+        dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
+        dialogConfirm.setBody("La inspección ha sido enviada satisfactoriamente");
+        dialogConfirm.setTextBtnAceptar("DE ACUERDO");
+        dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
+        dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogConfirm.dismiss();
+                activityMain.replaceFragment(new FragmentInspecciones(), true, 0, 0, 0, 0);
+            }
+        });
+    }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void updateLocalInspection(int id) {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            realm.beginTransaction();
+            mInspc.setId(id);
+            mInspc.setTmpId(String.valueOf(id));
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
     }
 }

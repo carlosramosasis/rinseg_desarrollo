@@ -34,7 +34,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/text_incident_detail_area"
+                android:id="@+id/text_inspection_detail_area"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -47,7 +47,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/text_incident_detail_fecha"
+                    android:id="@+id/text_inspection_detail_fecha"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
@@ -76,7 +76,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/text_incident_detail_tipo"
+                android:id="@+id/text_inspection_detail_tipo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -87,6 +87,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:layout_marginTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/inspeccion_detalle1_empr_insp"
@@ -94,10 +95,10 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/text_incident_detail_empresa"
+                android:id="@+id/text_inspection_detail_empresa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="6dp"
                 android:layout_marginStart="15dp"
                 android:text="@string/rop_c1_texto_default"
                 android:textColor="@color/colorGray"
@@ -113,7 +114,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/text_incident_detail_inspectores"
+                android:id="@+id/text_inspection_detail_inspectores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -131,7 +132,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/text_incident_detail_responsables"
+                android:id="@+id/text_inspection_detail_responsables"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
