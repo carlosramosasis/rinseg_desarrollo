@@ -186,7 +186,7 @@ public class FragmentROPPendiente2 extends Fragment
         activityMain.toolbar.setTitle(R.string.title_rop);
         activityMain.ShowButtonsBottom(true);
         activityMain.ShowNumPagina();
-        activityMain.MostrarCantidadImagenesRop(mRop.getTmpId());
+        activityMain.MostrarCantidadImagenesRop(mRop.listaImgComent);
         activityMain.btnFabMenu.setVisibility(View.VISIBLE);
         activityMain.btnFabMenu.collapseImmediately();
 
@@ -350,6 +350,13 @@ public class FragmentROPPendiente2 extends Fragment
                 MostrarAccionCondicionSubestandar();
             }
         });
+        textActoCondicion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MostrarAccionCondicionSubestandar();
+            }
+        });
+
 
         txtFecha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -396,6 +403,11 @@ public class FragmentROPPendiente2 extends Fragment
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mRop.listaEventItems.size() == 0) {
+                    Messages.showSB(v, getString(R.string.msg_lista_acto_subestandar), "ok");
+                    return;
+                }
+
                 if (!listaAccionesValida()) {
                     Validarformulario();
                     Messages.showSB(v, getString(R.string.msg_lista_acciones), "ok");
@@ -417,7 +429,6 @@ public class FragmentROPPendiente2 extends Fragment
             @Override
             public void onClick(View view) {
                 launchActivityGaleria();
-
             }
         });
 
@@ -539,13 +550,13 @@ public class FragmentROPPendiente2 extends Fragment
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 new DatePickerDialog.OnDateSetListener() {
 
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(year, monthOfYear, dayOfMonth);
-                txtFecha.setText(Generic.dateFormatter.format(newDate.getTime()));
-                txtFecha.setError(null);
-            }
-        }, newCalendar.get(Calendar.YEAR),
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        Calendar newDate = Calendar.getInstance();
+                        newDate.set(year, monthOfYear, dayOfMonth);
+                        txtFecha.setText(Generic.dateFormatter.format(newDate.getTime()));
+                        txtFecha.setError(null);
+                    }
+                }, newCalendar.get(Calendar.YEAR),
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
@@ -578,15 +589,24 @@ public class FragmentROPPendiente2 extends Fragment
                     }
 
                     // Recuperando la lista de actos o condiciones :
-                    if ( mRop.getListaEventItems() != null ) {
-                        String s = "";
-                        for ( EventItemsRO e : mRop.getListaEventItems() ) {
+                    int cantEventItems = mRop.listaEventItems.size();
+                    if (cantEventItems > 0) {
+                        /*String s = "";
+                        for (EventItemsRO e : mRop.getListaEventItems()) {
                             s = s + e.getName() + " - ";
                         }
                         if (s.length() > 2) {
                             s = s.substring(0, s.length() - 2);
+                        }*/
+
+                        if (cantEventItems == 1) {
+                            textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elemento));
+                        } else if (cantEventItems > 1) {
+                            textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elementos));
                         }
-                        textActoCondicion.setText(s);
+
+                    } else {
+                        textActoCondicion.setText("");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -655,23 +675,26 @@ public class FragmentROPPendiente2 extends Fragment
     }
 
 
-    /** Implementación de método para setear texto al campo de acto o condición sub estándar */
+    /**
+     * Implementación de método para setear texto al campo de acto o condición sub estándar
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
     public void onAcceptItems() {
         final Realm realm = Realm.getInstance(myConfig);
         try {
             mRop = realm.where(ROP.class).equalTo("tmpId", mRop.getTmpId()).findFirst();
-            if ( mRop != null ) {
-                if ( mRop.getListaEventItems() != null ) {
-                    String s = "";
-                    for ( EventItemsRO e : mRop.getListaEventItems() ) {
-                        s = s + e.getName() + " - ";
+            if (mRop != null) {
+                int cantEventItems = mRop.listaEventItems.size();
+                if (cantEventItems > 0) {
+
+                    if (cantEventItems == 1) {
+                        textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elemento));
+                    } else if (cantEventItems > 1) {
+                        textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elementos));
                     }
-                    if ( s.length() > 2 ) {
-                        s = s.substring(0, s.length() - 2);
-                    }
-                    textActoCondicion.setText(s);
+                } else {
+                    textActoCondicion.setText("");
                 }
             }
         } catch (Exception e) {
@@ -687,7 +710,7 @@ public class FragmentROPPendiente2 extends Fragment
             final String src = Generic.RutaPdfRop(activityMain, Constants.NAME_PDF_ROP_BASE);
 
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "prueba.pdf");
-            if(file.exists()){
+            if (file.exists()) {
                 file.delete();
             }
             file.getParentFile().mkdirs();
@@ -698,14 +721,13 @@ public class FragmentROPPendiente2 extends Fragment
             PdfObject object = dict.getDirectObject(PdfName.CONTENTS);
 
             if (object != null) {
-                PRStream stream = (PRStream)object;
+                PRStream stream = (PRStream) object;
                 byte[] data = PdfReader.getStreamBytes(stream);
                 stream.setData(new String(data).replace("pdf", "CARLOS").getBytes());
             }
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(file.getAbsolutePath()));
             stamper.close();
             reader.close();
-
 
 
         } catch (Exception e) {

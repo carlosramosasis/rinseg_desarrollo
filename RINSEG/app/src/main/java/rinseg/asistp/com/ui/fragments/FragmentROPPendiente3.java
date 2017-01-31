@@ -24,6 +24,7 @@ import java.util.Calendar;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.SettingsRopRO;
@@ -72,7 +73,10 @@ public class FragmentROPPendiente3 extends Fragment {
     ActivityMain activityMain;
     Button btnContinuar;
 
+    private String nameEvent;
+
     static Uri capturedImageUri = null;
+
     public FragmentROPPendiente3() {
         // Required empty public constructor
     }
@@ -130,7 +134,7 @@ public class FragmentROPPendiente3 extends Fragment {
         activityMain.ShowNumPagina();
         activityMain.btnFabMenu.setVisibility(View.VISIBLE);
         activityMain.btnFabMenu.collapseImmediately();
-        activityMain.MostrarCantidadImagenesRop(mRop.getTmpId());
+        activityMain.MostrarCantidadImagenesRop(mRop.listaImgComent);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -210,7 +214,6 @@ public class FragmentROPPendiente3 extends Fragment {
     }
 
 
-
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
         bundle = getArguments();
@@ -235,11 +238,21 @@ public class FragmentROPPendiente3 extends Fragment {
             public void onClick(View v) {
                 activityMain.actualPaginaRop -= 1;
                 Fragment fRopPendiente2 = new FragmentROPPendiente2();
-                if(!activityMain.mostrarPagAccionRealizada){
+                if (!activityMain.mostrarPagAccionRealizada) {
                     fRopPendiente2 = new FragmentROPPendiente1();
                 }
+
+                for (int i = 0; i < sRop.events.size(); i++) {
+                    EventRO e = sRop.events.get(i);
+                    if(e.getId() == mRop.getEventId()){
+                        nameEvent = e.getName();
+                    }
+                }
+
+
                 Bundle args = new Bundle();
                 args.putString("ROPtmpId", mRop.getTmpId());
+                args.putString("nameEvent", nameEvent);
                 fRopPendiente2.setArguments(args);
                 activityMain.replaceFragment(fRopPendiente2, true, R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_left);
             }
@@ -368,8 +381,14 @@ public class FragmentROPPendiente3 extends Fragment {
         ArrayList<String> especificacionPermisos = new ArrayList<String>();
 
         int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
         String[] permisos = new String[especificacionPermisos.size()];

@@ -170,7 +170,7 @@ public class FragmentROPPendiente4 extends Fragment {
         activityMain.ShowNumPagina();
         activityMain.btnFabMenu.setVisibility(View.VISIBLE);
         activityMain.btnFabMenu.collapseImmediately();
-        activityMain.MostrarCantidadImagenesRop(mRop.getTmpId());
+        activityMain.MostrarCantidadImagenesRop(mRop.listaImgComent);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -555,10 +555,15 @@ public class FragmentROPPendiente4 extends Fragment {
 
                             String api_token = activityMain.usuarioLogueado.getApi_token();
 
+                            String oldFolder = mRop.getTmpId();
                             Realm realm = Realm.getInstance(myConfig);
                             realm.beginTransaction();
                             mRop.setId(ropResult.getInt("id"));
+                            mRop.setTmpId(String.valueOf(ropResult.getInt("id")));
                             realm.commitTransaction();
+
+                            Generic.CambiarNombreCarpetaImageens(activityMain,Constants.PATH_IMAGE_GALERY_ROP,oldFolder,mRop.getTmpId());
+                            ropToSend.setTmpId(mRop.getTmpId());
 
                             int idRop = mRop.getId();
 
@@ -569,8 +574,10 @@ public class FragmentROPPendiente4 extends Fragment {
                                 }
                             } else {
                                 dialogLoading.dismiss();
-                                mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok));
+                                mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #"+ mRop.getId());
                             }
+
+
 
                         }
 
@@ -685,14 +692,15 @@ public class FragmentROPPendiente4 extends Fragment {
                         }
 
                         cantImagenesEnviadas += 1;
-                        postExecute();
+                        postExecute(idRop);
 
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         cantImagenesEnviadas += 1;
-                        postExecute();
+                        postExecute(idRop);
+                        Log.e("failure", t.getMessage());
                         //dialogLoading.dismiss();
                         //Messages.showSB(getView(), getString(R.string.msg_servidor_inaccesible), "ok");
                     }
@@ -702,9 +710,8 @@ public class FragmentROPPendiente4 extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
                 cantImagenesEnviadas += 1;
-                postExecute();
+                postExecute(idRop);
             }
-
 
             return errorValue;
         }
@@ -725,11 +732,11 @@ public class FragmentROPPendiente4 extends Fragment {
 
     }
 
-    public void postExecute() {
+    public void postExecute(int idRop) {
         if (cantImagenesTotal == cantImagenesEnviadas) {
             dialogLoading.hide();
 
-            mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok));
+            mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #"+ idRop);
 
             cantImagenesTotal = 0;
             cantImagenesEnviadas = 0;
@@ -778,8 +785,15 @@ public class FragmentROPPendiente4 extends Fragment {
         ArrayList<String> especificacionPermisos = new ArrayList<String>();
 
         int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
         if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
             especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
         String[] permisos = new String[especificacionPermisos.size()];

@@ -136,7 +136,7 @@ public class Generic {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(path);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 11, out); // bmp is your Bitmap instance
+            bmp.compress(Bitmap.CompressFormat.JPEG, 75, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
             result = true;
         } catch (Exception e) {
@@ -223,6 +223,7 @@ public class Generic {
         return resu;
     }
 
+
     public static int CantidadImagenesPorIncidente(Context context, String carpertaIncidente) {
         boolean existeCarpeta = false;
         int resu = 0;
@@ -237,6 +238,24 @@ public class Generic {
                 Log.d("Files", "FileName:" + files[i].getName());
                 resu += 1;
             }
+        }
+        return resu;
+    }
+
+    public static boolean CambiarNombreCarpetaImageens(Context context, String pathImageGallery, String carpertaOld, String carpetaNew) {
+        boolean resu = false;
+
+        File myDir = context.getFilesDir();
+        File OldFolder = new File(myDir, pathImageGallery + carpertaOld + "/");
+        File NewFolder = new File(myDir, pathImageGallery + carpetaNew + "/");
+        try {
+            if (OldFolder.exists()) {
+                if (OldFolder.isDirectory()) {
+                    resu = OldFolder.renameTo(NewFolder);
+                }
+            }
+        } catch (Exception e) {
+            return  false;
         }
         return resu;
     }
@@ -256,11 +275,11 @@ public class Generic {
         String resu = "";
 
         File f = new File(context.getCacheDir() + "/" + nombrePdf);
-        if(f.exists()){
+        if (f.exists()) {
             f.delete();
         }
 
-         try {
+        try {
 
             InputStream is = context.getAssets().open(nombrePdf);
             int size = is.available();
@@ -283,8 +302,8 @@ public class Generic {
     }
 
     //target to save
-    public static Target getTarget(final String url){
-        Target target = new Target(){
+    public static Target getTarget(final String url) {
+        Target target = new Target() {
 
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -293,15 +312,16 @@ public class Generic {
                     @Override
                     public void run() {
 
-                        File file = new File( url);
+
+                        File file = new File(url);
                         try {
                             file.createNewFile();
                             FileOutputStream ostream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
                             ostream.flush();
                             ostream.close();
                         } catch (IOException e) {
-                            Log.e("IOException", e.getLocalizedMessage());
+                            e.printStackTrace();
                         }
                     }
                 }).start();
@@ -315,11 +335,12 @@ public class Generic {
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-                Log.e("load","load ok");
+                Log.e("load", "load ok");
             }
         };
         return target;
     }
+
 
 }
 

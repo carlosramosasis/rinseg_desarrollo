@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import io.realm.RealmList;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.fragments.FragmentIncidenciaNuevo1;
@@ -83,6 +85,7 @@ public class ActivityRopCerradoDetalle extends AppCompatActivity {
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
     }
+
 
 
 }

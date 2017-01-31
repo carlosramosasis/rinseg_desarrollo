@@ -29,10 +29,12 @@ import java.util.Calendar;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FotoModel;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.models.RacRO;
@@ -123,7 +125,7 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         activityMain.btnRight.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_plus_circle, 0);
 
         if ( mIncidencia != null ) {
-            MostrarCantidadImagenesRop(mIncidencia.getTmpId());
+            MostrarCantidadImagenesRop(mIncidencia.listaImgComent);
         }
         activityMain.actualPagina = 2;
         activityMain.ShowNumPagina();
@@ -492,10 +494,15 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
         GaleriaIntent.putExtra("IncidentetmpId", mIncidencia.getTmpId());
         startActivity(GaleriaIntent);
     }
-
+/*
     public void MostrarCantidadImagenesRop(String nombreCarpeta) {
         int cant = Generic.CantidadImagenesPorIncidente(
                 activityMain.getApplicationContext(), nombreCarpeta);
+        this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
+    }*/
+
+    public void MostrarCantidadImagenesRop(RealmList<ImagenRO> listaImagenes) {
+        int cant = listaImagenes.size();
         this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
     }
 }

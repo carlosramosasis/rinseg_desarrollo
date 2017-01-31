@@ -80,7 +80,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public void onBindViewHolder(final ImageViewHolder viewHolder, final int i) {
         viewHolder.txtComentario.setText(ListaImagenes.get(i).getDescripcion());
         String nombreImagen = ListaImagenes.get(i).getName();
-        final FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
+        //final FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
+        File folderRop = new File(mFileAPP, mPathImageGallery + mCarpetaRop + "/" + nombreImagen);
+        FotoModel fotoModel = new FotoModel();
+        fotoModel.uri = Uri.parse(folderRop.getAbsoluteFile().toString());
+
 
         if (fotoModel != null) {
             Picasso.with(mContext).load("file://" + fotoModel.uri.getPath())
@@ -97,7 +101,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             @Override
             public void onClick(View view) {
                 String nombreImagen = ListaImagenes.get(i).getName();
-                FotoModel fotoModel = Generic.DevolverImagendeCarpeta(mFileAPP, mPathImageGallery, mCarpetaRop, nombreImagen);
+                File folderRop = new File(mFileAPP, mPathImageGallery + mCarpetaRop + "/" + nombreImagen);
+                FotoModel fotoModel = new FotoModel();
+                fotoModel.uri = Uri.parse(folderRop.getAbsoluteFile().toString());
 
                 mListener.onItemClicked(viewHolder, i, fotoModel);
             }

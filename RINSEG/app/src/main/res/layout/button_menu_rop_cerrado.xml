@@ -1,5 +1,5 @@
 <com.getbase.floatingactionbutton.FloatingActionsMenu
-    android:id="@+id/fab_menu_rop"
+    android:id="@+id/rd_fab_menu_rop"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
@@ -15,7 +15,7 @@
     >
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_tomar_foto"
+        android:id="@+id/rd_fab_tomar_foto"
         app:fabSize="mini"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
         app:rippleColor="@color/colorTertiary" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_import_foto"
+        android:id="@+id/rd_fab_import_foto"
         app:fabSize="mini"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
         app:rippleColor="@color/colorTertiary" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_set_dir"
+        android:id="@+id/rd_fab_set_dir"
         android:layout_width="wrap_content"
         app:fabSize="mini"
         android:layout_height="wrap_content"
@@ -48,6 +48,17 @@
         app:fab_icon="@drawable/ic_multiple_image"
         />
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/rd_fab_set_enviar"
+        android:layout_width="wrap_content"
+        app:fabSize="mini"
+        android:layout_height="wrap_content"
+        app:fab_colorNormal="@color/colorAccent"
+        app:fab_colorPressed="@color/colorAccent"
+        app:rippleColor="@color/colorTertiary"
+        app:fab_title="@string/label_enviar_imagenes"
+        app:fab_icon="@drawable/ic_send"
+        />
 
 
 

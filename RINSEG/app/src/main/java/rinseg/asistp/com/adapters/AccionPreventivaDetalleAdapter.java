@@ -58,7 +58,6 @@ public class AccionPreventivaDetalleAdapter extends RecyclerView.Adapter<AccionP
         viewHolder.txtResponsable.setText(ListaAcciones.get(i).getResponsable());
         viewHolder.txtAccion.setText(ListaAcciones.get(i).getAccion());
         viewHolder.txtFecha.setText(Generic.dateFormatter.format(ListaAcciones.get(i).getFecha()));
-
     }
 
 

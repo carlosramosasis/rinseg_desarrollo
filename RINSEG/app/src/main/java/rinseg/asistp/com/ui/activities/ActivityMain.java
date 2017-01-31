@@ -42,6 +42,7 @@ import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ManagementRO;
@@ -1012,8 +1013,13 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     }
 
 
-    public void MostrarCantidadImagenesRop(String nombreCarpeta) {
+  /*  public void MostrarCantidadImagenesRop(String nombreCarpeta) {
         int cant = Generic.CantidadImagenesPorRop(this.getApplicationContext(), nombreCarpeta);
+        this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
+    }*/
+
+    public void MostrarCantidadImagenesRop(RealmList<ImagenRO> listaImagenes) {
+        int cant = listaImagenes.size();
         this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
     }
 

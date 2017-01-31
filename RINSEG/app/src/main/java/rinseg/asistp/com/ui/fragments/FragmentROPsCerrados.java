@@ -2,6 +2,8 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,10 +20,14 @@ import android.widget.EditText;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -347,30 +353,51 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         JSONArray rImagesJSON = ropJSON.getJSONArray("images");
                         JSONArray rRopItemsJSON = ropJSON.getJSONArray("rop_items");
 
-                        //
-                        realm.beginTransaction();
-                        ROP ropRecuperado = realm.createObject(ROP.class);
-                        //Poblamos las tablas para el ROP
-                        PopulateROP(ropRecuperado, ropJSON);
-                        //PopulateCompanieForRop(ropRecuperado, rCompanyJSON, realm);
-                        PopulateImagesForRop(ropRecuperado, rImagesJSON, realm);
-                        PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
-                        realm.commitTransaction();
+                        ROP ropRecuperado = realm.where(ROP.class).equalTo("id", ropJSON.getInt("id")).findFirst();
+
+                        if (ropRecuperado != null) {
+                            realm.beginTransaction();
+                            PopulateImagesForRopExisting(ropRecuperado, rImagesJSON, realm);
+                            realm.commitTransaction();
+
+                            ROP ropCopy = realm.copyFromRealm(ropRecuperado);
+                            for (int i = 0; i < listaRops.size(); i++) {
+                                int idRop = listaRops.get(i).getId();
+                                if(idRop == ropCopy.getId()){
+                                    listaRops.remove(i);
+                                    ropAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            listaRops.add(0, ropCopy);
+                            ropAdapter.notifyDataSetChanged();
+                            dialogLoading.dismiss();
+
+                        } else {
+                            realm.beginTransaction();
+                            ropRecuperado = realm.createObject(ROP.class);
+                            //Poblamos las tablas para el ROP
+                            PopulateROP(ropRecuperado, ropJSON);
+                            //PopulateCompanieForRop(ropRecuperado, rCompanyJSON, realm);
+                            PopulateImagesForRopNew(ropRecuperado, rImagesJSON, realm);
+                            PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
+                            realm.commitTransaction();
 
 
-                        ROP ropCopy = realm.copyFromRealm(ropRecuperado);
+                            ROP ropCopy = realm.copyFromRealm(ropRecuperado);
 
-                        String path = activityMain.getFilesDir().getPath();
-                        path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + ropCopy.getTmpId() + "/";
+                            String path = activityMain.getFilesDir().getPath();
+                            path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + ropCopy.getTmpId() + "/";
 
-                        GuardarImagenesEnLocal(ropCopy.getTmpId(), ropCopy.listaImgComent, path);
+                            GuardarImagenesEnLocal(ropCopy.listaImgComent, path);
 
-                        listaRops.add(0, ropCopy);
-                        ropAdapter.notifyDataSetChanged();
+                            listaRops.add(0, ropCopy);
+                            ropAdapter.notifyDataSetChanged();
 
-                        dialogLoading.dismiss();
+                            dialogLoading.dismiss();
+                        }
+
+
                         Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
-
 
                     } catch (Exception e) {
                         dialogLoading.dismiss();
@@ -459,7 +486,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     }
 
-    public void PopulateImagesForRop(ROP rop, JSONArray imagesArray, Realm realm) {
+    public void PopulateImagesForRopNew(ROP rop, JSONArray imagesArray, Realm realm) {
         for (int i = 0; i < imagesArray.length(); i++) {
             try {
                 JSONObject imgJson = imagesArray.getJSONObject(i);
@@ -486,6 +513,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 accionPreventiva.setAccion(item.getString("action"));
                 accionPreventiva.setResponsable(item.getString("responsible"));
                 accionPreventiva.setFechaString(item.getString("date"));
+                accionPreventiva.setFecha(Generic.dateFormatterMySql.parse(accionPreventiva.getFechaString()));
                 rop.listaAccionPreventiva.add(accionPreventiva);
 
             } catch (Exception e) {
@@ -495,41 +523,122 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     }
 
 
-    public void GuardarImagenesEnLocal(String ropID, RealmList<ImagenRO> listaImagenes, String pathBase) {
+    public void GuardarImagenesEnLocal(RealmList<ImagenRO> listaImagenes, String pathBase) {
         for (int i = 0; i < listaImagenes.size(); i++) {
             ImagenRO img = listaImagenes.get(i);
-            String path = pathBase + img.getName();
-            Log.e("path", path);
-            new GuardarImagenRop(img, path);
+            final String path = pathBase + img.getName();
+            Picasso.with(activityMain)
+                    .load(img.getPath())
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                            Log.e("onBitmapLoaded", "onBitmapLoaded");
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    File file = new File(path);
+                                    try {
+                                        Log.e("empeso", "empezo");
+                                        file.createNewFile();
+                                        FileOutputStream ostream = new FileOutputStream(file);
+                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                        ostream.flush();
+                                        ostream.close();
+                                        Log.e("termino", "termino");
+
+                                    } catch (IOException e) {
+                                        Log.e("IOException", e.getLocalizedMessage());
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Log.e("onBitmapFailed", "onBitmapFailed");
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            Log.e("onPrepareLoad", "onPrepareLoad");
+                        }
+                    });
         }
     }
 
 
-    public class GuardarImagenRop extends AsyncTask<String, Integer, Integer> {
-        private ImagenRO imagenRop;
-        private String urlLocal;
+    public void PopulateImagesForRopExisting(ROP rop, JSONArray imagesArray, Realm realm) {
 
-        GuardarImagenRop(ImagenRO pImagenRop, String url) {
-            imagenRop = pImagenRop;
-            urlLocal = url;
-        }
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-            int errorValue = 0;
+        for (int i = 0; i < imagesArray.length(); i++) {
             try {
-                Log.e("path", urlLocal);
-                Picasso.with(activityMain)
-                        .load(imagenRop.getPath())
-                        .into(Generic.getTarget(urlLocal));
+
+                JSONObject imgJson = imagesArray.getJSONObject(i);
+                ImagenRO img = rop.listaImgComent.where().equalTo("name", imgJson.getString("name")).findFirst();
+
+                if (img == null) {
+                    ImagenRO imagen = realm.createObject(ImagenRO.class);
+                    imagen.setId(imgJson.getInt("id"));
+                    imagen.setName(imgJson.getString("name"));
+                    imagen.setDescripcion(imgJson.getString("description"));
+                    imagen.setPath(imgJson.getString("path"));
+                    rop.listaImgComent.add(imagen);
+
+                    String path = activityMain.getFilesDir().getPath();
+                    path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + rop.getTmpId() + "/";
+
+                    GuardarImagenesEnLocal(imagen, path);
+
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                errorValue = 1;
             }
-            return errorValue;
         }
+
+
     }
 
+    public void GuardarImagenesEnLocal(ImagenRO img, String pathBase) {
+
+        final String path = pathBase + img.getName();
+        Picasso.with(activityMain)
+                .load(img.getPath())
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                File file = new File(path);
+                                try {
+                                    Log.e("empeso", "empezo");
+                                    file.createNewFile();
+                                    FileOutputStream ostream = new FileOutputStream(file);
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                    ostream.flush();
+                                    ostream.close();
+                                    Log.e("termino", "termino");
+
+                                } catch (IOException e) {
+                                    Log.e("IOException", e.getLocalizedMessage());
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        Log.e("onBitmapFailed", "onBitmapFailed");
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.e("onPrepareLoad", "onPrepareLoad");
+                    }
+                });
+
+    }
 
 }

@@ -1,10 +1,18 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,12 +24,26 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rinseg.asistp.com.adapters.AccionPreventivaAdapter;
 import rinseg.asistp.com.adapters.AccionPreventivaDetalleAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
@@ -30,15 +52,25 @@ import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
+import rinseg.asistp.com.models.FotoModel;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.SettingsRopRO;
 import rinseg.asistp.com.models.TargetRO;
 import rinseg.asistp.com.models.User;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.services.RestClient;
+import rinseg.asistp.com.services.Services;
+import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
+import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.DialogLoading;
+import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
@@ -63,6 +95,11 @@ public class FragmentROPCerrado1 extends Fragment {
 
 
     ActivityRopCerradoDetalle activityMain;
+
+    public FloatingActionButton btnGaleriaFotos;
+    public FloatingActionButton btnImportarFotos;
+    public FloatingActionButton btnTomarFoto;
+    public FloatingActionButton btnEnviarImg;
 
     Bundle bundle;
 
@@ -97,6 +134,19 @@ public class FragmentROPCerrado1 extends Fragment {
     TextView txtRequiereInvestigacion;
 
     Calendar newDateForROP;
+
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    //tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
+
+    static Uri capturedImageUri = null;
+
+    int cantImagenesTotal = 0;
+    int cantImagenesEnviadas = 0;
+    int cantImagenesEnviadasYrecibidos = 0;
+
+    private DialogLoading dialogLoading;
 
     public FragmentROPCerrado1() {
         // Required empty public constructor
@@ -152,6 +202,7 @@ public class FragmentROPCerrado1 extends Fragment {
     public void onResume() {
         super.onResume();
         activityMain.toolbar.setTitle(R.string.title_rop);
+        MostrarCantidadImagenesRop(mRop.listaImgComent);
 
     }
 
@@ -194,7 +245,44 @@ public class FragmentROPCerrado1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imagen = null;
+                if (data != null) {
+                    if (data.getData() != null) {
+                        imagen = data.getData();
+                    }
+                } else if (capturedImageUri != null) {
+                    imagen = capturedImageUri;
+                    capturedImageUri = null;
+                }
+
+                if (imagen != null) {
+                    launchActivityFotoComentario(imagen);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }*/
+
+
+        }
+    }
+
 //// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
@@ -202,7 +290,14 @@ public class FragmentROPCerrado1 extends Fragment {
 
         bundle = getArguments();
 
+        dialogLoading = new DialogLoading(activityMain);
+
         newDateForROP = Calendar.getInstance();
+
+        btnGaleriaFotos = (FloatingActionButton) v.findViewById(R.id.rd_fab_set_dir);
+        btnImportarFotos = (FloatingActionButton) v.findViewById(R.id.rd_fab_import_foto);
+        btnTomarFoto = (FloatingActionButton) v.findViewById(R.id.rd_fab_tomar_foto);
+        btnEnviarImg = (FloatingActionButton) v.findViewById(R.id.rd_fab_set_enviar);
 
         txtCodigo = (TextView) v.findViewById(R.id.rd_txt_codigo);
         txtAprobado = (TextView) v.findViewById(R.id.rd_txt_aprobado);
@@ -250,6 +345,126 @@ public class FragmentROPCerrado1 extends Fragment {
 
     //cargamos los eventos
     private void setUpActions() {
+        btnTomarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED || permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+                    Permissions();
+                }
+
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED || permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                    Calendar cal = Calendar.getInstance();
+                    File file = new File(Environment.getExternalStorageDirectory(), (cal.getTimeInMillis() + ".jpg"));
+                    if (!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        file.delete();
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    capturedImageUri = Uri.fromFile(file);
+
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+                }
+            }
+        });
+
+        btnImportarFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            }
+        });
+
+        btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivityGaleria();
+            }
+        });
+
+        btnEnviarImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Realm realm = Realm.getInstance(myConfig);
+                try {
+                    final ROP ropCopy = realm.copyFromRealm(mRop);
+                    cantImagenesTotal = 0;
+                    List<ImagenRO> listaImagen = new ArrayList<ImagenRO>();
+                    for (int i = 0; i < ropCopy.listaImgComent.size(); i++) {
+                        ImagenRO img = ropCopy.listaImgComent.get(i);
+                        if (img.getId() == 0) {
+                            cantImagenesTotal += 1;
+                            listaImagen.add(img);
+                        }
+                    }
+
+                    if (cantImagenesTotal > 0){
+                        dialogLoading.show();
+                        for (ImagenRO image : listaImagen){
+                            new EnviarImagenRop(image, ropCopy.getTmpId(), ropCopy.getId(), usuario.getApi_token()).execute("", "", "");
+                        }
+                    }else{
+                        Messages.showToast(getView(),getString(R.string.msg_error_no_nuevas_imagenes));
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    realm.close();
+                } finally {
+                    realm.close();
+                }
+
+
+            }
+        });
+    }
+
+    public void Permissions() {
+
+        ArrayList<String> especificacionPermisos = new ArrayList<String>();
+
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        String[] permisos = new String[especificacionPermisos.size()];
+        permisos = especificacionPermisos.toArray(permisos);
+
+        if (especificacionPermisos.size() > 0) {
+            this.requestPermissions(permisos, REQUEST_IMAGE_CAPTURE);
+        }
 
     }
 
@@ -412,6 +627,174 @@ public class FragmentROPCerrado1 extends Fragment {
                 }
             }
         }
+    }
+
+    public void launchActivityGaleria() {
+
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("ROPtmpId", mRop.getTmpId());
+        startActivity(GaleriaIntent);
+    }
+
+    public void launchActivityFotoComentario(Uri uriImagen) {
+        FotoModel fotoMd = new FotoModel();
+
+        Uri uri = uriImagen;
+        fotoMd.uri = uri;
+        //fotoMd.bitmap = null;
+
+        Intent FotoComentarioIntent = new Intent().setClass(activityMain, ActivityFotoComentario.class);
+        FotoComentarioIntent.putExtra("imagen", fotoMd);
+        FotoComentarioIntent.putExtra("ROPtmpId", mRop.getTmpId());
+        startActivity(FotoComentarioIntent);
+    }
+
+    public void MostrarCantidadImagenesRop(RealmList<ImagenRO> listaImagenes) {
+        int cant = listaImagenes.size();
+        this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
+    }
+
+    public class EnviarImagenRop extends AsyncTask<String, Integer, Integer> {
+        private ImagenRO imagenRop;
+        private String tmpIdRop;
+        private int idRop;
+        private String apitoken;
+
+
+        EnviarImagenRop(ImagenRO imagen, String pTmpIdRop, int pIdRop, String mApiToken) {
+            imagenRop = imagen;
+            tmpIdRop = pTmpIdRop;
+            idRop = pIdRop;
+            apitoken = mApiToken;
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            int errorValue = 0;
+            try {
+
+                RestClient restClient = new RestClient(Services.URL_ROPS);
+
+                File myDir = getActivity().getApplicationContext().getFilesDir();
+                File file = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + tmpIdRop + "/" + imagenRop.getName());
+
+                // create RequestBody instance from file
+                RequestBody requestFile =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData("file_image", file.getName(), requestFile);
+
+                // add another part within the multipart request
+
+                RequestBody description =
+                        RequestBody.create(
+                                MediaType.parse("multipart/form-data"), imagenRop.getDescripcion());
+                RequestBody rop_id =
+                        RequestBody.create(
+                                MediaType.parse("multipart/form-data"), String.valueOf(idRop));
+
+
+                Call<ResponseBody> call = restClient.iServices.setImageRop(rop_id, description, body, apitoken);
+
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        int code = response.code();
+                        if (response.isSuccessful()) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body().string());
+                                String status = jsonObject.getString("status");
+                                if (status.equals(Constants.SUCCESS)) {
+                                    JSONObject messageResult = jsonObject.getJSONObject("message");
+                                    JSONObject ropImageResult = messageResult.getJSONObject("rop_image");
+
+                                    Realm real = Realm.getInstance(myConfig);
+
+                                    imagenRop = real.where(ImagenRO.class).equalTo("name", ropImageResult.getString("name")).findFirst();
+                                    if (imagenRop != null) {
+                                        real.beginTransaction();
+                                        imagenRop.setId(ropImageResult.getInt("id"));
+                                        real.commitTransaction();
+                                        cantImagenesEnviadasYrecibidos += 1;
+                                    }
+
+                                }
+
+                                Log.e("jsonObject", jsonObject.toString());
+
+
+                            } catch (Exception e) {
+                                // dialogLoading.dismiss();
+                                e.printStackTrace();
+                                // Messages.showSB(getView(), getString(R.string.msg_error_guardar), "ok");
+                            }
+
+
+                        } else {
+                            Log.e("imagen", response.message());
+                            Log.e("imagen error", response.errorBody().toString());
+                            //dialogLoading.dismiss();
+                            //Messages.showSB(getView(), getString(R.string.msg_login_fail), "ok");
+                        }
+
+                        cantImagenesEnviadas += 1;
+                        postExecute();
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        cantImagenesEnviadas += 1;
+                        postExecute();
+                        Log.e("failure", t.getMessage());
+                        //dialogLoading.dismiss();
+                        //Messages.showSB(getView(), getString(R.string.msg_servidor_inaccesible), "ok");
+                    }
+                });
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                cantImagenesEnviadas += 1;
+                postExecute();
+            }
+
+            return errorValue;
+        }
+
+        @Override
+        protected void onPostExecute(Integer errorValue) {
+
+        }
+
+
+    }
+
+    public void postExecute() {
+        if (cantImagenesTotal == cantImagenesEnviadas) {
+            dialogLoading.hide();
+
+            mostrarDialogRop(getString(R.string.msg_envio_imagen_ok) );
+
+            cantImagenesTotal = 0;
+            cantImagenesEnviadas = 0;
+            cantImagenesEnviadasYrecibidos = 0;
+        }
+    }
+
+    private void mostrarDialogRop(String msg) {
+        final DialogRINSEG dialogRINSEG = new DialogRINSEG(getActivity());
+        dialogRINSEG.show();
+        dialogRINSEG.setBody(msg);
+        dialogRINSEG.btnCancelar.setVisibility(View.GONE);
+        dialogRINSEG.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogRINSEG.dismiss();
+            }
+        });
     }
 
 

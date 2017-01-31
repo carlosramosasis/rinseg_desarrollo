@@ -92,11 +92,15 @@
 
     <!--Nuevo ROP 2-->
     <string name="hint_acto_condicion_sub">Acto o condición sub estándar</string>
+    <string name="acto_condicion_sub_default">0 elementos seleccionados</string>
+    <string name="acto_condicion_sub_elemento">elemento seleccionado</string>
+    <string name="acto_condicion_sub_elementos">elementos seleccionados</string>
     <string name="acciones_preventivas">Acciones preventivas o correctivas inmediatas realizadas:</string>
     <string name="hint_accion_preventiva">Acción preventiva o correctiva</string>
     <string name="hint_responsable">Responsable</string>
     <string name="btn_agreagar">AGREGAR</string>
     <string name="btn_atras">ATRAS</string>
+    <string name="msg_lista_acto_subestandar">Agregar por lo menos un acto subestandar</string>
     <string name="msg_lista_acciones">Agregar por lo menos una acción preventiva o correctiva</string>
     <string name="error_resp_rp2">ingrese responsable de acción preventiva o correctiva</string>
     <string name="error_accion_rp2">ingrese acción preventiva o correctiva</string>
@@ -148,6 +152,8 @@
     <string name="rop_c1_hora">Hora:</string>
     <string name="rop_c1_desc">Descripción:</string>
     <string name="rop_c1_acto_sub">Acto sub estándar:</string>
+    <string name="msg_envio_imagen_ok">Se enviaron las imágenes con éxito.</string>
+    <string name="msg_error_no_nuevas_imagenes">No hay nuevas imágenes para enviar.</string>
     <!--ROP Cerrado 2-->
     <string name="rop_c2_acciones_preventivas">Acciones preventivas o creativas inmediatas
         realizadas:</string>
@@ -266,6 +272,8 @@
     <string name="label_agregar_incidente">Agregar incidente</string>
     <!--fab menu inspeccion detalle-->
     <string name="label_ver_incidentes">Ver incidentes</string>
+
+    <string name="label_enviar_imagenes">Enviar Imagenes</string>
 
 
     <!--text default SPINNER's-->

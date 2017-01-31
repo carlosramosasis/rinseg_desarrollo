@@ -120,7 +120,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         //configuracion para el recicler
         recyclerImage = (RecyclerView) findViewById(R.id.recycler_galeria);
         recyclerImage.setHasFixedSize(true);
-        recyclerImage.setItemViewCacheSize(20);
+        recyclerImage.setItemViewCacheSize(10);
         recyclerImage.setDrawingCacheEnabled(true);
         recyclerImage.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         // usar administrador para linearLayout

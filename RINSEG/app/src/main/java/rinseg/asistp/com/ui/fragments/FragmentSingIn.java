@@ -211,7 +211,6 @@ public class FragmentSingIn extends Fragment {
                         User u = gson.fromJson(usur.toString(), User.class);
                         SaveUserInRealm(u);
                         launchActivityMain(u);
-                        dialogLoading.dismiss();
                     } catch (Exception e) {
                         dialogLoading.dismiss();
                         e.printStackTrace();
