@@ -29,5 +29,6 @@ public class Services {
     static final String ROP_RECOVERY = "find";
     static final String FIX_INCIDENT = "close-incident";
     static final String CLOSE = "close";
+    static final String PDF = "pdf";
 
 }

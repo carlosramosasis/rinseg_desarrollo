@@ -304,7 +304,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     private void sendInspection() {
         // Obtenemos el token :
         //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "VtNScpPELM94bsKF4Cn4hWPHEg6UOv1UTUQbzzojepnxE2Pgsc2vZW5iBV0J";
+        String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
@@ -342,6 +342,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
                         // Actualizar el registro en Realm :
                         updateLocalInspection(id);
+
+                        //Actualizar los id de las incidencias:
+
 
                         dialog.dismiss();
                         showDialogSuccess();

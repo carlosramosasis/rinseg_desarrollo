@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,37 +13,45 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.IncidenciaLevantadaRO;
 import rinseg.asistp.com.models.IncidenciaRO;
-import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.RiskRO;
 import rinseg.asistp.com.models.SeveritiesRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.services.RestClient;
+import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
+import rinseg.asistp.com.utils.DialogLoading;
+import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
 public class FragmentLevantarIncidencia extends Fragment {
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "idInspeccion";
     private static final String ARG_PARAM2 = "idIncidencia";
 
     private int idInspeccion;
-    private int idIncidencia;
+    private String idIncidencia;
 
     private OnFragmentInteractionListener mListener;
 
@@ -58,11 +67,10 @@ public class FragmentLevantarIncidencia extends Fragment {
     TextView textCategory;
     TextView textLevel;
 
-    ArrayAdapter<FrecuencieRO> adapterFrequencies;
-    ArrayAdapter<SeveritiesRO> adapterSeverities;
-    RealmResults<FrecuencieRO> frecuencieROs;
-    RealmResults<SeveritiesRO> severitiesROs;
     RealmResults<RiskRO> riesgosROs;
+
+    List<FrecuencieRO> listF;
+    List<SeveritiesRO> listS;
 
     IncidenciaRO incidenciaRO;
     IncidenciaLevantadaRO incLevantadaRO;
@@ -76,11 +84,11 @@ public class FragmentLevantarIncidencia extends Fragment {
 
     public FragmentLevantarIncidencia() { }
 
-    public static FragmentLevantarIncidencia newInstance(int idInspeccion, int idIncidencia) {
+    public static FragmentLevantarIncidencia newInstance(int idInspeccion, String idIncidencia) {
         FragmentLevantarIncidencia fragment = new FragmentLevantarIncidencia();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, idInspeccion);
-        args.putInt(ARG_PARAM2, idIncidencia);
+        args.putString(ARG_PARAM2, idIncidencia);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,7 +98,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             idInspeccion = getArguments().getInt(ARG_PARAM1);
-            idIncidencia = getArguments().getInt(ARG_PARAM2);
+            idIncidencia = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -118,9 +126,8 @@ public class FragmentLevantarIncidencia extends Fragment {
         activityMain.toolbarInspeccionDet.setTitle(R.string.title_levantamiento);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+        if ( mListener != null ) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -166,18 +173,16 @@ public class FragmentLevantarIncidencia extends Fragment {
 
         try {
             // Recuperamos desde Real todas las frecuencias :
-            frecuencieROs = realm.where(FrecuencieRO.class).findAll();
-            // Asignamos las frecuncias al adapter :
-            adapterFrequencies = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, frecuencieROs);
-            adapterFrequencies.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerFrequencies.setAdapter(adapterFrequencies);
+            RealmResults<FrecuencieRO> frecuencieROs = realm.where(FrecuencieRO.class).findAll();
+            listF = realm.copyFromRealm(frecuencieROs);
+            listF.remove(0);
+            spinnerFrequencies.setItems(listF);
 
             // Recuperamos desde Realm todas las severidades :
-            severitiesROs = realm.where(SeveritiesRO.class).findAll();
-            // Asignamos las severidades al adapter :
-            adapterSeverities = new ArrayAdapter<>(getActivity(), R.layout.spinner_item, severitiesROs);
-            adapterSeverities.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSeverities.setAdapter(adapterSeverities);
+            RealmResults<SeveritiesRO> severitiesROs = realm.where(SeveritiesRO.class).findAll();
+            listS = realm.copyFromRealm(severitiesROs);
+            listS.remove(0);
+            spinnerSeverities.setItems(listS);
 
             //Recuperamos desde Realm los riesgos :
             riesgosROs = realm.where(RiskRO.class).findAll();
@@ -188,25 +193,27 @@ public class FragmentLevantarIncidencia extends Fragment {
         }
 
         // Recuperando la incidencia anfitriona :
-        if (idIncidencia != 0) {
-            incidenciaRO = realm.where(IncidenciaRO.class).equalTo("id", idIncidencia).findFirst();
+        if (!idIncidencia.equals("")) {
+            incidenciaRO = realm.where(IncidenciaRO.class).equalTo("tmpId", idIncidencia).findFirst();
 
             // Seteando la frecuencia de la incidencia al spinner :
-            for ( int i = 0; i < frecuencieROs.size(); i++ ) {
-                if ( frecuencieROs.get(i).getId() == incidenciaRO.getFrecuenciaId() ) {
+            for ( int i = 0; i < listF.size(); i++ ) {
+                if ( listF.get(i).getId() == incidenciaRO.getFrecuenciaId() ) {
                     spinnerFrequencies.setSelectedIndex(i);
                     break;
                 }
             }
 
             // Seteando la severidad de la incidencia al spinner :
-            for ( int i = 0; i < severitiesROs.size(); i++ ) {
-                if ( severitiesROs.get(i).getId() == incidenciaRO.getSeveridadId() ) {
+            for ( int i = 0; i < listS.size(); i++ ) {
+                if ( listS.get(i).getId() == incidenciaRO.getSeveridadId() ) {
                     spinnerSeverities.setSelectedIndex(i);
                     break;
                 }
             }
         }
+        textCategory.setText(incidenciaRO.getCategoria());
+        textLevel.setText(String.valueOf(incidenciaRO.getRiesgo()));
     }
 
     /** Listener de acciones */
@@ -214,16 +221,18 @@ public class FragmentLevantarIncidencia extends Fragment {
         activityMain.toolbarInspeccionDet.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activityMain.replaceFragment(new FragmentInspeccionIncidenciaDetalle1(),
-                        true, 0, 0, 0, 0);
+                Fragment f = FragmentInspeccionIncidenciaDetalle1
+                        .newInstance(idInspeccion, idIncidencia);
+                activityMain.replaceFragment(f, true, 0, 0, 0, 0);
             }
         });
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activityMain.replaceFragment(new FragmentInspeccionIncidenciaDetalle1(),
-                        true, 0, 0, 0, 0);
+                Fragment f = FragmentInspeccionIncidenciaDetalle1
+                        .newInstance(idInspeccion, idIncidencia);
+                activityMain.replaceFragment(f, true, 0, 0, 0, 0);
             }
         });
 
@@ -234,7 +243,7 @@ public class FragmentLevantarIncidencia extends Fragment {
                 // Validamos que los campos sean correctos :
                 if ( validateForm( )) {
                     // Seteamos los nuevos valores a nuestro IncidenciaRO :
-                    saveIncLevantada();
+                    showDialogConfirm();
                 }
             }
         });
@@ -251,8 +260,8 @@ public class FragmentLevantarIncidencia extends Fragment {
         spinnerSeverities.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
-                valorNiv = severitiesROs.get(position).getValue() *
-                        frecuencieROs.get(spinnerFrequencies.getSelectedIndex()).getValue();
+                valorNiv = listS.get(position).getValue() *
+                        listF.get(spinnerFrequencies.getSelectedIndex()).getValue();
                 // Flag de nueva severidad :
                 isNewSeverity = ((SeveritiesRO)item).getId() != incidenciaRO.getSeveridadId();
                 // Seteamos los valores en la vista :
@@ -264,8 +273,8 @@ public class FragmentLevantarIncidencia extends Fragment {
         spinnerFrequencies.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
-                valorNiv = frecuencieROs.get(position).getValue() *
-                        severitiesROs.get(spinnerSeverities.getSelectedIndex()).getValue();
+                valorNiv = listF.get(position).getValue() *
+                        listS.get(spinnerSeverities.getSelectedIndex()).getValue();
                 // Flag de nueva frecuencia :
                 isNewFrequency = ((FrecuencieRO)item).getId() != incidenciaRO.getFrecuenciaId();
                 // Seteamos los valores en la vista :
@@ -307,7 +316,7 @@ public class FragmentLevantarIncidencia extends Fragment {
             }
         }
         textCategory.setText(categoria);
-        textLevel.setText(valorNiv);
+        textLevel.setText(String.valueOf(valorNiv));
     }
 
     /** Método para validar el formulario */
@@ -320,11 +329,11 @@ public class FragmentLevantarIncidencia extends Fragment {
             editDescription.setError(getString(R.string.error_fix_incident_description));
             return false;
         }
-        if ( !isNewFrequency || !isNewSeverity ) {
+        /*if ( !isNewFrequency || !isNewSeverity ) {
             spinnerFrequencies.setError(getString(R.string.error_fix_incident_frequency));
             spinnerSeverities.setError(getString(R.string.error_fix_incident_severity));
             return false;
-        }
+        }*/
         return true;
     }
 
@@ -340,9 +349,9 @@ public class FragmentLevantarIncidencia extends Fragment {
             incLevantadaRO.setFechaLevantamiento(datePicker.getTime());
             incLevantadaRO.setFechaLevantamientoString(textDisplayDate.getText().toString());
             incLevantadaRO.setIdFrecuencia(
-                    frecuencieROs.get(spinnerFrequencies.getSelectedIndex()).getId());
+                    listF.get(spinnerFrequencies.getSelectedIndex()).getId());
             incLevantadaRO.setIdSeveridad(
-                    severitiesROs.get(spinnerSeverities.getSelectedIndex()).getId());
+                    listS.get(spinnerSeverities.getSelectedIndex()).getId());
             incLevantadaRO.setCategoriaRiesgo(textCategory.getText().toString());
             incLevantadaRO.setNivelRiesgo(valorNiv);
             realm.commitTransaction();
@@ -350,6 +359,93 @@ public class FragmentLevantarIncidencia extends Fragment {
             e.printStackTrace();
         } finally {
             realm.close();
+            sendData();
         }
+    }
+
+    /** Dialog de confirmación */
+    private void showDialogConfirm() {
+        final DialogRINSEG dialogConfirm = new DialogRINSEG(activityMain);
+        dialogConfirm.show();
+        dialogConfirm.setTitle("LEVANTAMIENTO DE INCIDENCIA");
+        dialogConfirm.setBody("¿Está seguro de enviar los nuevos datos de la incidencia?");
+        dialogConfirm.setTextBtnAceptar("FINALIZAR");
+
+        dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveIncLevantada();
+                //dialogConfirm.dismiss();
+            }
+        });
+    }
+
+    /** Módulo para enviar hacia el servidor los datos de la incidencia levantada */
+    private void sendData() {
+        // Obtenemos el token :
+        //String token = activityMain.usuarioLogueado.getApi_token();
+        String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
+
+        // Mostramos dialog mientras se procese :
+        final DialogLoading dialog = new DialogLoading(activityMain);
+        dialog.show();
+
+        Realm realm = Realm.getInstance(myConfig);
+        final IncidenciaLevantadaRO incidentToFix = realm.copyFromRealm(incLevantadaRO);
+
+        RestClient restClient = new RestClient(Services.INSPECTION);
+        Call<ResponseBody> call = restClient.iServices.setFixIncident(incidentToFix, token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if ( response.isSuccessful() ) {
+                    // Mostramos dialog de éxito :
+                    try {
+                        // Intentaremos castear la respuesta :
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
+
+                        // Actualizar el registro en Realm :
+                        //updateLocalInspection(id);
+
+                        //Actualizar los id de las incidencias:
+                        dialog.dismiss();
+                        showDialogSuccess();
+                    } catch (Exception e) {
+                        dialog.dismiss();
+                        e.printStackTrace();
+                    }
+                } else {
+                    dialog.dismiss();
+                    Messages.showSB(getView(), getString(R.string.msg_error_guardar_inspeccion),
+                            "ok");
+                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                            response.message() + "code :" + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                dialog.dismiss();
+                t.printStackTrace();
+            }
+        });
+    }
+
+    /** Dialog de información de éxito */
+    private void showDialogSuccess() {
+        final DialogRINSEG dialogConfirm = new DialogRINSEG(activityMain);
+        dialogConfirm.show();
+        dialogConfirm.setTitle("INCIDENCIA LEVANTADA");
+        dialogConfirm.setBody("Los nuevos datos de la inspección han sido enviados al servidor");
+        dialogConfirm.setTextBtnAceptar("DE ACUERDO");
+        dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
+        dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogConfirm.dismiss();
+                activityMain.replaceFragment(new FragmentInspecciones(), true, 0, 0, 0, 0);
+            }
+        });
     }
 }

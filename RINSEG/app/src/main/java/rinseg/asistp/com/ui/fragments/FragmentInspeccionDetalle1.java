@@ -1,53 +1,51 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import rinseg.asistp.com.models.AreaRO;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rinseg.asistp.com.models.CompanyRO;
-import rinseg.asistp.com.models.EventRO;
-import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.InspectorRO;
-import rinseg.asistp.com.models.ROP;
-import rinseg.asistp.com.models.RiskRO;
-import rinseg.asistp.com.models.TargetRO;
-import rinseg.asistp.com.models.TypeInspection;
 import rinseg.asistp.com.models.TypesRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.services.RestClient;
+import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
-import rinseg.asistp.com.ui.activities.ActivityMain;
-import rinseg.asistp.com.utils.Constants;
-import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.DialogLoading;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentInspeccionDetalle1.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * create an instance of this fragment.
- */
 public class FragmentInspeccionDetalle1 extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "InspId";
     private static final String ARG_PARAM2 = "InspTmpId";
 
-    // TODO: Rename and change types of parameters
     private InspeccionRO inspeccion;
 
     private OnFragmentInteractionListener mListener;
@@ -55,16 +53,16 @@ public class FragmentInspeccionDetalle1 extends Fragment {
     int idInspeccion;
     String idInspeccionTem;
 
-
     ActivityInspeccionDetalle activityMain;
     private TextView textArea, textFecha, textTipo, textEmpresa, textInspectores, textResponsables;
-    FloatingActionButton btnVerIncidentes;
+    private CoordinatorLayout coordinatorLayout;
+
+    private FloatingActionButton btnVerIncidentes, btnGenerarPDF;
+    private FloatingActionsMenu btnMenu;
 
     RealmConfiguration myConfig;
 
-    public FragmentInspeccionDetalle1() {
-        // Required empty public constructor
-    }
+    public FragmentInspeccionDetalle1() { }
 
     public static FragmentInspeccionDetalle1 newInstance(int id, String idTemporal) {
         FragmentInspeccionDetalle1 fragment = new FragmentInspeccionDetalle1();
@@ -138,6 +136,10 @@ public class FragmentInspeccionDetalle1 extends Fragment {
         textResponsables = (TextView) v.findViewById(R.id.text_inspection_detail_responsables);
 
         btnVerIncidentes = (FloatingActionButton) v.findViewById(R.id.btn_ver_incidente);
+        btnGenerarPDF = (FloatingActionButton)
+                v.findViewById(R.id.btn_inspection_detail_generate_pdf);
+        btnMenu = (FloatingActionsMenu) v.findViewById(R.id.fab_menu_incidencias);
+        coordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.coordinator_inspection_detail);
 
         // Configuramos Realm :
         Realm.init(this.getActivity().getApplicationContext());
@@ -165,7 +167,89 @@ public class FragmentInspeccionDetalle1 extends Fragment {
                 activityMain.finish();
             }
         });
+
+        btnGenerarPDF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Obtenemos el token :
+                //String token = activityMain.usuarioLogueado.getApi_token();
+                String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
+
+                final DialogLoading loading = new DialogLoading(activityMain);
+                loading.show();
+
+                RestClient restClient = new RestClient(Services.INSPECTION);
+                Call<ResponseBody> call = restClient.iServices.downloadInspecPDF(
+                        idInspeccion, token);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if ( response.isSuccessful() ) {
+                            // Mostramos dialog de éxito :
+                            try {
+                                final File file = Environment.getExternalStoragePublicDirectory(
+                                        Environment.DIRECTORY_DOWNLOADS);
+                                final String nameFile = "Inspeccion_" + String.valueOf(idInspeccion)
+                                        + ".pdf";
+                                String path = file.getPath() + "/" + nameFile;
+                                OutputStream out = new FileOutputStream(path);
+                                out.write(response.body().bytes());
+                                out.close();
+
+                                loading.dismiss();
+                                btnMenu.collapse();
+
+                                // Mostramos SnackBar y acción para abrir el documento :
+                                assert getView() != null;
+                                Snackbar snackbar = Snackbar
+                                        .make(getView(), R.string.msg_succeess_generate_pdf,
+                                                Snackbar.LENGTH_LONG)
+                                        .setAction("ABRIR", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                openPDF(file, nameFile);
+                                            }
+                                        });
+                                snackbar.show();
+
+                            } catch (Exception e) {
+                                loading.dismiss();
+                                e.printStackTrace();
+                            }
+                        } else {
+                            loading.dismiss();
+                            Messages.showSB(
+                                    getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
+                            Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                                    response.message() + "code :" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        loading.dismiss();
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
     }
+
+    /** Módulo para abrir el archivo PDF */
+    private void openPDF(File path, String nameFile) {
+        File file = new File(path, nameFile);
+        Uri pathUri = Uri.fromFile(file);
+        Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenintent.setDataAndType(pathUri, "application/pdf");
+        try {
+            startActivity(pdfOpenintent);
+        }
+        catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /** Módulo para cargar los datos */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")

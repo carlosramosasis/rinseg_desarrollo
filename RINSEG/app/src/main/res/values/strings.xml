@@ -160,7 +160,8 @@
     <string name="rop_c2_compromiso">Compromiso del trabajador:</string>
     <string name="rop_c2_reportante">Reportante:</string>
     <string name="rop_c2_supervisor_a_cargo">Supervisor a cargo de levantar la observación:</string>
-    <string name="rop_c2_requiere_investigacion">¿Requiere investigación y análisis de causa?</string>
+    <string name="rop_c2_requiere_investigacion">¿Requiere investigación y análisis de causa?
+    </string>
 
     <!--inspeccion nuevo 1-->
     <string name="insp_nuevo1_lista_inspectores">Lista de inspectores:</string>
@@ -222,6 +223,7 @@
     <string name="inspeccion_detalle1_empr_insp">Empresa inspeccionada:</string>
     <string name="inspeccion_detalle1_inspectores">Inspectores:</string>
     <string name="inspeccion_detalle1_responsables">Responsables:</string>
+    <string name="msg_succeess_generate_pdf">Se ha descargado el archivo PDF.</string>
 
     <!--Inspeccion detalle - IncidenciaRO detalle-->
     <string name="incidencia_detalle_acto_inseguro">ACTO INSEGURO</string>
@@ -238,7 +240,8 @@
     <string name="incidencia_detalle_empresa_repo">Empresa del reportante:</string>
     <string name="incidencia_detalle_gerencia_repo">Gerencia del reportante:</string>
     <string name="incidencia_detalle_empresa_pertenece">Empresa que pertenece:</string>
-    <string name="incidencia_detalle_supervisor_cmmm_reportante">Supervisor CMMM del reportante:</string>
+    <string name="incidencia_detalle_supervisor_cmmm_reportante">Supervisor CMMM del reportante:
+    </string>
     <string name="incidencia_detalle_reportante">Reportante:</string>
 
 
@@ -253,7 +256,8 @@
     <string name="lev_incidencia_cat_nivel_riesgo">Categoría y nivel de riesgo:</string>
     <string name="btn_grabar">GRABAR</string>
     <string name="error_fix_incident_display_date">Asigne la fecha de levantamiento</string>
-    <string name="error_fix_incident_description">Ingrese el detalle de la acción correctiva</string>
+    <string name="error_fix_incident_description">Ingrese el detalle de la acción correctiva
+    </string>
     <string name="error_fix_incident_frequency">La frecuencia no ha sido modificada</string>
     <string name="error_fix_incident_severity">La severidad no ha sido modificada</string>
 

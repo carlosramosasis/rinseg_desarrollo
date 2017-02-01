@@ -156,6 +156,15 @@
                             android:textColor="@color/colorGray"
                             android:textSize="12dp" />
 
+                        <!--<Spinner
+                            android:id="@+id/spinner_incidencia_1_frecuencia"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="@color/colorPrimaryDark"
+                            android:textSize="17.3dp"
+                            >
+                        </Spinner> -->
+
                         <com.jaredrummler.materialspinner.MaterialSpinner
                             android:id="@+id/spinner_fix_incident_frequency"
                             android:layout_width="match_parent"

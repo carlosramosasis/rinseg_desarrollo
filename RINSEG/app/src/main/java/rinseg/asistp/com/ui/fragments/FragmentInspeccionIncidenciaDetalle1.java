@@ -222,12 +222,12 @@ public class FragmentInspeccionIncidenciaDetalle1 extends Fragment {
         }
     }
 
-    //cargamos los eventos
+    // Cargamos los eventos :
     private void setUpActions() {
         btnLevantarIncidente.setOnClickListener(new View.OnClickListener(){
             @Override
             public  void onClick(View v){
-                Fragment f = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+                Fragment f = FragmentLevantarIncidencia.newInstance(idInspeccion, idIncidencia);
                 activityMain.replaceFragment(f, true ,0, 0, 0, 0);
             }
 
