@@ -3,6 +3,7 @@ package rinseg.asistp.com.ui.fragments;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
@@ -18,6 +19,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -527,43 +532,50 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         for (int i = 0; i < listaImagenes.size(); i++) {
             ImagenRO img = listaImagenes.get(i);
             final String path = pathBase + img.getName();
-            Picasso.with(activityMain)
-                    .load(img.getPath())
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            Log.e("onBitmapLoaded", "onBitmapLoaded");
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    File file = new File(path);
-                                    try {
-                                        Log.e("empeso", "empezo");
-                                        file.createNewFile();
-                                        FileOutputStream ostream = new FileOutputStream(file);
-                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                        ostream.flush();
-                                        ostream.close();
-                                        Log.e("termino", "termino");
+            try {
+                Picasso.with(activityMain)
+                        .load(img.getPath())
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                                Log.e("onBitmapLoaded", "onBitmapLoaded");
+                                new Thread(new Runnable() {
+                                    public void run() {
+                                        File file = new File(path);
+                                        try {
+                                            Log.e("empeso", "empezo");
+                                            file.createNewFile();
+                                            FileOutputStream ostream = new FileOutputStream(file);
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                            ostream.flush();
+                                            ostream.close();
+                                            Log.e("termino", "termino");
 
-                                    } catch (IOException e) {
-                                        Log.e("IOException", e.getLocalizedMessage());
-                                        e.printStackTrace();
+                                        } catch (IOException e) {
+                                            Log.e("IOException", e.getLocalizedMessage());
+                                            e.printStackTrace();
+                                        }
                                     }
-                                }
-                            }).start();
-                        }
+                                }).start();
 
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                            Log.e("onBitmapFailed", "onBitmapFailed");
-                        }
 
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                            Log.e("onPrepareLoad", "onPrepareLoad");
-                        }
-                    });
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+                                Log.e("onBitmapFailed", "onBitmapFailed");
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                                Log.e("onPrepareLoad", "onPrepareLoad");
+                            }
+                        });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
         }
     }
@@ -609,7 +621,6 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                     @Override
                     public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                         new Thread(new Runnable() {
-                            @Override
                             public void run() {
                                 File file = new File(path);
                                 try {
@@ -627,6 +638,8 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                                 }
                             }
                         }).start();
+
+
                     }
 
                     @Override
@@ -640,6 +653,28 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                     }
                 });
 
+    }
+
+    public class GuardarImagenesEnLocalAsync extends AsyncTask<String, Integer, Integer> {
+        private ImagenRO imgRop;
+        private String mPath;
+
+        GuardarImagenesEnLocalAsync(ImagenRO img, String path) {
+            imgRop = img;
+            mPath = path;
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            int error = 0;
+            try {
+                GuardarImagenesEnLocal(imgRop, mPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return error;
+        }
     }
 
 }
