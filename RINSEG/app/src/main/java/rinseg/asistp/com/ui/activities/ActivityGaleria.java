@@ -81,7 +81,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
     @Override
     public void onResume() {
         super.onResume();
-        toolbar.setTitle("Galería de imágenes");
+        toolbar.setTitle(getString(R.string.title_galeria));
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
             } else if (mIncidente != null) {
                 FotoComentarioIntent.putExtra("IncidentetmpId", mIncidente.getTmpId());
             }
-
+            FotoComentarioIntent.putExtra("titulo",getString(R.string.title_imagen));
             FotoComentarioIntent.putExtra("puedeEditar", false);
             FotoComentarioIntent.putExtra("comentario", listaImagenes.get(position).getDescripcion());
             startActivity(FotoComentarioIntent);

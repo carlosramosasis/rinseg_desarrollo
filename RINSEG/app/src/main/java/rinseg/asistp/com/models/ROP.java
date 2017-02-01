@@ -29,6 +29,7 @@ public class ROP extends RealmObject{
     @SerializedName("area_id")
     private int areaId;
 
+    @SerializedName("area_name")
     private String area;
 
     @SerializedName("event_place")
