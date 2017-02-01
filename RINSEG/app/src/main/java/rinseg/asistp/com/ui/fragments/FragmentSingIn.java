@@ -197,7 +197,7 @@ public class FragmentSingIn extends Fragment {
 */
         dialogLoading.show();
         RestClient restClient = new RestClient(Services.URL_SECURITY);
-        Call<ResponseBody> call = restClient.iServices.setLogin("carlosc", "123456");
+        Call<ResponseBody> call = restClient.iServices.setLogin("oscar.sequeiros", "123456");
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

@@ -41,4 +41,6 @@ public class Constants {
 
     public static String NAME_PDF_ROP_BASE = "ejemplo_pdf.pdf";
 
+    public static String MY_SHARED_PREFERENCES = "RINSEG.PREFERENCES";
+
 }

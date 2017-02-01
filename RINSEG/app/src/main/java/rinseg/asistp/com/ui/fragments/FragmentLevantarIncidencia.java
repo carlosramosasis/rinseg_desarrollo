@@ -1,6 +1,8 @@
 package rinseg.asistp.com.ui.fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,6 +46,9 @@ import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
+
+import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
 
 public class FragmentLevantarIncidencia extends Fragment {
 
@@ -194,7 +199,8 @@ public class FragmentLevantarIncidencia extends Fragment {
 
         // Recuperando la incidencia anfitriona :
         if (!idIncidencia.equals("")) {
-            incidenciaRO = realm.where(IncidenciaRO.class).equalTo("tmpId", idIncidencia).findFirst();
+            incidenciaRO = realm.where(IncidenciaRO.class)
+                    .equalTo("id", Integer.parseInt(idIncidencia)).findFirst();
 
             // Seteando la frecuencia de la incidencia al spinner :
             for ( int i = 0; i < listF.size(); i++ ) {
@@ -250,6 +256,14 @@ public class FragmentLevantarIncidencia extends Fragment {
 
         // Click sobre el botón del Calendar :
         btnShowCalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        });
+
+        // Presión sobre el campo fecha :
+        textDisplayDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePicker();
@@ -343,11 +357,12 @@ public class FragmentLevantarIncidencia extends Fragment {
         // Guardando en Realm :
         Realm realm = Realm.getInstance(myConfig);
         try {
-            incLevantadaRO = realm.createObject(IncidenciaLevantadaRO.class);
             realm.beginTransaction();
+            incLevantadaRO = realm.createObject(IncidenciaLevantadaRO.class);
             incLevantadaRO.setIdIncidencia(incidenciaRO.getId());
             incLevantadaRO.setFechaLevantamiento(datePicker.getTime());
-            incLevantadaRO.setFechaLevantamientoString(textDisplayDate.getText().toString());
+            incLevantadaRO.setFechaLevantamientoString(
+                    Generic.dateFormatterMySql.format(datePicker.getTime()));
             incLevantadaRO.setIdFrecuencia(
                     listF.get(spinnerFrequencies.getSelectedIndex()).getId());
             incLevantadaRO.setIdSeveridad(
@@ -369,13 +384,13 @@ public class FragmentLevantarIncidencia extends Fragment {
         dialogConfirm.show();
         dialogConfirm.setTitle("LEVANTAMIENTO DE INCIDENCIA");
         dialogConfirm.setBody("¿Está seguro de enviar los nuevos datos de la incidencia?");
-        dialogConfirm.setTextBtnAceptar("FINALIZAR");
+        dialogConfirm.setTextBtnAceptar("ENVIAR");
 
         dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveIncLevantada();
-                //dialogConfirm.dismiss();
+                dialogConfirm.dismiss();
             }
         });
     }
@@ -383,8 +398,9 @@ public class FragmentLevantarIncidencia extends Fragment {
     /** Módulo para enviar hacia el servidor los datos de la incidencia levantada */
     private void sendData() {
         // Obtenemos el token :
-        //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
+        SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
+                activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
+        String token = preferencesHelper.getToken();
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
@@ -404,12 +420,8 @@ public class FragmentLevantarIncidencia extends Fragment {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
-
-                        // Actualizar el registro en Realm :
-                        //updateLocalInspection(id);
-
-                        //Actualizar los id de las incidencias:
                         dialog.dismiss();
+                        // Actualizar el id
                         showDialogSuccess();
                     } catch (Exception e) {
                         dialog.dismiss();
@@ -444,7 +456,8 @@ public class FragmentLevantarIncidencia extends Fragment {
             @Override
             public void onClick(View view) {
                 dialogConfirm.dismiss();
-                activityMain.replaceFragment(new FragmentInspecciones(), true, 0, 0, 0, 0);
+                Fragment fragment = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+                activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
             }
         });
     }

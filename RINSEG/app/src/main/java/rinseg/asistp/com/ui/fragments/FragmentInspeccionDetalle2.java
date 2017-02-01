@@ -45,10 +45,10 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
 
     public FragmentInspeccionDetalle2() { }
 
-    public static FragmentInspeccionDetalle2 newInstance(int id) {
+    public static FragmentInspeccionDetalle2 newInstance(int idIspeccion) {
         FragmentInspeccionDetalle2 fragment = new FragmentInspeccionDetalle2();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, id);
+        args.putInt(ARG_PARAM1, idIspeccion);
         fragment.setArguments(args);
         return fragment;
     }
@@ -156,7 +156,7 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
     @Override
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
         Fragment f = FragmentInspeccionIncidenciaDetalle1.newInstance(idInspeccion,
-                listaIncidenciasHost.get(position).getTmpId());
+                String.valueOf(listaIncidenciasHost.get(position).getId()));
         activityMain.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_main_content_inspeccion_detalle, f)

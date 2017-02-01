@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import rinseg.asistp.com.models.User;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.fragments.FragmentInspeccionDetalle1;
 
@@ -14,6 +15,7 @@ public class ActivityInspeccionDetalle extends AppCompatActivity {
 
     public Toolbar toolbarInspeccionDet;
     private ActivityInspeccionDetalle thiss = (ActivityInspeccionDetalle) this;
+    public static User usuarioLogueado;
 
     int id;
     String idTemp;

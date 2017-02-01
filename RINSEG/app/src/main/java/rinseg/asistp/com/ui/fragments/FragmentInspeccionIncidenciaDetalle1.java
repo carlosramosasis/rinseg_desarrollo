@@ -140,7 +140,7 @@ public class FragmentInspeccionIncidenciaDetalle1 extends Fragment {
         try {
             if ( !idIncidencia.equals("") && idInspeccion != 0 ) {
                 incidenciaRO = realm.where(IncidenciaRO.class)
-                        .equalTo("tmpId", idIncidencia).findFirst();
+                        .equalTo("id", Integer.parseInt(idIncidencia)).findFirst();
                 inspeccionRO = realm.where(InspeccionRO.class)
                         .equalTo("id", idInspeccion).findFirst();
 

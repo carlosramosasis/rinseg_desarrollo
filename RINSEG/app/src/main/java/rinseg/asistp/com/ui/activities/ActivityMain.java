@@ -1,7 +1,9 @@
 package rinseg.asistp.com.ui.activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -61,10 +63,12 @@ import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.fragments.FragmentInspecciones;
 import rinseg.asistp.com.ui.fragments.FragmentLevantarIncidencia;
 import rinseg.asistp.com.ui.fragments.FragmentTabRops;
+import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
 
 public class ActivityMain extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -119,8 +123,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public FloatingActionButton btnGaleriaFotos;
     public FloatingActionButton btnImportarFotos;
     public FloatingActionButton btnTomarFoto;
-
-
 
     ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
@@ -290,6 +292,16 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
             Realm realm = Realm.getInstance(myConfig);
             realm.beginTransaction();
             User usuario = realm.where(User.class).findFirst();
+
+            //Escribimos el shared preferences
+            SharedPreferences sharedPreferences =
+                    getSharedPreferences(Constants.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
+            SharedPreferencesHelper preferencesHelper =
+                    new SharedPreferencesHelper(sharedPreferences);
+
+            preferencesHelper.saveToken(usuario.getApi_token());
+
             usuarioLogueado = usuario;
             realm.commitTransaction();
 

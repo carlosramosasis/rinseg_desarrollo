@@ -45,6 +45,7 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
         public TextView txtDesc;
         public ImageView imgRiesgo;
         public final LinearLayout vLayout;
+        public ImageView imgReviewed;
 
 
         public IncidenciaViewHolder(View v) {
@@ -54,10 +55,12 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
             txtDesc = (TextView) v.findViewById(R.id.txt_card_view_incidencia_desc);
             imgRiesgo = (ImageView) v.findViewById(R.id.img_card_view_incidencia_riesgo);
             vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_incidencia);
+            imgReviewed = (ImageView) v.findViewById(R.id.img_card_incidents_reviewed);
         }
     }
 
-    public IncidenciaAdapter(List<IncidenciaRO> incidencias, Context context, ListenerClick listener) {
+    public IncidenciaAdapter(List<IncidenciaRO> incidencias, Context context,
+                             ListenerClick listener) {
         this.ListaIncidencias = incidencias;
         mListener = listener;
 
@@ -104,6 +107,10 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
         }
 
         viewHolder.txtDesc.setText(ListaIncidencias.get(i).getDescripcion());
+
+        if ( ListaIncidencias.get(i).getId() != 0 ) {
+            viewHolder.imgReviewed.setImageResource(R.drawable.incident_reviewed);
+        }
 
         FrecuencieRO frecuencia = new FrecuencieRO();
         int idFrec = ListaIncidencias.get(i).getFrecuenciaId();

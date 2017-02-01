@@ -1,5 +1,6 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,6 +51,9 @@ import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
+
+import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
 
 public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick {
 
@@ -103,12 +107,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_inspeccion_nuevo4, container, false);
-
-        listaIncidencias.add(new IncidenciaRO("nombre 1", "desc"));
-        listaIncidencias.add(new IncidenciaRO("nombre 2", "descripcion"));
-        listaIncidencias.add(new IncidenciaRO("nombre 3", "descripcion"));
-        listaIncidencias.add(new IncidenciaRO("nombre 4", "desc"));
-
         setUpElements(view);
         setUpActions();
         LoadInspeccion();
@@ -278,7 +276,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         dialogConfirm.show();
         dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
         dialogConfirm.setBody("¿Está seguro de finalizar la inspección? \n" +
-                "Una vez finalizada se enviará hacia el servidor y no podrá modificarse");
+                "Una vez finalizada se enviará hacia el servidor y no podrá modificarse.");
         dialogConfirm.setTextBtnAceptar("FINALIZAR");
 
         dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
@@ -317,9 +315,9 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     private void sendInspection() {
 
         // Obtenemos el token :
-
-        //String token = activityMain.usuarioLogueado.getApi_token();
-        String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
+        SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
+                activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
+        String token = preferencesHelper.getToken();
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
@@ -328,7 +326,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         Realm realm = Realm.getInstance(myConfig);
         final InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
 
-        //Asignar ids temporal segun orden a Incidente(inspection_items), (asi lo requiere el sevicio web)
+        //Asignar ids temporal segun orden a Incidente(inspection_items),
+        // (asi lo requiere el sevicio web)
         int cantImagenesTotal = 0;
         for (int i = 0; i < inspectionToSend.listaIncidencias.size(); i++) {
             inspectionToSend.listaIncidencias.get(i).setId(i);
@@ -336,11 +335,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             cantImagenesTotal += inspectionToSend.listaIncidencias.get(i).listaImgComent.size();
             for (int j = 0; j < inspectionToSend.listaIncidencias.get(i).listaImgComent.size(); j++) {
                 inspectionToSend.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
-
             }
-
         }
-
 
         RestClient restClient = new RestClient(Services.INSPECTION);
 
@@ -353,8 +349,10 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                     try {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        JSONObject inspeccionResult = jsonObject.getJSONObject("message").getJSONObject("inspection");
-                        JSONArray listaIncidentes = jsonObject.getJSONObject("message").getJSONArray("inspection_items");
+                        JSONObject inspeccionResult = jsonObject.getJSONObject("message")
+                                .getJSONObject("inspection");
+                        JSONArray listaIncidentes = jsonObject.getJSONObject("message")
+                                .getJSONArray("inspection_items");
 
                         // Actualizar el registro en Realm :
                         updateLocalInspection(inspeccionResult.getInt("id"));
