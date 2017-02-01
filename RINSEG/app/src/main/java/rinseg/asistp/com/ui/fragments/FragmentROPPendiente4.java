@@ -538,7 +538,7 @@ public class FragmentROPPendiente4 extends Fragment {
         Call<ResponseBody> call = restClient.iServices.setRopCerrado(ropToSend, token);
 
         Log.e("rop risk ", "" + rop.getRiskId());
-        Log.e("call risk ", "" + call.toString());
+        Log.e("call ", "" + call.toString());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -562,7 +562,7 @@ public class FragmentROPPendiente4 extends Fragment {
                             mRop.setTmpId(String.valueOf(ropResult.getInt("id")));
                             realm.commitTransaction();
 
-                            Generic.CambiarNombreCarpetaImageens(activityMain,Constants.PATH_IMAGE_GALERY_ROP,oldFolder,mRop.getTmpId());
+                            Generic.CambiarNombreCarpetaImageens(activityMain, Constants.PATH_IMAGE_GALERY_ROP, oldFolder, mRop.getTmpId());
                             ropToSend.setTmpId(mRop.getTmpId());
 
                             int idRop = mRop.getId();
@@ -574,9 +574,8 @@ public class FragmentROPPendiente4 extends Fragment {
                                 }
                             } else {
                                 dialogLoading.dismiss();
-                                mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #"+ mRop.getId());
+                                mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #" + mRop.getId());
                             }
-
 
 
                         }
@@ -683,7 +682,6 @@ public class FragmentROPPendiente4 extends Fragment {
                                 // Messages.showSB(getView(), getString(R.string.msg_error_guardar), "ok");
                             }
 
-
                         } else {
                             Log.e("imagen", response.message());
                             Log.e("imagen error", response.errorBody().toString());
@@ -736,7 +734,7 @@ public class FragmentROPPendiente4 extends Fragment {
         if (cantImagenesTotal == cantImagenesEnviadas) {
             dialogLoading.hide();
 
-            mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #"+ idRop);
+            mostrarDialogRopDireccionar(getString(R.string.msg_cerrar_rop_ok) + " \nRop #" + idRop);
 
             cantImagenesTotal = 0;
             cantImagenesEnviadas = 0;

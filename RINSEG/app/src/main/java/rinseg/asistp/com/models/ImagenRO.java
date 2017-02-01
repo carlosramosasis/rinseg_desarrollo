@@ -18,6 +18,8 @@ public class ImagenRO extends RealmObject{
 
     private String path;
 
+    private int idParent;
+
 
 
 
@@ -55,5 +57,11 @@ public class ImagenRO extends RealmObject{
         this.path = path;
     }
 
+    public int getIdParent() {
+        return idParent;
+    }
 
+    public void setIdParent(int idParent) {
+        this.idParent = idParent;
+    }
 }

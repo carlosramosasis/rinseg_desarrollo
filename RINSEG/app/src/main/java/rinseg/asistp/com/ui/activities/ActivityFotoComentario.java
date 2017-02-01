@@ -47,6 +47,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
     IncidenciaRO mIncidencia;
     ImagenRO imagenRO;
     String tmpIdRop = null;
+    String pTitulo = null;
     String tmpIdInci = null;
     Boolean puedeEditar;
     String comentario = null;
@@ -67,6 +68,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
                 tmpIdInci = extras.getString("IncidenciatmpId", null);
                 puedeEditar = extras.getBoolean("puedeEditar", true);
                 comentario = extras.getString("comentario", null);
+                pTitulo = extras.getString("titulo",getString(R.string.title_add_imagen));
             }
         }
 
@@ -89,7 +91,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        toolbarFotoComentario.setTitle(R.string.title_add_imagen);
+        toolbarFotoComentario.setTitle(pTitulo);
         txtComentario.clearFocus();
     }
 

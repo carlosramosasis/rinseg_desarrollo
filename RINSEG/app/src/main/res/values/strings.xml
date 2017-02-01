@@ -45,7 +45,9 @@
     <string name="title_rop">ROP</string>
     <string name="title_levantamiento">Levantamiento</string>
     <string name="title_ssma">SSMA</string>
-    <string name="title_add_imagen">Adjuntando imagen</string>
+    <string name="title_add_imagen">Adjuntando imágen</string>
+    <string name="title_imagen">Imágen y comentario</string>
+    <string name="title_galeria">Galería de imágenes</string>
     <string name="title_incident_detail">Detalle de inspección</string>
 
 

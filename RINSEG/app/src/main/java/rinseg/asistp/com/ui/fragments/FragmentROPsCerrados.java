@@ -363,7 +363,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                             ROP ropCopy = realm.copyFromRealm(ropRecuperado);
                             for (int i = 0; i < listaRops.size(); i++) {
                                 int idRop = listaRops.get(i).getId();
-                                if(idRop == ropCopy.getId()){
+                                if (idRop == ropCopy.getId()) {
                                     listaRops.remove(i);
                                     ropAdapter.notifyDataSetChanged();
                                 }
@@ -434,7 +434,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
             rop.setEventId(ropJson.getInt("event_id"));
             rop.setTargetId(ropJson.getInt("target_id"));
             rop.setAreaId(ropJson.getInt("area_id"));
-            rop.setArea(ropJson.getString("area"));
+            rop.setArea(ropJson.getString("area_name"));
             rop.setEventPlace(ropJson.getString("event_place"));
             rop.setCompanyId(ropJson.getInt("company_id"));
             rop.setEventDateString(ropJson.getString("event_date"));
@@ -523,7 +523,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     }
 
 
-    public void GuardarImagenesEnLocal(RealmList<ImagenRO> listaImagenes, String pathBase) {
+    public void GuardarImagenesEnLocal(final RealmList<ImagenRO> listaImagenes, final String pathBase) {
         for (int i = 0; i < listaImagenes.size(); i++) {
             ImagenRO img = listaImagenes.get(i);
             final String path = pathBase + img.getName();
@@ -564,6 +564,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                             Log.e("onPrepareLoad", "onPrepareLoad");
                         }
                     });
+
         }
     }
 
