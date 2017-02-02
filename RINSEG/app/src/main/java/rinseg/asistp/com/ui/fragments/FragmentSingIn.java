@@ -190,14 +190,14 @@ public class FragmentSingIn extends Fragment {
 
 
     private void Login(String usu, String pass, final View v) {
-        /*if(usu.length() == 0 || pass.length() == 0) {
+        if(usu.length() == 0 || pass.length() == 0) {
             Messages.showSB(v,  getString(R.string.msg_login_incomplete) , "ok");
             return;
         }
-*/
+
         dialogLoading.show();
         RestClient restClient = new RestClient(Services.URL_SECURITY);
-        Call<ResponseBody> call = restClient.iServices.setLogin("oscar.sequeiros", "123456");
+        Call<ResponseBody> call = restClient.iServices.setLogin(usu, pass);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

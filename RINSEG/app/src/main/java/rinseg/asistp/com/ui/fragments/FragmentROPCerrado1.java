@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -11,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,11 +28,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -72,6 +78,9 @@ import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
+
+import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -96,10 +105,9 @@ public class FragmentROPCerrado1 extends Fragment {
 
     ActivityRopCerradoDetalle activityMain;
 
-    public FloatingActionButton btnGaleriaFotos;
-    public FloatingActionButton btnImportarFotos;
-    public FloatingActionButton btnTomarFoto;
-    public FloatingActionButton btnEnviarImg;
+    public FloatingActionButton btnGaleriaFotos, btnImportarFotos, btnTomarFoto, btnEnviarImg,
+            btnGeneratePDF;
+    private FloatingActionsMenu fabMenu;
 
     Bundle bundle;
 
@@ -213,35 +221,13 @@ public class FragmentROPCerrado1 extends Fragment {
         }
     }
 
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
-
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -268,21 +254,10 @@ public class FragmentROPCerrado1 extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            /*catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }*/
-
-
         }
     }
 
 //// TODO: ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: METODOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
@@ -298,6 +273,8 @@ public class FragmentROPCerrado1 extends Fragment {
         btnImportarFotos = (FloatingActionButton) v.findViewById(R.id.rd_fab_import_foto);
         btnTomarFoto = (FloatingActionButton) v.findViewById(R.id.rd_fab_tomar_foto);
         btnEnviarImg = (FloatingActionButton) v.findViewById(R.id.rd_fab_set_enviar);
+        btnGeneratePDF = (FloatingActionButton) v.findViewById(R.id.fab_rop_detail_generate_pdf);
+        fabMenu = (FloatingActionsMenu) v.findViewById(R.id.rd_fab_menu_rop);
 
         txtCodigo = (TextView) v.findViewById(R.id.rd_txt_codigo);
         txtAprobado = (TextView) v.findViewById(R.id.rd_txt_aprobado);
@@ -429,18 +406,96 @@ public class FragmentROPCerrado1 extends Fragment {
                     }else{
                         Messages.showToast(getView(),getString(R.string.msg_error_no_nuevas_imagenes));
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                     realm.close();
                 } finally {
                     realm.close();
                 }
-
-
             }
         });
+
+        btnGeneratePDF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Obtenemos el token :
+                SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
+                        activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
+                String token = preferencesHelper.getToken();
+
+                final DialogLoading loading = new DialogLoading(activityMain);
+                loading.show();
+
+                RestClient restClient = new RestClient(Services.URL_ROPS);
+                Call<ResponseBody> call = restClient.iServices.downloadRopPDF(mRop.getId(), token);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if ( response.isSuccessful() ) {
+                            // Mostramos dialog de éxito :
+                            try {
+                                final File file = Environment.getExternalStoragePublicDirectory(
+                                        Environment.DIRECTORY_DOWNLOADS);
+                                final String nameFile = "ROP_" + String.valueOf(mRop.getId())
+                                        + ".pdf";
+                                String path = file.getPath() + "/" + nameFile;
+                                OutputStream out = new FileOutputStream(path);
+                                out.write(response.body().bytes());
+                                out.close();
+
+                                loading.dismiss();
+                                fabMenu.collapse();
+
+                                // Mostramos SnackBar y acción para abrir el documento :
+                                assert getView() != null;
+                                Snackbar snackbar = Snackbar
+                                        .make(getView(), R.string.msg_succeess_generate_pdf,
+                                                Snackbar.LENGTH_LONG)
+                                        .setAction("ABRIR", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                openPDF(file, nameFile);
+                                            }
+                                        });
+                                snackbar.show();
+
+                            } catch (Exception e) {
+                                loading.dismiss();
+                                e.printStackTrace();
+                            }
+                        } else {
+                            loading.dismiss();
+                            Messages.showSB(
+                                    getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
+                            Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                                    response.message() + "code :" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        loading.dismiss();
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
+    }
+
+    /** Módulo para abrir el archivo PDF */
+    private void openPDF(File path, String nameFile) {
+        File file = new File(path, nameFile);
+        Uri pathUri = Uri.fromFile(file);
+        Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenintent.setDataAndType(pathUri, "application/pdf");
+        try {
+            startActivity(pdfOpenintent);
+        }
+        catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void Permissions() {

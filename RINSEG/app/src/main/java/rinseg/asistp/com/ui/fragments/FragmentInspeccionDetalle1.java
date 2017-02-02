@@ -1,6 +1,7 @@
 package rinseg.asistp.com.ui.fragments;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,9 @@ import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
 import rinseg.asistp.com.utils.DialogLoading;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
+
+import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
 
 public class FragmentInspeccionDetalle1 extends Fragment {
 
@@ -172,8 +176,9 @@ public class FragmentInspeccionDetalle1 extends Fragment {
             @Override
             public void onClick(View v) {
                 // Obtenemos el token :
-                //String token = activityMain.usuarioLogueado.getApi_token();
-                String token = "fwrQQOS0Zp0q7tl0OxSuawBxdl2DMxqYiW7HOkj77nIrQpbVz9T15juWEByU";
+                SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
+                        activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
+                String token = preferencesHelper.getToken();
 
                 final DialogLoading loading = new DialogLoading(activityMain);
                 loading.show();

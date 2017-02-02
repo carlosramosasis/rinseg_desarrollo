@@ -203,8 +203,13 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 btnRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final int codRop = Integer.parseInt(txtCodigoRecuperar.getText().toString().trim());
-                        RecuperarRopCerrado(codRop);
+                        if ( !txtCodigoRecuperar.getText().toString().trim().equals("") ) {
+                            final int codRop = Integer.parseInt(
+                                    txtCodigoRecuperar.getText().toString().trim());
+                            RecuperarRopCerrado(codRop);
+                        } else {
+                            Messages.showSB(getView(), "Ingrese el código de ROP", "");
+                        }
                     }
                 });
 
@@ -214,7 +219,6 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         recuperaRopDialog.dismiss();
                     }
                 });
-
             }
         });
     }

@@ -66,4 +66,7 @@ public interface IServices {
 
     @GET(Services.PDF)
     Call<ResponseBody> downloadInspecPDF(@Query("id") int id_ins, @Query("api_token") String token);
+
+    @GET(Services.PDF)
+    Call<ResponseBody> downloadRopPDF(@Query("id") int id_rop, @Query("api_token") String token);
 }
