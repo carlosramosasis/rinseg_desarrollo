@@ -35,6 +35,15 @@ public class Messages {
         snackbar.show();
     }
 
+    /**
+     * Created on 28/10/2016
+     * @param view vista.
+     * @param message Mensaje a mostrarse.
+     */
+    public static void showSB(View view, String message){
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+
 
     public static void showToast(View view, String message){
         Toast.makeText(view.getContext(),message,Toast.LENGTH_LONG).show();

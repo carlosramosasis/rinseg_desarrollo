@@ -226,13 +226,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_sincronizar) {
             Sincronizar(usuarioLogueado.getApi_token());
         } else if (id == R.id.nav_acerca_de) {
-            ButtonBottomSetDefault();
-            replaceFragment(new FragmentLevantarIncidencia(), true, 0, 0, 0, 0);
+            //ButtonBottomSetDefault();
+            //replaceFragment(new FragmentLevantarIncidencia(), true, 0, 0, 0, 0);
         } else if (id == R.id.nav_cerrar_sesion) {
             CerrarSesion();
         }
-
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
