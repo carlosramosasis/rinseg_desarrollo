@@ -24,8 +24,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.github.clans.fab.FloatingActionButton;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -203,7 +201,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 btnRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if ( !txtCodigoRecuperar.getText().toString().trim().equals("") ) {
+                        if (!txtCodigoRecuperar.getText().toString().trim().equals("")) {
                             final int codRop = Integer.parseInt(
                                     txtCodigoRecuperar.getText().toString().trim());
                             RecuperarRopCerrado(codRop);
@@ -398,6 +396,12 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                             path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + ropCopy.getTmpId() + "/";
 
                             GuardarImagenesEnLocal(ropCopy.listaImgComent, path);
+                           /* for (int i = 0; i < ropCopy.listaImgComent.size(); i++) {
+                                ImagenRO img = ropCopy.listaImgComent.get(i);
+                                final String pathFinal = path + img.getName();
+                                new GuardarImagenesEnLocalAsync(img, pathFinal).execute("", "", "");
+                            }*/
+
 
                             listaRops.add(0, ropCopy);
                             ropAdapter.notifyDataSetChanged();
@@ -537,44 +541,32 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
             ImagenRO img = listaImagenes.get(i);
             final String path = pathBase + img.getName();
             try {
-                Picasso.with(activityMain)
-                        .load(img.getPath())
-                        .into(new Target() {
-                            @Override
-                            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                                Log.e("onBitmapLoaded", "onBitmapLoaded");
-                                new Thread(new Runnable() {
-                                    public void run() {
-                                        File file = new File(path);
-                                        try {
-                                            Log.e("empeso", "empezo");
-                                            file.createNewFile();
-                                            FileOutputStream ostream = new FileOutputStream(file);
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                            ostream.flush();
-                                            ostream.close();
-                                            Log.e("termino", "termino");
+                Glide.with(getActivity())
+                    .load(img.getPath()).asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    Log.e("onResourceReady", "onResourceReady");
+                                    File file = new File(path);
+                                    try {
+                                        Log.e("empeso", "empezo");
+                                        file.createNewFile();
+                                        FileOutputStream ostream = new FileOutputStream(file);
+                                        resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                        ostream.flush();
+                                        ostream.close();
+                                        Log.e("termino", "termino");
 
-                                        } catch (IOException e) {
-                                            Log.e("IOException", e.getLocalizedMessage());
-                                            e.printStackTrace();
-                                        }
+                                    } catch (IOException e) {
+                                        Log.e("IOException", e.getLocalizedMessage());
+                                        e.printStackTrace();
                                     }
-                                }).start();
-
-
-                            }
-
-                            @Override
-                            public void onBitmapFailed(Drawable errorDrawable) {
-                                Log.e("onBitmapFailed", "onBitmapFailed");
-                            }
-
-                            @Override
-                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                                Log.e("onPrepareLoad", "onPrepareLoad");
-                            }
-                        });
+                                }
+                            }).start();
+                        }
+                    });
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -619,19 +611,21 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     public void GuardarImagenesEnLocal(ImagenRO img, String pathBase) {
 
         final String path = pathBase + img.getName();
-        Picasso.with(activityMain)
-                .load(img.getPath())
-                .into(new Target() {
+
+        Glide.with(getActivity())
+                .load(img.getPath()).asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
                     @Override
-                    public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                    public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         new Thread(new Runnable() {
                             public void run() {
+                                Log.e("onResourceReady", "onResourceReady");
                                 File file = new File(path);
                                 try {
                                     Log.e("empeso", "empezo");
                                     file.createNewFile();
                                     FileOutputStream ostream = new FileOutputStream(file);
-                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
                                     ostream.flush();
                                     ostream.close();
                                     Log.e("termino", "termino");
@@ -642,43 +636,10 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                                 }
                             }
                         }).start();
-
-
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        Log.e("onBitmapFailed", "onBitmapFailed");
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        Log.e("onPrepareLoad", "onPrepareLoad");
                     }
                 });
 
     }
 
-    public class GuardarImagenesEnLocalAsync extends AsyncTask<String, Integer, Integer> {
-        private ImagenRO imgRop;
-        private String mPath;
-
-        GuardarImagenesEnLocalAsync(ImagenRO img, String path) {
-            imgRop = img;
-            mPath = path;
-        }
-
-        @Override
-        protected Integer doInBackground(String... strings) {
-            int error = 0;
-            try {
-                GuardarImagenesEnLocal(imgRop, mPath);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return error;
-        }
-    }
 
 }
