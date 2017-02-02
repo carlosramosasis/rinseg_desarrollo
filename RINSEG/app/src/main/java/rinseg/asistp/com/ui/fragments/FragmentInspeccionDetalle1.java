@@ -190,7 +190,6 @@ public class FragmentInspeccionDetalle1 extends Fragment {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if ( response.isSuccessful() ) {
-                            // Mostramos dialog de éxito :
                             try {
                                 final File file = Environment.getExternalStoragePublicDirectory(
                                         Environment.DIRECTORY_DOWNLOADS);
