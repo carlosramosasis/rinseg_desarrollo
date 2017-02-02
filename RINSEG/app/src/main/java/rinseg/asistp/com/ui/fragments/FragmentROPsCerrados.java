@@ -9,6 +9,9 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -107,6 +110,9 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     EditText txtCodigoRecuperar;
 
     RealmConfiguration myConfig;
+
+    int cantImagenesTotal = 0;
+    int cantImagenesRecibidos = 0;
 
     public FragmentROPsCerrados() {
         // Required empty public constructor
@@ -396,21 +402,17 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                             path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + ropCopy.getTmpId() + "/";
 
                             GuardarImagenesEnLocal(ropCopy.listaImgComent, path);
-                           /* for (int i = 0; i < ropCopy.listaImgComent.size(); i++) {
-                                ImagenRO img = ropCopy.listaImgComent.get(i);
-                                final String pathFinal = path + img.getName();
-                                new GuardarImagenesEnLocalAsync(img, pathFinal).execute("", "", "");
-                            }*/
-
 
                             listaRops.add(0, ropCopy);
                             ropAdapter.notifyDataSetChanged();
 
-                            dialogLoading.dismiss();
+                            if (ropCopy.listaImgComent.size() == 0) {
+                                dialogLoading.dismiss();
+                                Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
+                            }
+
                         }
 
-
-                        Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
 
                     } catch (Exception e) {
                         dialogLoading.dismiss();
@@ -418,7 +420,6 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                         Messages.showSB(rootLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
                     } finally {
                         realm.close();
-                        dialogLoading.dismiss();
                     }
 
                 } else {
@@ -437,7 +438,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     }
 
-    public void PopulateROP(ROP rop, JSONObject ropJson) {
+    private void PopulateROP(ROP rop, JSONObject ropJson) {
 
         try {
             rop.setCerrado(true);
@@ -485,7 +486,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     }
 
-    public void PopulateCompanieForRop(ROP rop, JSONObject companyJson, Realm realm) {
+    private void PopulateCompanieForRop(ROP rop, JSONObject companyJson, Realm realm) {
 
         try {
             CompanyRO company = realm.createObject(CompanyRO.class);
@@ -499,7 +500,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     }
 
-    public void PopulateImagesForRopNew(ROP rop, JSONArray imagesArray, Realm realm) {
+    private void PopulateImagesForRopNew(ROP rop, JSONArray imagesArray, Realm realm) {
         for (int i = 0; i < imagesArray.length(); i++) {
             try {
                 JSONObject imgJson = imagesArray.getJSONObject(i);
@@ -516,7 +517,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         }
     }
 
-    public void PopulateRopItemsForRop(ROP rop, JSONArray RopItems, Realm realm) {
+    private void PopulateRopItemsForRop(ROP rop, JSONArray RopItems, Realm realm) {
         for (int i = 0; i < RopItems.length(); i++) {
             try {
                 JSONObject item = RopItems.getJSONObject(i);
@@ -536,37 +537,68 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     }
 
 
-    public void GuardarImagenesEnLocal(final RealmList<ImagenRO> listaImagenes, final String pathBase) {
+    private void GuardarImagenesEnLocal(final RealmList<ImagenRO> listaImagenes, final String pathBase) {
+        cantImagenesTotal = listaImagenes.size();
         for (int i = 0; i < listaImagenes.size(); i++) {
             ImagenRO img = listaImagenes.get(i);
             final String path = pathBase + img.getName();
             try {
                 Glide.with(getActivity())
-                    .load(img.getPath()).asBitmap()
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            new Thread(new Runnable() {
-                                public void run() {
-                                    Log.e("onResourceReady", "onResourceReady");
-                                    File file = new File(path);
-                                    try {
-                                        Log.e("empeso", "empezo");
-                                        file.createNewFile();
-                                        FileOutputStream ostream = new FileOutputStream(file);
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                        ostream.flush();
-                                        ostream.close();
-                                        Log.e("termino", "termino");
+                        .load(img.getPath()).asBitmap()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                new Thread(new Runnable() {
+                                    public void run() {
+                                        Log.e("onResourceReady", "onResourceReady");
+                                        File file = new File(path);
+                                        try {
+                                            Log.e("empeso", "empezo");
+                                            file.createNewFile();
+                                            FileOutputStream ostream = new FileOutputStream(file);
+                                            resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                            ostream.flush();
+                                            ostream.close();
+                                            Log.e("termino", "termino");
+                                            cantImagenesRecibidos += 1;
+                                            if (validarDescargaTotalImagenes()) {
+                                                Looper.prepare();
+                                                Message msg =  new Message();
+                                                msg.obj =  getString(R.string.msg_rop_recuperado_ok);
+                                                _handler.sendMessage(msg);
+                                                Looper.loop();
+                                            }
 
-                                    } catch (IOException e) {
-                                        Log.e("IOException", e.getLocalizedMessage());
-                                        e.printStackTrace();
+
+                                        } catch (IOException e) {
+                                            Log.e("IOException", e.getLocalizedMessage());
+                                            e.printStackTrace();
+                                            cantImagenesRecibidos += 1;
+                                            if (validarDescargaTotalImagenes()) {
+                                                Looper.prepare();
+                                                Message msg =  new Message();
+                                                msg.obj =  getString(R.string.msg_rop_recuperado_fail);
+                                                _handler.sendMessage(msg);
+                                                Looper.loop();
+                                            }
+                                        }
                                     }
+                                }).start();
+                            }
+
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                                cantImagenesRecibidos += 1;
+                                if (validarDescargaTotalImagenes()) {
+                                    Looper.prepare();
+                                    Message msg =  new Message();
+                                    msg.obj =  getString(R.string.msg_rop_recuperado_fail);
+                                    _handler.sendMessage(msg);
+                                    Looper.loop();
                                 }
-                            }).start();
-                        }
-                    });
+                            }
+                        });
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -576,8 +608,15 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         }
     }
 
+    private Handler _handler = new Handler() {
+        public void handleMessage(Message m) {
+            Messages.showToast(getView(), m.obj.toString());
+            super.handleMessage(m);
+        }
+    };
 
-    public void PopulateImagesForRopExisting(ROP rop, JSONArray imagesArray, Realm realm) {
+
+    private void PopulateImagesForRopExisting(ROP rop, JSONArray imagesArray, Realm realm) {
 
         for (int i = 0; i < imagesArray.length(); i++) {
             try {
@@ -608,7 +647,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     }
 
-    public void GuardarImagenesEnLocal(ImagenRO img, String pathBase) {
+    private void GuardarImagenesEnLocal(ImagenRO img, String pathBase) {
 
         final String path = pathBase + img.getName();
 
@@ -639,6 +678,19 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                     }
                 });
 
+    }
+
+    private Boolean validarDescargaTotalImagenes() {
+        boolean resu = false;
+        if (cantImagenesTotal == cantImagenesRecibidos) {
+            cantImagenesTotal = 0;
+            cantImagenesRecibidos = 0;
+            resu = true;
+            dialogLoading.dismiss();
+
+        }
+
+        return resu;
     }
 
 

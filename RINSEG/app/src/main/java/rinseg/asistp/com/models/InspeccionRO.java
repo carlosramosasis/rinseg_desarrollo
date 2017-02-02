@@ -45,6 +45,8 @@ public class InspeccionRO extends RealmObject {
 
     private String tmpId;
 
+    private Boolean cerrado;
+
     @SerializedName("inspector")
     public RealmList<InspectorRO> listaInspectores;
 
@@ -53,6 +55,8 @@ public class InspeccionRO extends RealmObject {
 
     @SerializedName("inspection_item")
     public RealmList<IncidenciaRO> listaIncidencias;
+
+
 
 
     public int getId() {
@@ -157,6 +161,14 @@ public class InspeccionRO extends RealmObject {
 
     public void setCompanyString(String companyString) {
         this.companyString = companyString;
+    }
+
+    public Boolean isCerrado() {
+        return cerrado;
+    }
+
+    public void setCerrado(Boolean cerrado) {
+        this.cerrado = cerrado;
     }
 
     @Override

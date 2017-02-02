@@ -31,6 +31,7 @@ public class Constants {
     public static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
     public static String KEY_INTENT_SERV_ACTIVO = "intentServActivo";
+    public static String KEY_INTENT_SERV_ACTIVO_INSPECCION = "intentServActivoInspeccion";
 
     public static String NAME_EVENT_ACTO_INSEGURO = "acto_inseguro";
     public static String NAME_EVENT_CONDICION_INSEGURA = "condicion_insegura";
