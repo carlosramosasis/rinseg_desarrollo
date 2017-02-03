@@ -84,6 +84,10 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
     RealmConfiguration myConfig;
     Bundle bundle;
 
+    int totalToSend, correctSend, failSend = 0;
+
+    DialogLoading dialog;
+
     public FragmentInspeccionNuevo4() {
     }
 
@@ -275,7 +279,6 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
     private void showDialogConfirm() {
         dialogConfirm = new DialogRINSEG(activityMain);
-        //dialogConfirm.setContentView(R.layout.dialog_terminar_inspeccion);
         dialogConfirm.show();
         dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
         dialogConfirm.setBody("¿Está seguro de finalizar la inspección? \n" +
@@ -292,9 +295,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         });
     }
 
-    /**
-     * Módulo para almacenar la inspección
-     */
+    /** Módulo para almacenar la inspección */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void saveInspection() {
         Realm realm = Realm.getInstance(myConfig);
@@ -313,30 +314,26 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         }
     }
 
-    /**
-     * Módulo para enviar la inspección al servidor
-     */
+    /** Módulo para enviar la inspección al servidor */
     private void sendInspection() {
-
         // Obtenemos el token :
         SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
                 activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
         final String token = preferencesHelper.getToken();
 
         // Mostramos dialog mientras se procese :
-        final DialogLoading dialog = new DialogLoading(activityMain);
+        dialog = new DialogLoading(activityMain);
         dialog.show();
 
         final Realm realm = Realm.getInstance(myConfig);
         InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
 
-        //Asignar ids temporal segun orden a Incidente(inspection_items),
+        // Asignar ids temporal segun orden a Incidente(inspection_items),
         // (asi lo requiere el sevicio web)
-        int cantImagenesTotal = 0;
         for (int i = 0; i < inspectionToSend.listaIncidencias.size(); i++) {
             inspectionToSend.listaIncidencias.get(i).setId(i);
             // asignamos el id temporal del incidente a sus respectivas imagenes
-            cantImagenesTotal += inspectionToSend.listaIncidencias.get(i).listaImgComent.size();
+            totalToSend += inspectionToSend.listaIncidencias.get(i).listaImgComent.size();
             for (int j = 0; j < inspectionToSend.listaIncidencias.get(i).listaImgComent.size(); j++) {
                 inspectionToSend.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
             }
@@ -348,7 +345,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
+                if ( response.isSuccessful() ) {
                     // Mostramos dialog de éxito :
                     try {
                         // Intentaremos castear la respuesta :
@@ -366,15 +363,12 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
                         InspeccionRO currentInspe = realm.copyFromRealm(mInspc);
 
-                        //Enviamos todas las imágenes :
+                        // Enviamos todas las imágenes :
                         for ( IncidenciaRO incident : currentInspe.listaIncidencias ) {
                             for ( ImagenRO image : incident.listaImgComent ) {
                                 sendImage(image, incident.getTmpId(),incident.getId(), token);
                             }
                         }
-                        dialog.dismiss();
-                        showDialogSuccess();
-                        // Enviar imágenes :
                     } catch (Exception e) {
                         dialog.dismiss();
                         e.printStackTrace();
@@ -396,11 +390,11 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         });
     }
 
-    private void showDialogSuccess() {
+    private void showDialogSuccess(String message) {
         dialogConfirm = new DialogRINSEG(activityMain);
         dialogConfirm.show();
         dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
-        dialogConfirm.setBody("La inspección ha sido enviada satisfactoriamente");
+        dialogConfirm.setBody(message);
         dialogConfirm.setTextBtnAceptar("DE ACUERDO");
         dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
         dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
@@ -472,17 +466,42 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     Log.d("TAG-TAG", response.message());
+                    correctSend++;
+                    if ( correctSend == totalToSend ) {
+                        dialog.dismiss();
+                        showDialogSuccess("La inspección ha sido enviada satisfactoriamente");
+                    } else {
+                        if ( correctSend + failSend == totalToSend ) {
+                            Messages.showSB(getView(),
+                                    getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
+                            dialog.dismiss();
+                            showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
+                                    "Sin embargo, algunas imágenes no han sido enviadas.");
+                        }
+                    }
                 } else {
-                    Messages.showSB(
-                            getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
-                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                            response.message() + "code :" + response.code());
+                    failSend++;
+                    if ( correctSend + failSend == totalToSend ) {
+                        Messages.showSB(getView(),
+                                getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
+                        dialog.dismiss();
+                        showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
+                                "Sin embargo, algunas imágenes no han sido enviadas.");
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
+                failSend++;
+                if ( correctSend + failSend == totalToSend ) {
+                    Messages.showSB(getView(),
+                            getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
+                    dialog.dismiss();
+                    showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
+                            "Sin embargo, algunas imágenes no han sido enviadas.");
+                }
             }
         });
     }

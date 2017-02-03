@@ -213,6 +213,8 @@
 
     <string name="msg_error_guardar_inspeccion">Ocurrió un error al enviar la inspección.
         (se enviará cuando se recupere la conexión a internet).</string>
+    <string name="msg_error_guardar_inspeccion_imagen">Ocurrió un error al enviar las imágenes.
+    </string>
 
     <!--Dialog Terminar Inpsección -->
     <string name="dialog_terminar_ssma_titulo">Terminar Inspección</string>
