@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,9 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import com.github.clans.fab.FloatingActionButton;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +20,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
@@ -42,7 +38,6 @@ import rinseg.asistp.com.listener.ListenerClick;
 import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
-import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
@@ -146,25 +141,20 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         void onFragmentInteraction(Uri uri);
     }
 
-    /**
-     * Método sobre escrito para manejar el click sobre una incidencia
-     */
+    /** Método sobre escrito para manejar el click sobre una incidencia */
     @Override
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
         launchActivityGenerarIncidencia(mInspc, listaIncidencias.get(position).getTmpId());
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
-    }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
 
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
-    }
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
-    }
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
 
     @Override
     public void onDestroyView() {
@@ -304,7 +294,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             Calendar currentDate = Calendar.getInstance();
             mInspc.setDateClose(currentDate.getTime());
             mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
-            //mInspc.setCerrado(true);
+            mInspc.setCerrado(true);
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -467,17 +457,37 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 if (response.isSuccessful()) {
                     Log.d("TAG-TAG", response.message());
                     correctSend++;
-                    if ( correctSend == totalToSend ) {
-                        dialog.dismiss();
-                        showDialogSuccess("La inspección ha sido enviada satisfactoriamente");
-                    } else {
-                        if ( correctSend + failSend == totalToSend ) {
-                            Messages.showSB(getView(),
-                                    getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
-                            dialog.dismiss();
-                            showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
-                                    "Sin embargo, algunas imágenes no han sido enviadas.");
+
+                    try {
+                        // Seteando el id de imagen :
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        JSONObject messageResult = jsonObject.getJSONObject("message");
+                        JSONObject imageResult = messageResult.getJSONObject("inspection_image");
+
+                        Realm real = Realm.getInstance(myConfig);
+
+                        ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
+                                imageResult.getString("name")).findFirst();
+                        if (imagenInc != null) {
+                            real.beginTransaction();
+                            imagenInc.setId(imageResult.getInt("id"));
+                            real.commitTransaction();
                         }
+                        if (correctSend == totalToSend) {
+                            dialog.dismiss();
+                            showDialogSuccess("La inspección ha sido enviada satisfactoriamente");
+                        } else {
+                            if (correctSend + failSend == totalToSend) {
+                                Messages.showSB(getView(),
+                                        getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
+                                dialog.dismiss();
+                                showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
+                                        "Sin embargo, algunas imágenes no han sido enviadas.");
+                            }
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
                     }
                 } else {
                     failSend++;
