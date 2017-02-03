@@ -128,11 +128,11 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         mListener = null;
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
     public void onDeleteClicked(InspectorAdapter.InspectorViewHolder holder, int position) {
 
         Realm realm = Realm.getInstance(myConfig);
-
         try {
             realm.beginTransaction();
             mInspc.listaInspectores.get(position).deleteFromRealm();
@@ -147,7 +147,6 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -231,13 +230,14 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         });
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadFormDefault(View v) {
         final Realm realm = Realm.getInstance(myConfig);
         try {
             sIns = realm.where(SettingsInspectionRO.class).findFirst();
             //cargar Empresa (Companies)
-            adapterGerencia = new ArrayAdapter<ManagementRO>(
-                    getActivity(), R.layout.spinner_item, sIns.managements);
+            adapterGerencia = new ArrayAdapter<>(getActivity(),
+                    R.layout.spinner_item, sIns.managements);
             adapterGerencia.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerGerencia.setAdapter(adapterGerencia);
 
@@ -277,6 +277,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         return resu;
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void AgregarInspector() {
         // Validando los campos :
         if ( !ValidarFormulario() ) {
@@ -299,6 +300,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
                 Calendar timeNow = Calendar.getInstance();
                 mInspc.setDate(timeNow.getTime());
                 mInspc.setDateString(Generic.dateFormatterMySql.format(mInspc.getDate()));
+                mInspc.setCerrado(false);
 
                 // Obtener id Secuencial para id temporal
                 int codigoSecuencial = 0;
@@ -348,37 +350,5 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
                 realm.close();
             }
         }
-
-        /*String tmpIdInsp = null;
-        int id = 0;
-        if ( bundle != null ) {
-            tmpIdInsp = bundle.getString("InspTmpId", null);
-            id = bundle.getInt("InspId", 0);
-            boolean vieneDeListado = bundle.getBoolean("vieneDeListado", false);
-
-            final Realm realm = Realm.getInstance(myConfig);
-            try {
-                if (id != 0) {
-                    mInspc = realm.where(InspeccionRO.class).equalTo("id", id).findFirst();
-                } else if (tmpIdInsp != null) {
-                    mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", tmpIdInsp).findFirst();
-                }
-                if (mInspc == null) {
-                    return;
-                }
-
-                // recuperar Inspectores
-                for (int i = 0; i < mInspc.listaInspectores.size(); i++) {
-                    InspectorRO insp = mInspc.listaInspectores.get(i);
-                    listaInspectores.add(insp);
-                    inspectorAdapter.notifyDataSetChanged();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                realm.close();
-            } finally {
-                realm.close();
-            }
-        }*/
     }
 }

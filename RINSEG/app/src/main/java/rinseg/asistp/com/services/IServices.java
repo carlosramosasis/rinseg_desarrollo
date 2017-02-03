@@ -69,4 +69,12 @@ public interface IServices {
 
     @GET(Services.PDF)
     Call<ResponseBody> downloadRopPDF(@Query("id") int id_rop, @Query("api_token") String token);
+
+    @Multipart
+    @POST(Services.ADD_INS_IMAGEN)
+    Call<ResponseBody> addImageIncident(@Part("inspection_item_id") RequestBody incident_id,
+                                        @Part("description") RequestBody description,
+                                        @Part MultipartBody.Part file_image,
+                                        @Query("api_token") String api_token
+    );
 }

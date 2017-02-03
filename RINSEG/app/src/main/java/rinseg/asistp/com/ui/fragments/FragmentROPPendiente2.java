@@ -75,22 +75,13 @@ import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentROPPendiente2.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentROPPendiente2#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class FragmentROPPendiente2 extends Fragment
         implements ListenerClickAccionPreventiva, ListenerClickActoCondicion {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -131,19 +122,8 @@ public class FragmentROPPendiente2 extends Fragment
     //tomar foto
     public int REQUEST_IMAGE_CAPTURE = 1;
 
-    public FragmentROPPendiente2() {
-        // Required empty public constructor
-    }
+    public FragmentROPPendiente2() { }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPPendiente1.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FragmentROPPendiente2 newInstance(String param1, String param2) {
         FragmentROPPendiente2 fragment = new FragmentROPPendiente2();
         Bundle args = new Bundle();
@@ -168,12 +148,9 @@ public class FragmentROPPendiente2 extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rop_pendiente2, container, false);
 
-
         setUpElements(view);
         setUpActions();
-
         Permissions();
-
         LoadRopPendiente();
 
         return view;
@@ -189,26 +166,13 @@ public class FragmentROPPendiente2 extends Fragment
         activityMain.MostrarCantidadImagenesRop(mRop.listaImgComent);
         activityMain.btnFabMenu.setVisibility(View.VISIBLE);
         activityMain.btnFabMenu.collapseImmediately();
-
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -245,7 +209,6 @@ public class FragmentROPPendiente2 extends Fragment
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -261,10 +224,6 @@ public class FragmentROPPendiente2 extends Fragment
                     imagen = capturedImageUri;
                     capturedImageUri = null;
                 }
-
-                //Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                // activityMain.getApplicationContext().getContentResolver(), capturedImageUri);
-
                 if (imagen != null) {
                     launchActivityFotoComentario(imagen);
                 }
@@ -272,31 +231,10 @@ public class FragmentROPPendiente2 extends Fragment
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            /*catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }*/
-
-
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -487,8 +425,6 @@ public class FragmentROPPendiente2 extends Fragment
                         startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
-
-
             }
 
 
@@ -560,16 +496,12 @@ public class FragmentROPPendiente2 extends Fragment
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
-
     }
-
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopPendiente() {
-
-        String tmpIdRop = null;
         if (bundle != null) {
-            tmpIdRop = bundle.getString("ROPtmpId", null);
+            String tmpIdRop = bundle.getString("ROPtmpId", null);
             nameEvent = bundle.getString("nameEvent", null);
 
             //ROP tmpRop = new ROP();
@@ -591,14 +523,6 @@ public class FragmentROPPendiente2 extends Fragment
                     // Recuperando la lista de actos o condiciones :
                     int cantEventItems = mRop.listaEventItems.size();
                     if (cantEventItems > 0) {
-                        /*String s = "";
-                        for (EventItemsRO e : mRop.getListaEventItems()) {
-                            s = s + e.getName() + " - ";
-                        }
-                        if (s.length() > 2) {
-                            s = s.substring(0, s.length() - 2);
-                        }*/
-
                         if (cantEventItems == 1) {
                             textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elemento));
                         } else if (cantEventItems > 1) {
@@ -620,8 +544,7 @@ public class FragmentROPPendiente2 extends Fragment
     public void launchActivityFotoComentario(Uri uriImagen) {
         FotoModel fotoMd = new FotoModel();
 
-        Uri uri = uriImagen;
-        fotoMd.uri = uri;
+        fotoMd.uri = uriImagen;
         //fotoMd.bitmap = null;
 
         Intent FotoComentarioIntent =
@@ -655,7 +578,6 @@ public class FragmentROPPendiente2 extends Fragment
             especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
-
         String[] permisos = new String[especificacionPermisos.size()];
         permisos = especificacionPermisos.toArray(permisos);
 
@@ -673,7 +595,6 @@ public class FragmentROPPendiente2 extends Fragment
                 new DialogActoCondicionSubestandar(getActivity(), nameEvent, mRop.getTmpId(), this);
         dialogActoCondicion.show();
     }
-
 
     /**
      * Implementación de método para setear texto al campo de acto o condición sub estándar
@@ -703,36 +624,4 @@ public class FragmentROPPendiente2 extends Fragment
             realm.close();
         }
     }
-
-    void GenerarPDF() {
-        try {
-
-            final String src = Generic.RutaPdfRop(activityMain, Constants.NAME_PDF_ROP_BASE);
-
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "prueba.pdf");
-            if (file.exists()) {
-                file.delete();
-            }
-            file.getParentFile().mkdirs();
-
-            PdfReader reader = new PdfReader(src);
-
-            PdfDictionary dict = reader.getPageN(1);
-            PdfObject object = dict.getDirectObject(PdfName.CONTENTS);
-
-            if (object != null) {
-                PRStream stream = (PRStream) object;
-                byte[] data = PdfReader.getStreamBytes(stream);
-                stream.setData(new String(data).replace("pdf", "CARLOS").getBytes());
-            }
-            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(file.getAbsolutePath()));
-            stamper.close();
-            reader.close();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

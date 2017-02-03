@@ -39,13 +39,16 @@ import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
 import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
@@ -300,6 +303,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             Calendar currentDate = Calendar.getInstance();
             mInspc.setDateClose(currentDate.getTime());
             mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
+            //mInspc.setCerrado(true);
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -317,14 +321,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         // Obtenemos el token :
         SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
                 activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
-        String token = preferencesHelper.getToken();
+        final String token = preferencesHelper.getToken();
 
         // Mostramos dialog mientras se procese :
         final DialogLoading dialog = new DialogLoading(activityMain);
         dialog.show();
 
-        Realm realm = Realm.getInstance(myConfig);
-        final InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
+        final Realm realm = Realm.getInstance(myConfig);
+        InspeccionRO inspectionToSend = realm.copyFromRealm(mInspc);
 
         //Asignar ids temporal segun orden a Incidente(inspection_items),
         // (asi lo requiere el sevicio web)
@@ -360,11 +364,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                         // Actualizar incidentes en Realm :
                         updateLocalIncidentes(listaIncidentes);
 
-                        Log.e("incidentes",mInspc.listaIncidencias.toString());
+                        InspeccionRO currentInspe = realm.copyFromRealm(mInspc);
 
-                        //Actualizar los id de las incidencias:
-
-
+                        //Enviamos todas las imágenes :
+                        for ( IncidenciaRO incident : currentInspe.listaIncidencias ) {
+                            for ( ImagenRO image : incident.listaImgComent ) {
+                                sendImage(image, incident.getTmpId(),incident.getId(), token);
+                            }
+                        }
                         dialog.dismiss();
                         showDialogSuccess();
                         // Enviar imágenes :
@@ -426,12 +433,12 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         Realm realm = Realm.getInstance(myConfig);
         try {
             realm.beginTransaction();
-            for (int i = 0; i < arrayIncidentes.length(); i++) {
+            for ( int i = 0; i < arrayIncidentes.length(); i++ ) {
                 JSONObject incidenteJson = arrayIncidentes.getJSONObject(i);
-                mInspc.listaIncidencias.get(0).setId(incidenteJson.getInt("id"));
+                mInspc.listaIncidencias.get(i).setId(incidenteJson.getInt("id"));
             }
             realm.commitTransaction();
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
             realm.close();
         } finally {
@@ -439,5 +446,44 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         }
     }
 
+    private void sendImage(ImagenRO imagenRO, String tmpId, int idIncident, String api_token) {
 
+        File myDir = getActivity().getApplicationContext().getFilesDir();
+        File file = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + tmpId + "/"
+                + imagenRO.getName());
+
+        // Asignamos la imagen como Part
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file_image", file.getName(),
+                requestFile);
+
+        // Asignamos los campos como RequestBody :
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"),
+                imagenRO.getDescripcion());
+        RequestBody incident_id = RequestBody.create(MediaType.parse("multipart/form-data"),
+                String.valueOf(idIncident));
+
+        RestClient restClient = new RestClient(Services.INSPECTION);
+
+        Call<ResponseBody> call = restClient.iServices.addImageIncident(incident_id, description,
+                body, api_token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.d("TAG-TAG", response.message());
+                } else {
+                    Messages.showSB(
+                            getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
+                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                            response.message() + "code :" + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
 }

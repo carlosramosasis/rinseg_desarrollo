@@ -29,7 +29,7 @@
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/new_document"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccentDark"
         app:fab_colorRipple="@color/colorTertiary"/>

@@ -108,9 +108,9 @@ public class IncidenciaAdapter extends RecyclerView.Adapter<IncidenciaAdapter.In
 
         viewHolder.txtDesc.setText(ListaIncidencias.get(i).getDescripcion());
 
-        if ( ListaIncidencias.get(i).getId() != 0 ) {
+        /*if ( ListaIncidencias.get(i).getId() != 0 ) {
             viewHolder.imgReviewed.setImageResource(R.drawable.incident_reviewed);
-        }
+        }*/
 
         FrecuencieRO frecuencia = new FrecuencieRO();
         int idFrec = ListaIncidencias.get(i).getFrecuenciaId();
