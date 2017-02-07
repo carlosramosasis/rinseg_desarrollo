@@ -531,7 +531,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 JSONObject f = frecuencies.getJSONObject(i);
                 FrecuencieRO realmFrecuencie = realm.createObject(FrecuencieRO.class);
                 realmFrecuencie.setId(f.getInt("id"));
-                realmFrecuencie.setDisplayName(f.getString("display_name"));
+                realmFrecuencie.setDisplayName(f.getString("display_name") + " (" + f.getInt("value") + ")");
                 realmFrecuencie.setValue(f.getInt("value"));
                 insp.frecuencies.add(realmFrecuencie);
 
@@ -553,7 +553,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 JSONObject f = severities.getJSONObject(i);
                 SeveritiesRO realmSeverities = realm.createObject(SeveritiesRO.class);
                 realmSeverities.setId(f.getInt("id"));
-                realmSeverities.setDisplayName(f.getString("display_name"));
+                realmSeverities.setDisplayName(f.getString("display_name") + " (" + f.getInt("value") + ")");
                 realmSeverities.setValue(f.getInt("value"));
                 insp.severities.add(realmSeverities);
 

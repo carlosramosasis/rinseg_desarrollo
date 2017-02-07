@@ -19,14 +19,7 @@
         android:layout_marginBottom="4dp"
         android:layout_marginTop="4dp">
 
-        <ImageView
-            android:id="@+id/img_card_view_incidencia_riesgo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:background="@drawable/backgorund_circle_gradient"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="2dp"/>
+
 
         <LinearLayout
             android:layout_width="0dp"
@@ -55,7 +48,14 @@
                 android:maxLines="2"/>
 
         </LinearLayout>
-
+        <ImageView
+            android:id="@+id/img_card_view_incidencia_riesgo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/backgorund_circle_gradient"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="2dp"/>
         <ImageView
             android:id="@+id/img_card_incidents_reviewed"
             android:layout_width="wrap_content"

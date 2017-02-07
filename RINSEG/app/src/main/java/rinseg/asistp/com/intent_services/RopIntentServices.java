@@ -33,6 +33,7 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
@@ -129,12 +130,16 @@ public class RopIntentServices extends IntentService {
                             JSONObject messageResult = jsonObject.getJSONObject("message");
                             JSONObject ropResult = messageResult.getJSONObject("rop");
 
-
+                            String oldFolder = ropCopy.getTmpId();
                             Realm realm = Realm.getInstance(myConfig);
                             realm.beginTransaction();
                             ROP ropCerradoRealm = realm.where(ROP.class).equalTo("tmpId",ropCopy.getTmpId()).findFirst();
                             ropCerradoRealm.setId(ropResult.getInt("id"));
+                            ropCerradoRealm.setTmpId(String.valueOf(ropResult.getInt("id")));
                             realm.commitTransaction();
+
+                            Generic.CambiarNombreCarpetaImageens(getApplicationContext(), Constants.PATH_IMAGE_GALERY_ROP, oldFolder, ropCerradoRealm.getTmpId());
+                            ropCopy.setTmpId(ropCerradoRealm.getTmpId());
 
                             int idRop = ropCerradoRealm.getId();
 

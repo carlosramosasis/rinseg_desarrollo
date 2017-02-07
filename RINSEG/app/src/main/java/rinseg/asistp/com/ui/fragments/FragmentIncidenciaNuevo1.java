@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import java.util.Calendar;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.FrecuencieRO;
@@ -53,6 +57,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
     TextView txtCatRiesgo;
     TextView txtNivelRiesgo;
+    ProgressBar progressRiesgo;
 
     ArrayAdapter<EventRO> adapterTipoIncidencia;
     ArrayAdapter<FrecuencieRO> adapterFrecuencia;
@@ -71,7 +76,11 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     int nivelRiesgo;
     String categoriaRiesgo;
 
-    public FragmentIncidenciaNuevo1() { }
+    int progresMax = 0;
+
+
+    public FragmentIncidenciaNuevo1() {
+    }
 
     public static FragmentIncidenciaNuevo1 newInstance(String idIncidencia) {
         FragmentIncidenciaNuevo1 fragment = new FragmentIncidenciaNuevo1();
@@ -84,7 +93,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if ( getArguments() != null ) {
+        if (getArguments() != null) {
             idIncidencia = getArguments().getString(ARG_ID, "");
         }
     }
@@ -96,6 +105,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_incidencia_nuevo1, container, false);
 
         setUpElements(view);
+        inicializarProgressRiesgo();
         setUpActions();
         LoadFormDefault();
         LoadIncidencia();
@@ -133,7 +143,9 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    /** Proceso para cargar las vistas */
+    /**
+     * Proceso para cargar las vistas
+     */
     private void setUpElements(View v) {
         activityMain = ((ActivityGenerarIncidencia) getActivity());
 
@@ -150,6 +162,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
         txtCatRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_categoria_riesgo);
         txtNivelRiesgo = (TextView) v.findViewById(R.id.txt_incidencia_1_nivel_riesgo);
+        progressRiesgo = (ProgressBar) v.findViewById(R.id.progress_incidencia_1_riesgo);
 
         // Configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
@@ -161,7 +174,28 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 .build();
     }
 
-    /** Múdulo para escuchar las accoiones */
+    private void inicializarProgressRiesgo() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            int maxFrecuencia = activityMain.sIns.frecuencies.where().max("value").intValue();
+            int maxSeveridad = activityMain.sIns.severities.where().max("value").intValue();
+
+            int resu = maxFrecuencia * maxSeveridad;
+            Log.e("resu", "" + resu);
+            progressRiesgo.setMax(resu);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
+    /**
+     * Múdulo para escuchar las accoiones
+     */
     private void setUpActions() {
         txtFecha.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +217,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         spinnerSveridad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -193,7 +228,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
@@ -206,7 +242,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( !ValidarFormulario() ) {
+                if (!ValidarFormulario()) {
                     return;
                 }
                 saveIncidencia();
@@ -228,13 +264,13 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 new DatePickerDialog.OnDateSetListener() {
 
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                calendarFechaLimite = Calendar.getInstance();
-                calendarFechaLimite.set(year, monthOfYear, dayOfMonth);
-                txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
-                txtFecha.setError(null);
-            }
-        }, newCalendar.get(Calendar.YEAR),
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        calendarFechaLimite = Calendar.getInstance();
+                        calendarFechaLimite.set(year, monthOfYear, dayOfMonth);
+                        txtFecha.setText(Generic.dateFormatter.format(calendarFechaLimite.getTime()));
+                        txtFecha.setError(null);
+                    }
+                }, newCalendar.get(Calendar.YEAR),
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
@@ -251,7 +287,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
             realm.beginTransaction();
 
-            if ( mIncidencia == null ) {
+            if (mIncidencia == null) {
                 isNewInc = true;
                 mIncidencia = realm.createObject(IncidenciaRO.class);
 
@@ -328,16 +364,18 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         }
     }
 
-    /** Módulo para recuperar la incidencia seleccionada */
+    /**
+     * Módulo para recuperar la incidencia seleccionada
+     */
     private void LoadIncidencia() {
-        if ( !idIncidencia.equals("") ) {
+        if (!idIncidencia.equals("")) {
             Realm realm = Realm.getInstance(myConfig);
             try {
                 mIncidencia = realm.where(IncidenciaRO.class)
                         .equalTo("tmpId", idIncidencia).findFirst();
-                if ( mIncidencia != null ) {
+                if (mIncidencia != null) {
                     // Recuperamos el tipo de incidencia :
-                    for ( int i = 0; i < activityMain.sIns.events.size(); i++ ) {
+                    for (int i = 0; i < activityMain.sIns.events.size(); i++) {
                         if (activityMain.sIns.events.get(i).getId() == mIncidencia.getEventId()) {
                             spinnerTipoIncidencia.setSelection(i);
                             break;
@@ -375,7 +413,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
 
                     CalcularRiesgo();
                 }
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 realm.close();
@@ -433,6 +471,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
     void CalcularRiesgo() {
         txtCatRiesgo.setText(getString(R.string.rop_c1_texto_default));
         txtNivelRiesgo.setText(getString(R.string.rop_c1_texto_default));
+        progressRiesgo.setProgress(0);
 
         FrecuencieRO frecuenciaSelect = (FrecuencieRO) spinnerFrecuencia.getSelectedItem();
         SeveritiesRO severitiesSelect = (SeveritiesRO) spinnerSveridad.getSelectedItem();
@@ -443,6 +482,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         nivelRiesgo = valorSeveridad * valorFrecuencia;
         txtNivelRiesgo.setText(String.valueOf(nivelRiesgo));
 
+        int valorMaximoBase = 0;
+
 
         for (int i = 0; i < activityMain.sIns.risks.size(); i++) {
             RiskRO riesgo = activityMain.sIns.risks.get(i);
@@ -450,8 +491,33 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                     && nivelRiesgo <= riesgo.getMaxValue() && nivelRiesgo != 0) {
                 categoriaRiesgo = riesgo.getDisplayName();
                 txtCatRiesgo.setText(categoriaRiesgo);
+
+                switch (categoriaRiesgo) {
+                    case "Bajo":
+                        progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_green, null));
+                        valorMaximoBase = 0;
+                       // progressRiesgo.setMax();
+                        break;
+                    case "Medio":
+                        progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_yellow, null));
+                        valorMaximoBase = 25;
+                        break;
+                    case "Alto":
+                        progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_orange, null));
+                        valorMaximoBase = 50;
+                        break;
+                    case "Muy Alto":
+                        progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_red, null));
+                        valorMaximoBase = 75;
+                        break;
+                }
+
+
                 break;
             }
         }
+
+
+        progressRiesgo.setProgress(nivelRiesgo);
     }
 }

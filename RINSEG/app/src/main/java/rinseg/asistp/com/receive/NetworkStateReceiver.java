@@ -11,6 +11,7 @@ import android.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
+import rinseg.asistp.com.intent_services.InspeccionIntentServices;
 import rinseg.asistp.com.intent_services.RopIntentServices;
 import rinseg.asistp.com.rinseg.R;
 
@@ -40,8 +41,11 @@ public class NetworkStateReceiver extends WakefulBroadcastReceiver {
         if (ni != null && ni.getState() == NetworkInfo.State.CONNECTED) {
           //  if (firstConnect) {
                 try{
-                    Intent newIntent = new Intent(context, RopIntentServices.class);
-                    context.startService(newIntent);
+                    Intent newIntentRop = new Intent(context, RopIntentServices.class);
+                    context.startService(newIntentRop);
+
+                    Intent newIntentInspeccion = new Intent(context, InspeccionIntentServices.class);
+                    context.startService(newIntentInspeccion);
                 }catch (Exception e){
                     e.printStackTrace();
                     return;

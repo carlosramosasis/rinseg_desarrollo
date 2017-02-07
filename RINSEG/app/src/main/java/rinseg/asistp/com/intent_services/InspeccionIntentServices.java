@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -22,12 +23,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rinseg.asistp.com.models.ImagenRO;
+import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.User;
+import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
@@ -72,20 +76,20 @@ public class InspeccionIntentServices extends IntentService {
                     return;
                 }
 
-                /*RealmResults<InspeccionRO> ropsCerradosNoEnviados = realm.where(InspeccionRO.class).distinct("cerrado", null).equalTo("id", 0).findAll();
+                RealmResults<InspeccionRO> inspeccionesCerradasNoEnviadas = realm.where(InspeccionRO.class).equalTo("cerrado", true).equalTo("id", 0).findAll();
 
-                if (ropsCerradosNoEnviados.size() > 0) {
-                    for (int i = 0; i < ropsCerradosNoEnviados.size(); i++) {
-                        ROP rop = ropsCerradosNoEnviados.get(i);
-                        ROP ropCopy = realm.copyFromRealm(rop);
-                        EnviarRop(realm,ropCopy);
-                        Log.e("ROP en INTENT",ropCopy.toString());
+                if (inspeccionesCerradasNoEnviadas.size() > 0) {
+                    for (int y = 0; y < inspeccionesCerradasNoEnviadas.size(); y++) {
+                        InspeccionRO inspeccion = inspeccionesCerradasNoEnviadas.get(y);
+                        InspeccionRO inspeccionCopy = realm.copyFromRealm(inspeccion);
+                        EnviarInspeccion(realm, inspeccionCopy, inspeccion);
+                        Log.e("Inspeccion en INTENT", inspeccionCopy.toString());
                     }
                 } else {
                     TerminaProceso();
                     return;
                 }
-*/
+
             }
 
         } catch (Exception e) {
@@ -98,18 +102,30 @@ public class InspeccionIntentServices extends IntentService {
 
 
     void TerminaProceso() {
-        Log.e("intent", "acabo el intent");
+        Log.e("intent", "acabo el intent inspeccion");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO, false).commit();
+        preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO_INSPECCION, false).commit();
     }
 
-    void EnviarRop(Realm realm, final ROP ropCopy) {
+    void EnviarInspeccion(final Realm realm, final InspeccionRO inspeccionCopy, final InspeccionRO inspeccionOriginal) {
 
-       final String token = usuParaToken.getApi_token();
+        final String token = usuParaToken.getApi_token();
 
-        RestClient restClient = new RestClient(Services.URL_ROPS);
+        //Asignar ids temporal segun orden a Incidente(inspection_items),
+        // (asi lo requiere el sevicio web)
+        int cantImagenesTotal = 0;
+        for (int i = 0; i < inspeccionCopy.listaIncidencias.size(); i++) {
+            inspeccionCopy.listaIncidencias.get(i).setId(i);
+            // asignamos el id temporal del incidente a sus respectivas imagenes
+            cantImagenesTotal += inspeccionCopy.listaIncidencias.get(i).listaImgComent.size();
+            for (int j = 0; j < inspeccionCopy.listaIncidencias.get(i).listaImgComent.size(); j++) {
+                inspeccionCopy.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
+            }
+        }
 
-        Call<ResponseBody> call = restClient.iServices.setRopCerrado(ropCopy, token);
+        RestClient restClient = new RestClient(Services.INSPECTION);
+
+        Call<ResponseBody> call = restClient.iServices.sendInspection(inspeccionCopy, token);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -117,32 +133,31 @@ public class InspeccionIntentServices extends IntentService {
                 int code = response.code();
                 if (response.isSuccessful()) {
                     try {
+                        // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        String status = jsonObject.getString("status");
+                        JSONObject inspeccionResult = jsonObject.getJSONObject("message")
+                                .getJSONObject("inspection");
+                        JSONArray listaIncidentes = jsonObject.getJSONObject("message")
+                                .getJSONArray("inspection_items");
 
-                        if (status.equals(Constants.SUCCESS)) {
-                            JSONObject messageResult = jsonObject.getJSONObject("message");
-                            JSONObject ropResult = messageResult.getJSONObject("rop");
+                        // Actualizar el registro en Realm :
+                        updateLocalInspection(inspeccionOriginal, inspeccionResult.getInt("id"));
 
+                        // Actualizar incidentes en Realm :
+                        updateLocalIncidentes(inspeccionOriginal, listaIncidentes);
 
-                            Realm realm = Realm.getInstance(myConfig);
-                            realm.beginTransaction();
-                            ROP ropCerradoRealm = realm.where(ROP.class).equalTo("tmpId",ropCopy.getTmpId()).findFirst();
-                            ropCerradoRealm.setId(ropResult.getInt("id"));
-                            realm.commitTransaction();
+                        InspeccionRO currentInspe = realm.copyFromRealm(inspeccionOriginal);
 
-                            int idRop = ropCerradoRealm.getId();
-
-                            if (ropCopy.listaImgComent.size() > 0) {
-                               // cantImagenesTotal = ropCopy.listaImgComent.size();
-                                for (ImagenRO img : ropCopy.listaImgComent) {
-                                   new EnviarImagenRop(img, ropCopy.getTmpId(), idRop, token).execute("", "", "");
+                        //Enviamos todas las imágenes :
+                        for (IncidenciaRO incident : currentInspe.listaIncidencias) {
+                            if (incident.listaImgComent.size() > 0) {
+                                for (ImagenRO image : incident.listaImgComent) {
+                                    sendImage(image, incident.getTmpId(), incident.getId(), token);
                                 }
                                 TerminaProceso();
                             } else {
-                               TerminaProceso();
+                                TerminaProceso();
                             }
-
                         }
 
                         Log.e("jsonObject", jsonObject.toString());
@@ -164,6 +179,41 @@ public class InspeccionIntentServices extends IntentService {
 
         });
     }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void updateLocalInspection(InspeccionRO inspeccionOriginal, int id) {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            realm.beginTransaction();
+            inspeccionOriginal.setId(id);
+            inspeccionOriginal.setTmpId(String.valueOf(id));
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void updateLocalIncidentes(InspeccionRO inspeccionOriginal, JSONArray arrayIncidentes) {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            realm.beginTransaction();
+            for (int i = 0; i < arrayIncidentes.length(); i++) {
+                JSONObject incidenteJson = arrayIncidentes.getJSONObject(i);
+                inspeccionOriginal.listaIncidencias.get(i).setId(incidenteJson.getInt("id"));
+            }
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
+
 
     public class EnviarImagenRop extends AsyncTask<String, Integer, Integer> {
         private ImagenRO imagenRop;
@@ -264,7 +314,6 @@ public class InspeccionIntentServices extends IntentService {
                 });
 
 
-
             } catch (Exception e) {
                 e.printStackTrace();
                 //cantImagenesEnviadas += 1;
@@ -276,10 +325,58 @@ public class InspeccionIntentServices extends IntentService {
         }
 
 
-
-
     }
 
+    private void sendImage(ImagenRO imagenRO, String tmpId, int idIncident, String api_token) {
 
+        File myDir = getApplicationContext().getFilesDir();
+        File file = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + tmpId + "/"
+                + imagenRO.getName());
 
+        // Asignamos la imagen como Part
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file_image", file.getName(),
+                requestFile);
+
+        // Asignamos los campos como RequestBody :
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"),
+                imagenRO.getDescripcion());
+        RequestBody incident_id = RequestBody.create(MediaType.parse("multipart/form-data"),
+                String.valueOf(idIncident));
+
+        RestClient restClient = new RestClient(Services.INSPECTION);
+
+        Call<ResponseBody> call = restClient.iServices.addImageIncident(incident_id, description,
+                body, api_token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try{
+                        // Seteando el id de imagen :
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        JSONObject messageResult = jsonObject.getJSONObject("message");
+                        JSONObject imageResult = messageResult.getJSONObject("inspection_image");
+
+                        Realm real = Realm.getInstance(myConfig);
+
+                        ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
+                                imageResult.getString("name")).findFirst();
+                        if (imagenInc != null) {
+                            real.beginTransaction();
+                            imagenInc.setId(imageResult.getInt("id"));
+                            real.commitTransaction();
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
 }
