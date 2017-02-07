@@ -181,8 +181,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
             int maxSeveridad = activityMain.sIns.severities.where().max("value").intValue();
 
             int resu = maxFrecuencia * maxSeveridad;
-            Log.e("resu", "" + resu);
-            progressRiesgo.setMax(resu);
+
+            progressRiesgo.setMax(100);
 
 
         } catch (Exception e) {
@@ -482,33 +482,44 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         nivelRiesgo = valorSeveridad * valorFrecuencia;
         txtNivelRiesgo.setText(String.valueOf(nivelRiesgo));
 
-        int valorMaximoBase = 0;
+        Double valorMaximoBase = 0.0;
+        Double nivelRiesgoEquivalente = 0.0;
 
 
         for (int i = 0; i < activityMain.sIns.risks.size(); i++) {
             RiskRO riesgo = activityMain.sIns.risks.get(i);
             if (nivelRiesgo >= riesgo.getMinValue()
-                    && nivelRiesgo <= riesgo.getMaxValue() && nivelRiesgo != 0) {
+                    && nivelRiesgo <= riesgo.getMaxValue()
+                    && nivelRiesgo != 0) {
+
                 categoriaRiesgo = riesgo.getDisplayName();
                 txtCatRiesgo.setText(categoriaRiesgo);
 
+                Double rango = ((double)riesgo.getMaxValue() - riesgo.getMinValue());
+                Double unidad = (rango / 25);
+
+                nivelRiesgo = nivelRiesgo - riesgo.getMinValue();
+                nivelRiesgoEquivalente = nivelRiesgo / unidad;
                 switch (categoriaRiesgo) {
                     case "Bajo":
                         progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_green, null));
-                        valorMaximoBase = 0;
-                       // progressRiesgo.setMax();
+                        valorMaximoBase = 4.0;
+                        progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
                         break;
                     case "Medio":
                         progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_yellow, null));
-                        valorMaximoBase = 25;
+                        valorMaximoBase = 29.0;
+                        progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
                         break;
                     case "Alto":
                         progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_orange, null));
-                        valorMaximoBase = 50;
+                        valorMaximoBase = 54.0;
+                        progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
                         break;
                     case "Muy Alto":
                         progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_red, null));
-                        valorMaximoBase = 75;
+                        valorMaximoBase = 79.0;
+                        progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
                         break;
                 }
 
@@ -518,6 +529,6 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         }
 
 
-        progressRiesgo.setProgress(nivelRiesgo);
+       // progressRiesgo.setProgress(nivelRiesgo);
     }
 }

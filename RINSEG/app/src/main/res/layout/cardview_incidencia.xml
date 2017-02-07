@@ -45,7 +45,7 @@
                 android:textSize="13sp"
                 android:textColor="@color/colorGray"
                 android:ellipsize="marquee"
-                android:maxLines="2"/>
+                android:maxLines="3"/>
 
         </LinearLayout>
         <ImageView
