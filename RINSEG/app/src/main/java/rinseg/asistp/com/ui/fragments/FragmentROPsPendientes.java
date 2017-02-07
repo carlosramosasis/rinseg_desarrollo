@@ -1,9 +1,12 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -66,6 +69,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
 
     RealmConfiguration myConfig;
 
+    public int REQUEST_IMAGE_CAPTURE = 1;
 
     public FragmentROPsPendientes() {
         // Required empty public constructor
@@ -111,6 +115,8 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         setUpActions();
 
         LoadRopPendientes();
+
+        Log.e("rops pndientes","createView");
 
         return view;
 
@@ -300,5 +306,8 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
             }
         });
     }
+
+
+
 
 }

@@ -1,12 +1,17 @@
 package rinseg.asistp.com.ui.activities;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,6 +34,8 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
@@ -124,6 +131,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
     public FloatingActionButton btnImportarFotos;
     public FloatingActionButton btnTomarFoto;
 
+    public int REQUEST_IMAGE_CAPTURE = 1;
+
     ///// TODO: ::::::::::::::::::::::::::::::::::::::::::::::: EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +161,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
         //Llamamos al fragment ROPS pendientes para que sea el primero que se muestre
         replaceFragment(new FragmentTabRops(), true, 0, 0, 0, 0);
+
+        Permissions();
 
     }
 
@@ -1032,5 +1043,32 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         int cant = listaImagenes.size();
         this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
     }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public void Permissions() {
+
+        ArrayList<String> especificacionPermisos = new ArrayList<>();
+
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        String[] permisos = new String[especificacionPermisos.size()];
+        permisos = especificacionPermisos.toArray(permisos);
+
+        if (especificacionPermisos.size() > 0) {
+            this.requestPermissions(permisos, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
 
 }
