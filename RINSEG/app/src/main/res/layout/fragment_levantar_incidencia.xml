@@ -106,7 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="8dp"
-                    android:height="100dp"
+                    android:height="85dp"
                     android:background="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_pencil"
                     android:elevation="2dp"
@@ -236,7 +236,7 @@
                         android:layout_gravity="center_horizontal"
                         android:gravity="center"
                         android:paddingBottom="3dp"
-                        android:textSize="14dp" />
+                        android:textSize="12dp" />
 
                     <TextView
                         android:id="@+id/textview_fix_incident_level"
@@ -244,7 +244,24 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center"
-                        android:textSize="13dp" />
+                        android:textSize="11dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_progresbar_riesgo"
+                    android:padding="8dp"
+                    android:elevation="2dp">
+                    <ProgressBar
+                        android:layout_gravity="center"
+                        android:id="@+id/progress_lev_incidencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:progressDrawable="@drawable/progressbar_green"/>
 
                 </LinearLayout>
 

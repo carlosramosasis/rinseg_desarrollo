@@ -1,5 +1,6 @@
 package rinseg.asistp.com.adapters;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,12 +13,20 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import rinseg.asistp.com.listener.ListenerClick;
+import rinseg.asistp.com.models.AreaRO;
+import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.ManagementRO;
+import rinseg.asistp.com.models.SettingsInspectionRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.fragments.FragmentInspeccionIncidenciaDetalle1;
 import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * Created by Carlos Ramos on 30/09/2016.
@@ -29,20 +38,22 @@ public class InspeccionAdapter extends RecyclerView.Adapter<InspeccionAdapter.In
     public static class InspeccionViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
         public TextView txtCodigo;
+        public TextView txtArea;
         public TextView txtFechaCrea;
-        public final LinearLayout vLayout;
 
+        public final LinearLayout vLayout;
 
         public InspeccionViewHolder(View v) {
             super(v);
 
             txtCodigo = (TextView) v.findViewById(R.id.txt_card_view_cod_inspeccion);
+            txtArea = (TextView) v.findViewById(R.id.txt_card_view_are_inspeccion);
             txtFechaCrea = (TextView) v.findViewById(R.id.txt_card_view_fec_crea_inspeccion);
             vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_inspecciones);
         }
     }
 
-    public InspeccionAdapter(List<InspeccionRO> inspecciones, ListenerClick listener) {
+    public InspeccionAdapter( List<InspeccionRO> inspecciones, ListenerClick listener) {
         this.ListaInspecciones = inspecciones;
         mListener = listener;
     }
@@ -69,6 +80,8 @@ public class InspeccionAdapter extends RecyclerView.Adapter<InspeccionAdapter.In
             viewHolder.txtCodigo.setText(insp.getTmpId());
         }
 
+
+        viewHolder.txtArea.setText(insp.getArea());
 
         viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaInspecciones.get(i).getDate()));
 

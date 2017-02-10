@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jaredrummler.materialspinner.MaterialSpinner;
@@ -36,6 +38,7 @@ import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.IncidenciaLevantadaRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.RiskRO;
+import rinseg.asistp.com.models.SettingsInspectionRO;
 import rinseg.asistp.com.models.SeveritiesRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
@@ -71,6 +74,7 @@ public class FragmentLevantarIncidencia extends Fragment {
     MaterialSpinner spinnerSeverities;
     TextView textCategory;
     TextView textLevel;
+    ProgressBar progressRiesgo;
 
     RealmResults<RiskRO> riesgosROs;
 
@@ -87,7 +91,13 @@ public class FragmentLevantarIncidencia extends Fragment {
 
     Calendar datePicker;
 
-    public FragmentLevantarIncidencia() { }
+    int nivelRiesgo;
+    String categoriaRiesgo;
+
+    SettingsInspectionRO sIns;
+
+    public FragmentLevantarIncidencia() {
+    }
 
     public static FragmentLevantarIncidencia newInstance(int idInspeccion, String idIncidencia) {
         FragmentLevantarIncidencia fragment = new FragmentLevantarIncidencia();
@@ -117,6 +127,9 @@ public class FragmentLevantarIncidencia extends Fragment {
         setUpData();
         setUpActions();
 
+        LoadSettingInspeccion();
+        CalcularRiesgo();
+
         return view;
     }
 
@@ -132,7 +145,7 @@ public class FragmentLevantarIncidencia extends Fragment {
     }
 
     public void onButtonPressed(Uri uri) {
-        if ( mListener != null ) {
+        if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -147,11 +160,13 @@ public class FragmentLevantarIncidencia extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    /** Inicializamos los elementos */
+    /**
+     * Inicializamos los elementos
+     */
     private void setUpElements(View v) {
         activityMain = ((ActivityInspeccionDetalle) getActivity());
-        btnCancelar =  (Button) v.findViewById(R.id.btn_cancelar);
-        btnGrabar =  (Button) v.findViewById(R.id.btn_grabar);
+        btnCancelar = (Button) v.findViewById(R.id.btn_cancelar);
+        btnGrabar = (Button) v.findViewById(R.id.btn_grabar);
         textDisplayDate = (TextView) v.findViewById(R.id.text_fix_incident_display_date);
         btnShowCalendar = (ImageButton) v.findViewById(R.id.btn_fix_incident_calendar);
         editDescription = (EditText) v.findViewById(R.id.edit_fix_incident_description);
@@ -159,6 +174,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         spinnerSeverities = (MaterialSpinner) v.findViewById(R.id.spinner_fix_incident_severity);
         textCategory = (TextView) v.findViewById(R.id.textview_fix_incident_category);
         textLevel = (TextView) v.findViewById(R.id.textview_fix_incident_level);
+        progressRiesgo =  (ProgressBar) v.findViewById(R.id.progress_lev_incidencia) ;
 
         // Configurando Realm :
         Realm.init(this.getActivity().getApplicationContext());
@@ -170,7 +186,9 @@ public class FragmentLevantarIncidencia extends Fragment {
                 .build();
     }
 
-    /** Cargamos los datos iniciales a la interfaz */
+    /**
+     * Cargamos los datos iniciales a la interfaz
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void setUpData() {
 
@@ -203,26 +221,28 @@ public class FragmentLevantarIncidencia extends Fragment {
                     .equalTo("id", Integer.parseInt(idIncidencia)).findFirst();
 
             // Seteando la frecuencia de la incidencia al spinner :
-            for ( int i = 0; i < listF.size(); i++ ) {
-                if ( listF.get(i).getId() == incidenciaRO.getFrecuenciaId() ) {
+            for (int i = 0; i < listF.size(); i++) {
+                if (listF.get(i).getId() == incidenciaRO.getFrecuenciaId()) {
                     spinnerFrequencies.setSelectedIndex(i);
                     break;
                 }
             }
 
             // Seteando la severidad de la incidencia al spinner :
-            for ( int i = 0; i < listS.size(); i++ ) {
-                if ( listS.get(i).getId() == incidenciaRO.getSeveridadId() ) {
+            for (int i = 0; i < listS.size(); i++) {
+                if (listS.get(i).getId() == incidenciaRO.getSeveridadId()) {
                     spinnerSeverities.setSelectedIndex(i);
                     break;
                 }
             }
         }
-        textCategory.setText(incidenciaRO.getCategoria());
-        textLevel.setText(String.valueOf(incidenciaRO.getRiesgo()));
+        //textCategory.setText(incidenciaRO.getCategoria());
+        //textLevel.setText(String.valueOf(incidenciaRO.getRiesgo()));
     }
 
-    /** Listener de acciones */
+    /**
+     * Listener de acciones
+     */
     private void setUpActions() {
         activityMain.toolbarInspeccionDet.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,7 +267,7 @@ public class FragmentLevantarIncidencia extends Fragment {
             @Override
             public void onClick(View v) {
                 // Validamos que los campos sean correctos :
-                if ( validateForm( )) {
+                if (validateForm()) {
                     // Seteamos los nuevos valores a nuestro IncidenciaRO :
                     showDialogConfirm();
                 }
@@ -277,9 +297,10 @@ public class FragmentLevantarIncidencia extends Fragment {
                 valorNiv = listS.get(position).getValue() *
                         listF.get(spinnerFrequencies.getSelectedIndex()).getValue();
                 // Flag de nueva severidad :
-                isNewSeverity = ((SeveritiesRO)item).getId() != incidenciaRO.getSeveridadId();
+                isNewSeverity = ((SeveritiesRO) item).getId() != incidenciaRO.getSeveridadId();
                 // Seteamos los valores en la vista :
-                calculateRisk();
+                //calculateRisk();
+                CalcularRiesgo();
             }
         });
 
@@ -290,14 +311,17 @@ public class FragmentLevantarIncidencia extends Fragment {
                 valorNiv = listF.get(position).getValue() *
                         listS.get(spinnerSeverities.getSelectedIndex()).getValue();
                 // Flag de nueva frecuencia :
-                isNewFrequency = ((FrecuencieRO)item).getId() != incidenciaRO.getFrecuenciaId();
+                isNewFrequency = ((FrecuencieRO) item).getId() != incidenciaRO.getFrecuenciaId();
                 // Seteamos los valores en la vista :
-                calculateRisk();
+                //calculateRisk();
+                CalcularRiesgo();
             }
         });
     }
 
-    /** Método para mostrar el DatePicker */
+    /**
+     * Método para mostrar el DatePicker
+     */
     private void showDatePicker() {
         Calendar newCalendar = Calendar.getInstance();
 
@@ -312,19 +336,21 @@ public class FragmentLevantarIncidencia extends Fragment {
                         datePicker.set(year, monthOfYear, dayOfMonth);
                         textDisplayDate.setText(Generic.dateFormatter.format(datePicker.getTime()));
                         textDisplayDate.setError(null);
-            }
-        }, newCalendar.get(Calendar.YEAR),
+                    }
+                }, newCalendar.get(Calendar.YEAR),
                 newCalendar.get(Calendar.MONTH),
                 newCalendar.get(Calendar.DAY_OF_MONTH));
 
         datePickerDialog.show();
     }
 
-    /** Método para calcular los valores de categoría y nivel de riesgo */
+    /**
+     * Método para calcular los valores de categoría y nivel de riesgo
+     */
     private void calculateRisk() {
         String categoria = "-";
-        for ( RiskRO riskRO : riesgosROs ) {
-            if ( valorNiv <= riskRO.getMaxValue() && valorNiv >= riskRO.getMinValue() ) {
+        for (RiskRO riskRO : riesgosROs) {
+            if (valorNiv <= riskRO.getMaxValue() && valorNiv >= riskRO.getMinValue()) {
                 categoria = riskRO.getDisplayName();
                 break;
             }
@@ -333,13 +359,15 @@ public class FragmentLevantarIncidencia extends Fragment {
         textLevel.setText(String.valueOf(valorNiv));
     }
 
-    /** Método para validar el formulario */
+    /**
+     * Método para validar el formulario
+     */
     private boolean validateForm() {
-        if ( textDisplayDate.getText().toString().isEmpty() ) {
+        if (textDisplayDate.getText().toString().isEmpty()) {
             textDisplayDate.setError(getString(R.string.error_fix_incident_display_date));
             return false;
         }
-        if ( editDescription.getText().toString().isEmpty() ) {
+        if (editDescription.getText().toString().isEmpty()) {
             editDescription.setError(getString(R.string.error_fix_incident_description));
             return false;
         }
@@ -351,7 +379,9 @@ public class FragmentLevantarIncidencia extends Fragment {
         return true;
     }
 
-    /** Metodo para asignar los nuevos valores a nuestra IncidenciaLevantadaRO */
+    /**
+     * Metodo para asignar los nuevos valores a nuestra IncidenciaLevantadaRO
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void saveIncLevantada() {
         // Guardando en Realm :
@@ -378,7 +408,9 @@ public class FragmentLevantarIncidencia extends Fragment {
         }
     }
 
-    /** Dialog de confirmación */
+    /**
+     * Dialog de confirmación
+     */
     private void showDialogConfirm() {
         final DialogRINSEG dialogConfirm = new DialogRINSEG(activityMain);
         dialogConfirm.show();
@@ -395,7 +427,9 @@ public class FragmentLevantarIncidencia extends Fragment {
         });
     }
 
-    /** Módulo para enviar hacia el servidor los datos de la incidencia levantada */
+    /**
+     * Módulo para enviar hacia el servidor los datos de la incidencia levantada
+     */
     private void sendData() {
         // Obtenemos el token :
         SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
@@ -414,7 +448,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if ( response.isSuccessful() ) {
+                if (response.isSuccessful()) {
                     // Mostramos dialog de éxito :
                     try {
                         // Intentaremos castear la respuesta :
@@ -444,7 +478,9 @@ public class FragmentLevantarIncidencia extends Fragment {
         });
     }
 
-    /** Dialog de información de éxito */
+    /**
+     * Dialog de información de éxito
+     */
     private void showDialogSuccess() {
         final DialogRINSEG dialogConfirm = new DialogRINSEG(activityMain);
         dialogConfirm.show();
@@ -461,4 +497,82 @@ public class FragmentLevantarIncidencia extends Fragment {
             }
         });
     }
+
+
+    void CalcularRiesgo() {
+        try{
+            textCategory.setText(getString(R.string.rop_c1_texto_default));
+            textLevel.setText(getString(R.string.rop_c1_texto_default));
+            progressRiesgo.setProgress(0);
+
+            FrecuencieRO frecuenciaSelect = listF.get(spinnerFrequencies.getSelectedIndex());
+            SeveritiesRO severitiesSelect = listS.get(spinnerSeverities.getSelectedIndex());
+
+            int valorFrecuencia = frecuenciaSelect.getValue();
+            int valorSeveridad = severitiesSelect.getValue();
+
+            nivelRiesgo = valorSeveridad * valorFrecuencia;
+            textLevel.setText(String.valueOf(nivelRiesgo));
+
+            Double valorMaximoBase = 0.0;
+            Double nivelRiesgoEquivalente = 0.0;
+
+
+            for (int i = 0; i < sIns.risks.size(); i++) {
+                RiskRO riesgo = sIns.risks.get(i);
+                if (nivelRiesgo >= riesgo.getMinValue()
+                        && nivelRiesgo <= riesgo.getMaxValue()
+                        && nivelRiesgo != 0) {
+
+                    categoriaRiesgo = riesgo.getDisplayName();
+                    textCategory.setText(categoriaRiesgo);
+
+                    Double rango = ((double) riesgo.getMaxValue() - riesgo.getMinValue());
+                    Double unidad = (rango / 25);
+
+                    nivelRiesgo = nivelRiesgo - riesgo.getMinValue();
+                    nivelRiesgoEquivalente = nivelRiesgo / unidad;
+                    switch (categoriaRiesgo) {
+                        case "Bajo":
+                            progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_green, null));
+                            valorMaximoBase = 4.0;
+                            progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
+                            break;
+                        case "Medio":
+                            progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_yellow, null));
+                            valorMaximoBase = 29.0;
+                            progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
+                            break;
+                        case "Alto":
+                            progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_orange, null));
+                            valorMaximoBase = 54.0;
+                            progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
+                            break;
+                        case "Muy Alto":
+                            progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_red, null));
+                            valorMaximoBase = 79.0;
+                            progressRiesgo.setProgress((valorMaximoBase.intValue() + nivelRiesgoEquivalente.intValue()));
+                            break;
+                    }
+
+
+                    break;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void LoadSettingInspeccion() {
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            sIns = realm.where(SettingsInspectionRO.class).findFirst();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+    }
+
 }

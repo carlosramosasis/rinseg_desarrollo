@@ -81,6 +81,7 @@
     <string name="hint_lugar_exacto">Lugar exacto del evento</string>
     <string name="hint_empresa">Empresa</string>
     <string name="hint_fecha">Fecha</string>
+    <string name="hint_fecha_limite">Fecha límite</string>
     <string name="hint_hora">Hora</string>
     <string name="hint_descr">Descripción</string>
     <string name="btn_cancelar">CANCELAR</string>
@@ -206,7 +207,7 @@
     <string name="inscidencia_nuevo2_hint_rac_relacionado">RAC relacionado</string>
     <string name="inscidencia_nuevo2_hint_reportante">Reportante</string>
     <string name="inscidencia_nuevo2_hint_responsable_lev">Responsable levantamiento</string>
-    <string name="inscidencia_nuevo2_hint_supervisor_cmmm">Supervisor CMMM del reportante</string>
+    <string name="inscidencia_nuevo2_hint_supervisor">Supervisor del reportante</string>
     <string name="error_resp_inci2">ingrese responsabke de levantamiento</string>
     <string name="error_supervisor_inci2">ingrese supervisor</string>
     <string name="confirmar_agregar_inccidente">Se agregará el incidente a la inspección.</string>

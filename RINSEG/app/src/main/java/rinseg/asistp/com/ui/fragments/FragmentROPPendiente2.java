@@ -50,6 +50,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import rinseg.asistp.com.adapters.ActoCondicionSubestandarSeleccionadosAdapter;
 import rinseg.asistp.com.listener.ListenerClickAccionPreventiva;
 import rinseg.asistp.com.listener.ListenerClickActoCondicion;
 import rinseg.asistp.com.models.AccionPreventiva;
@@ -99,6 +100,11 @@ public class FragmentROPPendiente2 extends Fragment
     Button btnAgregar;
     ImageButton btnDelete;
     Calendar newCalendar;
+
+    private List<EventItemsRO> listaActoCondicion = new ArrayList<>();
+    RecyclerView recyclerActoCondicion;
+    private RecyclerView.LayoutManager lManagerActoCondicion;
+    private RecyclerView.Adapter actoCondicionAdapter;
 
     private List<AccionPreventiva> listaAccionPreventiva = new ArrayList<>();
     RecyclerView recyclerAcciones;
@@ -258,7 +264,17 @@ public class FragmentROPPendiente2 extends Fragment
         btnAgregar = (Button) v.findViewById(R.id.btn_rop2_agregar);
         btnDelete = (ImageButton) v.findViewById(R.id.btn_card_view_delete);
 
-        //configuracion para el recicler
+        //configuracion para el recicler Acciones preventivas
+        recyclerActoCondicion= (RecyclerView) v.findViewById(R.id.recycler_rop2_acto_condicion);
+        recyclerActoCondicion.setHasFixedSize(true);
+        // usar administrador para linearLayout
+        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
+        recyclerActoCondicion.setLayoutManager(lManagerActoCondicion);
+        // Crear un nuevo Adaptador
+        actoCondicionAdapter = new ActoCondicionSubestandarSeleccionadosAdapter(listaActoCondicion);
+        recyclerActoCondicion.setAdapter(actoCondicionAdapter);
+
+        //configuracion para el recicler Acciones preventivas
         recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_rop2_acciones);
         recyclerAcciones.setHasFixedSize(true);
         // usar administrador para linearLayout
@@ -497,6 +513,11 @@ public class FragmentROPPendiente2 extends Fragment
                 newCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
+
+    private void CargarActoCondicionSubestandarSeleccionados(){
+        
+    }
+
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopPendiente() {

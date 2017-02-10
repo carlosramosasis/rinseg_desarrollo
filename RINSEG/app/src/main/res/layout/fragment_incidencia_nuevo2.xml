@@ -136,7 +136,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/inscidencia_nuevo2_hint_supervisor_cmmm"
+                    android:text="@string/inscidencia_nuevo2_hint_supervisor"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
 
@@ -148,7 +148,7 @@
                     android:background="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_pencil"
                     android:elevation="2dp"
-                    android:hint="@string/inscidencia_nuevo2_hint_supervisor_cmmm"
+                    android:hint="@string/inscidencia_nuevo2_hint_supervisor"
                     android:inputType="textCapWords"
                     android:maxLines="1"
                     android:paddingStart="23dp"

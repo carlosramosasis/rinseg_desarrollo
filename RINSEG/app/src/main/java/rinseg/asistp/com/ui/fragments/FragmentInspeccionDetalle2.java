@@ -15,6 +15,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.Sort;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
@@ -118,7 +119,7 @@ public class FragmentInspeccionDetalle2 extends Fragment implements ListenerClic
             if (idInspeccion != 0) {
                 InspeccionRO inspeccionRO = realm.where(InspeccionRO.class)
                         .equalTo("id", idInspeccion).findFirst();
-                listaIncidenciasHost.addAll(inspeccionRO.listaIncidencias);
+                listaIncidenciasHost.addAll(inspeccionRO.listaIncidencias.sort("riesgo", Sort.DESCENDING));
                 incidenciaAdapter.notifyDataSetChanged();
             }
         } catch (Exception e) {

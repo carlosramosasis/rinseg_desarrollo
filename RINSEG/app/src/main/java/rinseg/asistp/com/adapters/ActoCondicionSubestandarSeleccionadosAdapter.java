@@ -1,0 +1,62 @@
+package rinseg.asistp.com.adapters;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import java.util.List;
+
+import rinseg.asistp.com.listener.ListenerClickAccionPreventiva;
+import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.EventItemsRO;
+import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.utils.Generic;
+
+/**
+ * Created by Carlos Ramos on 30/09/2016.
+ */
+public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.Adapter<ActoCondicionSubestandarSeleccionadosAdapter.AccionViewHolder> {
+    public List<EventItemsRO> ListaActosCondiciones;
+
+    public static class AccionViewHolder extends RecyclerView.ViewHolder {
+        //Campos respectivos del item
+        public CheckBox mCheckActoCondicion;
+        public TextView mTextActoCondicion;
+
+
+        public AccionViewHolder(View v) {
+            super(v);
+            mCheckActoCondicion = (CheckBox) v.findViewById(R.id.chk_card_view_accion_condicion);
+            mCheckActoCondicion.setVisibility(View.GONE);
+            mTextActoCondicion = (TextView) v.findViewById(R.id.txt_card_view_accion_condicion);
+
+        }
+    }
+
+    public ActoCondicionSubestandarSeleccionadosAdapter(List<EventItemsRO> actoCondicionSub) {
+        this.ListaActosCondiciones = actoCondicionSub;
+    }
+
+    @Override
+    public int getItemCount() {
+        return ListaActosCondiciones.size();
+    }
+
+    @Override
+    public AccionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_acciones_preventivas, viewGroup, false);
+        return new AccionViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(final AccionViewHolder viewHolder, final int i) {
+
+        viewHolder.mTextActoCondicion.setText(ListaActosCondiciones.get(i).getName());
+    }
+
+
+}

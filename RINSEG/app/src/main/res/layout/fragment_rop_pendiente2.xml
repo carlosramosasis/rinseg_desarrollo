@@ -58,7 +58,7 @@
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17dp"
                         android:elevation="2dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="4dp"
                         />
                     <ImageButton
                         android:id="@+id/btn_rop2_acto_condicion_subestandar"
@@ -71,6 +71,15 @@
 
                     </ImageButton>
                 </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_rop2_acto_condicion"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginBottom="7dp"
+                    >
+
+                </android.support.v7.widget.RecyclerView>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -131,7 +140,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/hint_fecha"
+                    android:text="@string/hint_fecha_limite"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
                 <LinearLayout

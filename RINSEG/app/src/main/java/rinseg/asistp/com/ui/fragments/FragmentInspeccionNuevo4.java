@@ -24,6 +24,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.Sort;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -263,7 +264,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
     private void LoadIncidencias() {
         listaIncidencias.clear();
-        listaIncidencias.addAll(mInspc.listaIncidencias);
+        listaIncidencias.addAll(mInspc.listaIncidencias.sort("riesgo", Sort.DESCENDING));
         incidenciaAdapter.notifyDataSetChanged();
     }
 
