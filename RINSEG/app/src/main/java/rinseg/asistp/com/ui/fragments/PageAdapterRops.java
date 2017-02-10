@@ -22,8 +22,12 @@ public class PageAdapterRops extends FragmentStatePagerAdapter {
                 FragmentROPsPendientes ropsPndt = new FragmentROPsPendientes();
                 return ropsPndt;
             case 1:
-                FragmentROPsCerrados ropsCrrd = new FragmentROPsCerrados();
-                return ropsCrrd;
+                FragmentROPsRegistrados ropsRegistrados = new FragmentROPsRegistrados();
+                return ropsRegistrados;
+            case 2:
+                FragmentROPsCerrados ropsCerrados = new FragmentROPsCerrados();
+                return ropsCerrados;
+
             default:
                 return null;
         }

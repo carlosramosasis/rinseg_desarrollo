@@ -29,9 +29,11 @@ import java.util.GregorianCalendar;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.CompanyRO;
+import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.EventRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RiskRO;
@@ -646,6 +648,10 @@ public class FragmentROPPendiente1 extends Fragment {
                 mSecuencial.setTagTabla(Constants.tagROP_Pendiente);
             }
 
+
+            if(tipoEvento.getId() != mRop.getEventId()){
+                mRop.listaEventItems =  new RealmList<EventItemsRO>();
+            }
 
             mRop.setRiskId(potencialPerdida.getId());
             mRop.setEventId(tipoEvento.getId());

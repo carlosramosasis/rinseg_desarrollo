@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="rinseg.asistp.com.ui.fragments.FragmentROPsCerrados">
+    tools:context="rinseg.asistp.com.ui.fragments.FragmentROPsRegistrados">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/linearlayour_history"
@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view_rops_cerrados"
+            android:id="@+id/recycler_view_rops_registrados"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="6dp"
@@ -24,7 +24,7 @@
     </LinearLayout>
 
     <com.github.clans.fab.FloatingActionButton
-        android:id="@+id/btn_recupera_rop_cerrado"
+        android:id="@+id/btn_recupera_rop_registrado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

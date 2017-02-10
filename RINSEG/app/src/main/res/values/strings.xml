@@ -12,6 +12,7 @@
 
     <!--Tabs Rops-->
     <string name="tab_pendientes">Pendientes</string>
+    <string name="tab_registrados">Registrados</string>
     <string name="tab_cerrados">Cerrados</string>
     <string name="dialog_title_rop_pendiente_eliminar">Eliminar</string>
     <string name="dialog_body_rop_pendiente_eliminar">Eliminar al rop temporarl</string>
@@ -95,6 +96,8 @@
 
     <!--Nuevo ROP 2-->
     <string name="hint_acto_condicion_sub">Acto o condición sub estándar</string>
+    <string name="hint_acto_sub">Acto sub estándar</string>
+    <string name="hint_condicion_sub">Condición sub estándar</string>
     <string name="acto_condicion_sub_default">0 elementos seleccionados</string>
     <string name="acto_condicion_sub_elemento">elemento seleccionado</string>
     <string name="acto_condicion_sub_elementos">elementos seleccionados</string>

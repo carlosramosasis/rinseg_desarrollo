@@ -30,10 +30,7 @@ public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.A
 
         public AccionViewHolder(View v) {
             super(v);
-            mCheckActoCondicion = (CheckBox) v.findViewById(R.id.chk_card_view_accion_condicion);
-            mCheckActoCondicion.setVisibility(View.GONE);
-            mTextActoCondicion = (TextView) v.findViewById(R.id.txt_card_view_accion_condicion);
-
+            mTextActoCondicion = (TextView) v.findViewById(R.id.txt_card_view_accion_condicion_seleccionado);
         }
     }
 
@@ -48,13 +45,12 @@ public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.A
 
     @Override
     public AccionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_acciones_preventivas, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_accion_condicion_subestandar_seleccionado, viewGroup, false);
         return new AccionViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final AccionViewHolder viewHolder, final int i) {
-
         viewHolder.mTextActoCondicion.setText(ListaActosCondiciones.get(i).getName());
     }
 

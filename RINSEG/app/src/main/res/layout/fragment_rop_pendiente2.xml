@@ -10,8 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -25,11 +24,11 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="6dp"
                 android:orientation="vertical"
-                android:scrollbars="vertical"
                 android:paddingBottom="80dp"
-                >
+                android:scrollbars="vertical">
 
                 <TextView
+                    android:id="@+id/txt_view_rop2_acto_condicion_subestandar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hint_acto_condicion_sub"
@@ -40,61 +39,66 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/txt_rop2_acto_condicion_subestandar"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
+                        android:layout_marginBottom="2dp"
                         android:layout_weight="1"
                         android:background="@color/colorWhite"
+                        android:elevation="2dp"
+                        android:ellipsize="end"
                         android:gravity="center|start"
                         android:hint="@string/acto_condicion_sub_default"
                         android:maxLines="1"
-                        android:ellipsize="end"
                         android:paddingLeft="23dp"
                         android:paddingRight="6dp"
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
-                        android:textSize="17dp"
-                        android:elevation="2dp"
-                        android:layout_marginBottom="4dp"
-                        />
+                        android:textSize="17dp" />
+
                     <ImageButton
                         android:id="@+id/btn_rop2_acto_condicion_subestandar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:background="@color/colorSecondary"
-                        android:src="@drawable/ic_list"
                         android:elevation="2dp"
-                        >
+                        android:src="@drawable/ic_list">
 
                     </ImageButton>
                 </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler_rop2_acto_condicion"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginBottom="7dp"
-                    >
+                    android:layout_height="wrap_content">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_rop2_acto_condicion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="7dp">
 
-                </android.support.v7.widget.RecyclerView>
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/acciones_preventivas"
                     android:textColor="@color/colorGray"
-                    android:textSize="16dp"
-                    android:layout_marginBottom="8dp"
-                    />
+                    android:textSize="16dp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hint_accion_preventiva"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
+
                 <EditText
                     android:id="@+id/txt_rop2_accion"
                     android:layout_width="match_parent"
@@ -106,8 +110,8 @@
                     android:hint="@string/hint_accion_preventiva"
                     android:inputType="text|textCapSentences"
                     android:maxLines="1"
-                    android:paddingStart="23dp"
                     android:paddingEnd="15dp"
+                    android:paddingStart="23dp"
                     android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp" />
@@ -130,8 +134,8 @@
                     android:hint="@string/hint_responsable"
                     android:inputType="text|textCapWords"
                     android:maxLines="1"
-                    android:paddingStart="23dp"
                     android:paddingEnd="15dp"
+                    android:paddingStart="23dp"
                     android:textColor="@color/colorPrimary"
                     android:textColorHint="@color/colorSecondary0"
                     android:textSize="17.3dp" />
@@ -143,17 +147,20 @@
                     android:text="@string/hint_fecha_limite"
                     android:textColor="@color/colorGray"
                     android:textSize="12dp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/txt_rop2_fecha"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1"
                         android:background="@color/colorWhite"
+                        android:elevation="2dp"
                         android:gravity="center"
                         android:hint="@string/hint_fecha"
                         android:maxLines="1"
@@ -161,18 +168,15 @@
                         android:paddingRight="6dp"
                         android:textColor="@color/colorPrimary"
                         android:textColorHint="@color/colorSecondary0"
-                        android:textSize="17dp"
-                        android:elevation="2dp"
-                        android:layout_marginBottom="8dp"
-                        />
+                        android:textSize="17dp" />
+
                     <ImageButton
                         android:id="@+id/btn_rop2_calendar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
                         android:background="@color/colorSecondary"
-                        android:src="@drawable/ic_calendar"
                         android:elevation="2dp"
-                        >
+                        android:src="@drawable/ic_calendar">
 
                     </ImageButton>
                 </LinearLayout>
@@ -181,19 +185,18 @@
                     android:id="@+id/btn_rop2_agregar"
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="left"
                     android:layout_weight="2"
                     android:backgroundTint="@color/colorSecondary0"
                     android:drawableRight="@drawable/ic_down_bold_circle"
                     android:text="@string/btn_agreagar"
-                    android:textColor="@color/colorPrimary"
-                    android:layout_gravity="left"
-                    />
+                    android:textColor="@color/colorPrimary" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_rop2_acciones"
-                    android:minHeight="100dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:minHeight="100dp"
                     android:scrollbars="vertical" />
 
 

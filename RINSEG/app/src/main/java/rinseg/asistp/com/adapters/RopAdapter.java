@@ -88,7 +88,7 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
 
     @Override
     public void onBindViewHolder(final RopViewHolder viewHolder, final int i) {
-        if (ListaRops.get(i).esCerrado() == true) {
+        if (ListaRops.get(i).getEstadoRop() > 0 ) {
             if (ListaRops.get(i).getId() != 0) {
                 viewHolder.txtCodigo.setText(("" + ListaRops.get(i).getId()));
             } else {

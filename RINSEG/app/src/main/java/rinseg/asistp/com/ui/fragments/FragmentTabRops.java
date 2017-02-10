@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class FragmentTabRops extends Fragment {
 
         TabLayout tabLayout =  (TabLayout) v.findViewById(R.id.tab_rops);
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_pendientes)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_registrados)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_cerrados)));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -66,6 +68,7 @@ public class FragmentTabRops extends Fragment {
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.e("Tab Posicion",""+tab.getPosition());
                 viewPager.setCurrentItem(tab.getPosition());
             }
 

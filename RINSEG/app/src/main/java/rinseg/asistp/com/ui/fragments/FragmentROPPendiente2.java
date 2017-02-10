@@ -92,6 +92,7 @@ public class FragmentROPPendiente2 extends Fragment
 
     ActivityMain activityMain;
     ImageButton btnActoCondicion;
+    TextView txtActoCondicionTitle;
     EditText mEditResponsable;
     EditText mEditAccion;
     TextView txtFecha;
@@ -128,7 +129,8 @@ public class FragmentROPPendiente2 extends Fragment
     //tomar foto
     public int REQUEST_IMAGE_CAPTURE = 1;
 
-    public FragmentROPPendiente2() { }
+    public FragmentROPPendiente2() {
+    }
 
     public static FragmentROPPendiente2 newInstance(String param1, String param2) {
         FragmentROPPendiente2 fragment = new FragmentROPPendiente2();
@@ -172,6 +174,7 @@ public class FragmentROPPendiente2 extends Fragment
         activityMain.MostrarCantidadImagenesRop(mRop.listaImgComent);
         activityMain.btnFabMenu.setVisibility(View.VISIBLE);
         activityMain.btnFabMenu.collapseImmediately();
+
     }
 
     public void onButtonPressed(Uri uri) {
@@ -253,7 +256,9 @@ public class FragmentROPPendiente2 extends Fragment
 
         newCalendar = Calendar.getInstance();
 
+
         btnActoCondicion = (ImageButton) v.findViewById(R.id.btn_rop2_acto_condicion_subestandar);
+        txtActoCondicionTitle = (TextView) v.findViewById(R.id.txt_view_rop2_acto_condicion_subestandar_title);
 
         mEditResponsable = (EditText) v.findViewById(R.id.txt_rop2_responsable);
         mEditAccion = (EditText) v.findViewById(R.id.txt_rop2_accion);
@@ -265,10 +270,10 @@ public class FragmentROPPendiente2 extends Fragment
         btnDelete = (ImageButton) v.findViewById(R.id.btn_card_view_delete);
 
         //configuracion para el recicler Acciones preventivas
-        recyclerActoCondicion= (RecyclerView) v.findViewById(R.id.recycler_rop2_acto_condicion);
+        recyclerActoCondicion = (RecyclerView) v.findViewById(R.id.recycler_rop2_acto_condicion);
         recyclerActoCondicion.setHasFixedSize(true);
         // usar administrador para linearLayout
-        lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
+        lManagerActoCondicion = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerActoCondicion.setLayoutManager(lManagerActoCondicion);
         // Crear un nuevo Adaptador
         actoCondicionAdapter = new ActoCondicionSubestandarSeleccionadosAdapter(listaActoCondicion);
@@ -514,8 +519,25 @@ public class FragmentROPPendiente2 extends Fragment
         datePickerDialog.show();
     }
 
-    private void CargarActoCondicionSubestandarSeleccionados(){
-        
+    private void CargarActoCondicionSubestandarSeleccionados() {
+        try {
+            listaActoCondicion.clear();
+            actoCondicionAdapter.notifyDataSetChanged();
+
+            listaActoCondicion.addAll(mRop.listaEventItems);
+            actoCondicionAdapter.notifyDataSetChanged();
+
+
+         /*   for (int i = 0; i< mRop.listaEventItems.size(); i++){
+                EventItemsRO e =  mRop.listaEventItems.get(i);
+                listaActoCondicion.add(e);
+                actoCondicionAdapter.notifyDataSetChanged();
+            }*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
@@ -524,6 +546,11 @@ public class FragmentROPPendiente2 extends Fragment
         if (bundle != null) {
             String tmpIdRop = bundle.getString("ROPtmpId", null);
             nameEvent = bundle.getString("nameEvent", null);
+            if (nameEvent.equals(Constants.NAME_EVENT_ACTO_SUBESTANDAR)) {
+                txtActoCondicionTitle.setText(getString(R.string.hint_acto_sub));
+            } else if (nameEvent.equals(Constants.NAME_EVENT_CONDICION_SUBESTANDAR)) {
+                txtActoCondicionTitle.setText(getString(R.string.hint_condicion_sub));
+            }
 
             //ROP tmpRop = new ROP();
             if (tmpIdRop != null) {
@@ -549,10 +576,11 @@ public class FragmentROPPendiente2 extends Fragment
                         } else if (cantEventItems > 1) {
                             textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elementos));
                         }
-
                     } else {
                         textActoCondicion.setText("");
                     }
+
+                    CargarActoCondicionSubestandarSeleccionados();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -635,9 +663,11 @@ public class FragmentROPPendiente2 extends Fragment
                     } else if (cantEventItems > 1) {
                         textActoCondicion.setText(cantEventItems + " " + getString(R.string.acto_condicion_sub_elementos));
                     }
+
                 } else {
                     textActoCondicion.setText("");
                 }
+                CargarActoCondicionSubestandarSeleccionados();
             }
         } catch (Exception e) {
             e.printStackTrace();

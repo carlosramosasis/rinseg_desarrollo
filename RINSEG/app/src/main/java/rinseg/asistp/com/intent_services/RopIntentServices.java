@@ -78,7 +78,7 @@ public class RopIntentServices extends IntentService {
                     return;
                 }
 
-                RealmResults<ROP> ropsCerradosNoEnviados = realm.where(ROP.class).equalTo("cerrado", true).equalTo("id", 0).findAll();
+                RealmResults<ROP> ropsCerradosNoEnviados = realm.where(ROP.class).equalTo("estadoRop", 1).equalTo("id", 0).findAll();
 
                 if (ropsCerradosNoEnviados.size() > 0) {
                     for (int i = 0; i < ropsCerradosNoEnviados.size(); i++) {

@@ -86,6 +86,7 @@ public class ROP extends RealmObject{
 
     private boolean cerrado;
 
+    private int estadoRop;
 
     public ROP(){
     }
@@ -260,11 +261,11 @@ public class ROP extends RealmObject{
         this.listaEventItems = listaEventItems;
     }
 
-    public boolean esCerrado() {
-        return cerrado;
+    public int getEstadoRop() {
+        return estadoRop;
     }
 
-    public void setCerrado(boolean cerrado) {
-        this.cerrado = cerrado;
+    public void setEstadoRop(int estadoRop) {
+        this.estadoRop = estadoRop;
     }
 }

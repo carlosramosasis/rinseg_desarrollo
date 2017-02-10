@@ -517,7 +517,7 @@ public class FragmentROPPendiente4 extends Fragment {
             Calendar fecha = Calendar.getInstance();
             mRop.setDateClose(fecha.getTime());
             mRop.setDateCloseString(Generic.dateFormatterMySql.format(mRop.getDateClose()));
-            mRop.setCerrado(true);
+            mRop.setEstadoRop(1);
             realm.commitTransaction();
         } catch (Exception e) {
             realm.close();

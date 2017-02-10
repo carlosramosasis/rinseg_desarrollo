@@ -46,7 +46,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
-import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.CompanyRO;
@@ -56,6 +55,7 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.adapters.RopAdapter;
 import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
 import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
@@ -66,7 +66,7 @@ import rinseg.asistp.com.utils.SharedPreferencesHelper;
 
 import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
 
-public class FragmentROPsCerrados extends Fragment implements ListenerClick {
+public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -95,12 +95,12 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     int cantImagenesTotal = 0;
     int cantImagenesRecibidos = 0;
 
-    public FragmentROPsCerrados() {
+    public FragmentROPsRegistrados() {
         // Required empty public constructor
     }
 
-    public static FragmentROPsCerrados newInstance(String param1, String param2) {
-        FragmentROPsCerrados fragment = new FragmentROPsCerrados();
+    public static FragmentROPsRegistrados newInstance(String param1, String param2) {
+        FragmentROPsRegistrados fragment = new FragmentROPsRegistrados();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -122,7 +122,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_rops_cerrados, container, false);
+        View view = inflater.inflate(R.layout.fragment_rops_registrado, container, false);
 
         setUpElements(view);
         setUpActions();
@@ -134,7 +134,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
-        fab = (FloatingActionButton) v.findViewById(R.id.btn_recupera_rop_cerrado);
+        fab = (FloatingActionButton) v.findViewById(R.id.btn_recupera_rop_registrado);
         activityMain = ((ActivityMain) getActivity());
 
         dialogLoading = new DialogLoading(activityMain);
@@ -143,7 +143,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
         recuperaRopDialog = new Dialog(this.getContext(), R.style.CustomDialogTheme);
 
         //configuracion para el recicler
-        recyclerRops = (RecyclerView) v.findViewById(R.id.recycler_view_rops_cerrados);
+        recyclerRops = (RecyclerView) v.findViewById(R.id.recycler_view_rops_registrados);
         recyclerRops.setHasFixedSize(true);
         // usar administrador para linearLayout
         lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
