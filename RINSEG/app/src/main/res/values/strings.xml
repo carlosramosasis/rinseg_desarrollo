@@ -252,8 +252,6 @@
     </string>
     <string name="incidencia_detalle_reportante">Reportante:</string>
 
-
-
     <!--Levantar incidencia-->
     <string name="lev_incidencia_datos_levantamiento">DATOS DE LEVANTAMIENTO</string>
     <string name="lev_incidencia_fecha">Fecha de levantamiento</string>
@@ -301,5 +299,17 @@
     <string name="no_internet">Ud. no tiene acceso a internet.</string>
     <string name="ok">Ok</string>
     <string name="btn_aceptar">ACEPTAR</string>
+
+    <!-- Mensajes al terminar envío de Inpsección -->
+    <string name="msg_success_send_inspection">La inspección ha sido enviada satisfactoriamente
+    </string>
+    <string name="msg_success_send_inspe_error_image">La inspección ha sido enviada
+        satisfactoriamente. Sin embargo, algunas imágenes no han sido enviadas.
+    </string>
+    <string name="msg_error_empty_incidents">Añada por lo menos una incidencia.</string>
+
+    <!-- Tab incidents -->
+    <string name="tab_incidents_title_pending">PENDIENTES</string>
+    <string name="tab_incidents_title_closed">CERRADOS</string>
 
 </resources>

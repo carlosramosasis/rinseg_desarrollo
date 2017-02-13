@@ -223,7 +223,11 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialogConfirm();
+                if ( mInspc.listaIncidencias != null && mInspc.listaIncidencias.size() > 0 ) {
+                    showDialogConfirm();
+                } else {
+                    Messages.showSB(getView(), getString(R.string.msg_error_empty_incidents));
+                }
             }
         });
     }
@@ -325,7 +329,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             inspectionToSend.listaIncidencias.get(i).setId(i);
             // asignamos el id temporal del incidente a sus respectivas imagenes
             totalToSend += inspectionToSend.listaIncidencias.get(i).listaImgComent.size();
-            for (int j = 0; j < inspectionToSend.listaIncidencias.get(i).listaImgComent.size(); j++) {
+            for (int j = 0; j < inspectionToSend.listaIncidencias.get(i).listaImgComent.size(); j++ ) {
                 inspectionToSend.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
             }
         }
@@ -356,8 +360,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
 
                         // Enviamos todas las imágenes :
                         for ( IncidenciaRO incident : currentInspe.listaIncidencias ) {
-                            for ( ImagenRO image : incident.listaImgComent ) {
-                                sendImage(image, incident.getTmpId(),incident.getId(), token);
+                            if ( incident.listaImgComent != null &&
+                                    incident.listaImgComent.size() > 0 ) {
+                                for ( ImagenRO image : incident.listaImgComent ) {
+                                    sendImage(image, incident.getTmpId(), incident.getId(), token);
+                                }
+                            } else {
+                                dialog.dismiss();
+                                showDialogSuccess(getString(R.string.msg_success_send_inspection));
                             }
                         }
                     } catch (Exception e) {
@@ -366,10 +376,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                     }
                 } else {
                     dialog.dismiss();
-                    Messages.showSB(
-                            getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
-                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                            response.message() + "code :" + response.code());
+                    Messages.showSB(getView(), getString(R.string.msg_error_guardar_inspeccion));
                 }
             }
 
@@ -431,6 +438,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         }
     }
 
+    /** Módulo para enviar la imagen de incidencia */
     private void sendImage(ImagenRO imagenRO, String tmpId, int idIncident, String api_token) {
 
         File myDir = getActivity().getApplicationContext().getFilesDir();
@@ -455,10 +463,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.d("TAG-TAG", response.message());
+                if ( response.isSuccessful() ) {
                     correctSend++;
-
                     try {
                         // Seteando el id de imagen :
                         JSONObject jsonObject = new JSONObject(response.body().string());
@@ -474,30 +480,28 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                             imagenInc.setId(imageResult.getInt("id"));
                             real.commitTransaction();
                         }
-                        if (correctSend == totalToSend) {
+                        if ( correctSend == totalToSend ) {
                             dialog.dismiss();
-                            showDialogSuccess("La inspección ha sido enviada satisfactoriamente");
+                            showDialogSuccess(getString(R.string.msg_success_send_inspection));
                         } else {
-                            if (correctSend + failSend == totalToSend) {
-                                Messages.showSB(getView(),
-                                        getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
+                            if ( correctSend + failSend == totalToSend ) {
                                 dialog.dismiss();
-                                showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
-                                        "Sin embargo, algunas imágenes no han sido enviadas.");
+                                showDialogSuccess(getString(
+                                        R.string.msg_success_send_inspe_error_image));
                             }
                         }
                     }
-                    catch (Exception e) {
+                    catch ( Exception e ) {
                         e.printStackTrace();
+                        if ( correctSend + failSend == totalToSend ) {
+                            dialog.dismiss();
+                        }
                     }
                 } else {
                     failSend++;
                     if ( correctSend + failSend == totalToSend ) {
-                        Messages.showSB(getView(),
-                                getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
                         dialog.dismiss();
-                        showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
-                                "Sin embargo, algunas imágenes no han sido enviadas.");
+                        showDialogSuccess(getString(R.string.msg_success_send_inspe_error_image));
                     }
                 }
             }
@@ -507,11 +511,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                 t.printStackTrace();
                 failSend++;
                 if ( correctSend + failSend == totalToSend ) {
-                    Messages.showSB(getView(),
-                            getString(R.string.msg_error_guardar_inspeccion_imagen), "ok");
                     dialog.dismiss();
-                    showDialogSuccess("La inspección ha sido enviada satisfactoriamente. " +
-                            "Sin embargo, algunas imágenes no han sido enviadas.");
+                    showDialogSuccess(getString(R.string.msg_success_send_inspe_error_image));
                 }
             }
         });

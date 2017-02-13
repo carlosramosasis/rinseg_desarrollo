@@ -160,7 +160,8 @@ public class FragmentInspeccionDetalle1 extends Fragment {
         btnVerIncidentes.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Fragment fragment = FragmentInspeccionDetalle2.newInstance(inspeccion.getId());
+                //Fragment fragment = FragmentInspeccionDetalle2.newInstance(inspeccion.getId());
+                Fragment fragment = FragmentTabsIncidents.newInstance(inspeccion.getId());
                 activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
             }
         });

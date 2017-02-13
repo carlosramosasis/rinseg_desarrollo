@@ -26,10 +26,10 @@
         android:id="@+id/btn_agregar_inspeccion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        android:src="@drawable/new_document"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/fab_add"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccentDark"
         app:fab_colorRipple="@color/colorTertiary"/>

@@ -22,6 +22,8 @@ public class IncidenciaRO extends RealmObject {
 
     private String tmpId;
 
+    private boolean closed;
+
     @SerializedName("event_id")
     private int eventId;
 
@@ -99,6 +101,13 @@ public class IncidenciaRO extends RealmObject {
         this.detalle = detalle;
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
 
     public String getTmpId() {
         return tmpId;

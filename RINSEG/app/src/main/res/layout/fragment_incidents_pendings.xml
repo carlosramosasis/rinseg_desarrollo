@@ -1,0 +1,16 @@
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinator_incidents_pendings"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorSecondary1"
+    android:scrollbars="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_incidents_pending"
+        android:layout_width="match_parent"
+        android:paddingTop="6dp"
+        android:clipToPadding="false"
+        android:layout_height="match_parent" />
+
+</android.support.design.widget.CoordinatorLayout>
