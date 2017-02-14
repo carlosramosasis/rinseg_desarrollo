@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import rinseg.asistp.com.adapters.AccionPreventivaAdapter;
 import rinseg.asistp.com.adapters.InspectorAdapter;
@@ -71,7 +74,8 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     Spinner spinnerGerencia;
     Button btnAgregar;
 
-    public FragmentInspeccionNuevo1() { }
+    public FragmentInspeccionNuevo1() {
+    }
 
     public static FragmentInspeccionNuevo1 newInstance(String idTemporal) {
         FragmentInspeccionNuevo1 fragment = new FragmentInspeccionNuevo1();
@@ -84,7 +88,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if ( getArguments() != null ) {
+        if (getArguments() != null) {
             idTemp = getArguments().getString(ARG_PARAM1, "");
         }
     }
@@ -117,7 +121,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
 
 
     public void onButtonPressed(Uri uri) {
-        if ( mListener != null ) {
+        if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -202,6 +206,29 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
             }
         });
 
+        txtDni.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String dni = txtDni.getText().toString().trim();
+                if (dni.length() == 8) {
+                    InspectorRO insp = RecuperarPersonaPorDNI(dni);
+                    if (insp != null) {
+                        txtNombreInspector.setText(insp.getName());
+                    }
+                }
+            }
+        });
+
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,6 +255,8 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
                         R.anim.enter_from_right, R.anim.exit_to_right);
             }
         });
+
+
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
@@ -252,11 +281,11 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
 
         boolean resu = true;
 
-        if ( txtDni.getText().length() == 0 ) {
+        if (txtDni.getText().length() == 0) {
             txtDni.setError(getString(R.string.error_dni_insp1));
             resu = false;
         } else {
-            if ( txtDni.getText().length() != 8 ) {
+            if (txtDni.getText().length() != 8) {
                 txtDni.setError(getString(R.string.error_dni_invalid_insp1));
                 resu = false;
             }
@@ -280,7 +309,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void AgregarInspector() {
         // Validando los campos :
-        if ( !ValidarFormulario() ) {
+        if (!ValidarFormulario()) {
             return;
         }
 
@@ -336,19 +365,33 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadInspeccion() {
-        if ( !idTemp.equals("") ) {
+        if (!idTemp.equals("")) {
             final Realm realm = Realm.getInstance(myConfig);
             try {
                 mInspc = realm.where(InspeccionRO.class).equalTo("tmpId", idTemp).findFirst();
-                if ( mInspc != null) {
+                if (mInspc != null) {
                     listaInspectores.addAll(mInspc.listaInspectores);
                     inspectorAdapter.notifyDataSetChanged();
                 }
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
                 realm.close();
             }
         }
     }
+
+    private InspectorRO RecuperarPersonaPorDNI(String dni) {
+        InspectorRO insp = new InspectorRO();
+        try {
+            RealmList<InspectorRO> listaPersonas = sIns.inspectors;
+            insp = listaPersonas.where().equalTo("dni", dni).findFirst();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return insp;
+    }
+
 }

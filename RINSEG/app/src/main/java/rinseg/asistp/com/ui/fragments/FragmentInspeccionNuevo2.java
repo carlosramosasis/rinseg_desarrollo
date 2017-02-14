@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
+import io.realm.RealmList;
 import rinseg.asistp.com.adapters.InspectorAdapter;
 import rinseg.asistp.com.listener.ListenerClickInspector;
 import rinseg.asistp.com.models.InspeccionRO;
@@ -233,6 +236,29 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             }
         });
 
+        txtDni.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String dni = txtDni.getText().toString().trim();
+                if (dni.length() == 8) {
+                    InspectorRO insp = RecuperarPersonaPorDNI(dni);
+                    if (insp != null) {
+                        txtNombreResponsable.setText(insp.getName());
+                    }
+                }
+            }
+        });
+
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -373,4 +399,18 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
             }
         }
     }
+
+    private InspectorRO RecuperarPersonaPorDNI(String dni) {
+        InspectorRO insp = new InspectorRO();
+        try {
+            RealmList<InspectorRO> listaPersonas = sIns.inspectors;
+            insp = listaPersonas.where().equalTo("dni", dni).findFirst();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return insp;
+    }
+
 }
