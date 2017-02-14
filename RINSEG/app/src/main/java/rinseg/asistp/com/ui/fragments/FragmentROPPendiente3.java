@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
@@ -54,8 +56,10 @@ public class FragmentROPPendiente3 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    TextView txtBody;
-    TextView txtNota;
+    TextView txtBody, txtNota;
+    EditText txtEmpleado;
+    CheckBox chkAcepto;
+
 
     RealmConfiguration myConfig;
 
@@ -220,6 +224,8 @@ public class FragmentROPPendiente3 extends Fragment {
         activityMain = ((ActivityMain) getActivity());
         txtBody = (TextView) v.findViewById(R.id.txt_compromiso_body);
         txtNota = (TextView) v.findViewById(R.id.txt_compromiso_nota);
+        txtEmpleado = (EditText) v.findViewById(R.id.txt_compromiso_empleado);
+        chkAcepto = (CheckBox) v.findViewById(R.id.chk_compromiso_acepto);
 
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
@@ -236,6 +242,8 @@ public class FragmentROPPendiente3 extends Fragment {
         activityMain.btnLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SaveRop();
+
                 activityMain.actualPaginaRop -= 1;
                 Fragment fRopPendiente2 = new FragmentROPPendiente2();
                 if (!activityMain.mostrarPagAccionRealizada) {
@@ -244,7 +252,7 @@ public class FragmentROPPendiente3 extends Fragment {
 
                 for (int i = 0; i < sRop.events.size(); i++) {
                     EventRO e = sRop.events.get(i);
-                    if(e.getId() == mRop.getEventId()){
+                    if (e.getId() == mRop.getEventId()) {
                         nameEvent = e.getName();
                     }
                 }
@@ -260,6 +268,8 @@ public class FragmentROPPendiente3 extends Fragment {
         activityMain.btnRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SaveRop();
+
                 activityMain.actualPaginaRop += 1;
                 Fragment fRopPendiente4 = new FragmentROPPendiente4();
                 Bundle args = new Bundle();
@@ -366,6 +376,12 @@ public class FragmentROPPendiente3 extends Fragment {
                         return;
                     }
 
+                    txtEmpleado.setText(mRop.getWorkerCommitment());
+                    if(mRop.isCommitmentAccept()){
+                        chkAcepto.isChecked();
+                    }
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -419,5 +435,32 @@ public class FragmentROPPendiente3 extends Fragment {
         startActivity(GaleriaIntent);
     }
 
+    private void SaveRop() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            realm.beginTransaction();
+
+
+            mRop.setWorkerCommitment(txtEmpleado.getText().toString().trim());
+
+            if (txtEmpleado.getText().toString().trim().length() > 0) {
+                if (chkAcepto.isChecked()) {
+                    mRop.setCommitmentAccept(true);
+                } else {
+                    mRop.setCommitmentAccept(false);
+                }
+            } else {
+                mRop.setCommitmentAccept(false);
+            }
+
+            realm.commitTransaction();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
+    }
 
 }

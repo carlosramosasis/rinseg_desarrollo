@@ -19,8 +19,18 @@ public class AccionPreventiva extends RealmObject {
 
     private Date fecha;
 
-    @SerializedName("date")
+    @SerializedName("deadline")
     private String fechaString;
+
+
+    private Date fechaFinalizacion;
+
+    @SerializedName("date_done")
+    private String fechaFinalizacionString;
+
+    @SerializedName("action_done")
+    private boolean accionHecha;
+
 
     public AccionPreventiva() {
     }
@@ -78,5 +88,29 @@ public class AccionPreventiva extends RealmObject {
 
     public void setFechaString(String fecha) {
         this.fechaString = fecha;
+    }
+
+    public Date getFechaFinalizacion() {
+        return fechaFinalizacion;
+    }
+
+    public void setFechaFinalizacion(Date fechaFinalizacion) {
+        this.fechaFinalizacion = fechaFinalizacion;
+    }
+
+    public String getFechaFinalizacionString() {
+        return fechaFinalizacionString;
+    }
+
+    public void setFechaFinalizacionString(String fechaFinalizacionString) {
+        this.fechaFinalizacionString = fechaFinalizacionString;
+    }
+
+    public boolean isAccionHecha() {
+        return accionHecha;
+    }
+
+    public void setAccionHecha(boolean accionHecha) {
+        this.accionHecha = accionHecha;
     }
 }

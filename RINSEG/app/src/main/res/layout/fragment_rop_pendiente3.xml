@@ -48,6 +48,30 @@
                     android:elevation="3dp"
                     android:layout_margin="5dp"
                     >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/yo"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16dp"
+                            />
+                        <EditText
+                            android:id="@+id/txt_compromiso_empleado"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:lines="1"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16dp"
+                            android:layout_marginLeft="5dp"
+                            />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/txt_compromiso_body"
                         android:layout_width="wrap_content"
@@ -57,32 +81,15 @@
                         android:textSize="16dp"
                         android:layout_marginBottom="40dp"
                         />
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <CheckBox
+                        android:id="@+id/chk_compromiso_acepto"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="40dp"
-                        >
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/firma"
-                            android:layout_marginLeft="20dp"
-                            android:textSize="15dp"
-                            android:textColor="@color/colorPrimary"
-                            />
-                        <TextView
-                            android:layout_marginRight="20dp"
-                            android:gravity="right"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/empresa"
-                            android:textSize="15dp"
-                            android:textColor="@color/colorPrimary"
-                            />
-                    </LinearLayout>
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="15dp"
+                        android:text="@string/acepto_compromiso"
+                        />
+
                     <TextView
                         android:id="@+id/txt_compromiso_nota"
                         android:layout_width="match_parent"

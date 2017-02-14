@@ -16,4 +16,5 @@ public class SettingsInspectionRO extends RealmObject {
     public RealmList<TargetRO> targets;
     public RealmList<TypesRO> types;
     public RealmList<RacRO> racs;
+    public RealmList<InspectorRO> inspectors;
 }

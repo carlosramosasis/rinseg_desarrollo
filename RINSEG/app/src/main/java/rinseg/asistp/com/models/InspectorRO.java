@@ -20,6 +20,7 @@ public class InspectorRO extends RealmObject {
     @SerializedName("management_id")
     private int managementId;
 
+    private String tipo;
 
     public int getId() {
         return id;
@@ -51,6 +52,14 @@ public class InspectorRO extends RealmObject {
 
     public void setManagementId(int managementId) {
         this.managementId = managementId;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     @Override

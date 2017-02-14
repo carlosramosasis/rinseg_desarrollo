@@ -54,6 +54,7 @@ import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.Inspeccion;
 import rinseg.asistp.com.models.InspeccionRO;
+import rinseg.asistp.com.models.InspectorRO;
 import rinseg.asistp.com.models.ManagementRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.models.RacRO;
@@ -424,6 +425,11 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                         //////////////////////////////////Settings///////////////////////////////////////
                         JSONObject settingsJSON = jsonObject.getJSONObject("settings");
                         PopulateSettings(rops, settingsJSON);
+
+
+                        ///////////////////////////////////INSPECTORS////////////////////////////////////////////
+                        JSONObject inspectorsJSON = jsonObject.getJSONObject("inspectors");
+                        PopulateInspectors(inspections, inspectorsJSON,realm);
 
 
                         realm.commitTransaction();
@@ -846,6 +852,32 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void PopulateInspectors(SettingsInspectionRO inspectionRO, JSONObject inspectores, Realm realm) {
+
+        try {
+            JSONArray inspectorsJSON = inspectores.getJSONArray("inspector");
+
+
+            for (int i = 0; i < inspectorsJSON.length(); i++) {
+
+                JSONObject inspector = inspectorsJSON.getJSONObject(i);
+                InspectorRO inspectorRO = realm.createObject(InspectorRO.class);
+                inspectorRO.setId(inspector.getInt("id"));
+                inspectorRO.setName(inspector.getString("name"));
+                inspectorRO.setDni(inspector.getString("dni"));
+                inspectorRO.setTipo(inspector.getString("type"));
+                inspectionRO.inspectors.add(inspectorRO);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
 
     }
 

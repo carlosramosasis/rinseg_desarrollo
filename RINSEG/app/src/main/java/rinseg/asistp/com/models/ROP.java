@@ -71,6 +71,12 @@ public class ROP extends RealmObject{
     @SerializedName("date_close")
     private String dateCloseString;
 
+    @SerializedName("worker_commitment")
+    private String workerCommitment;
+
+    @SerializedName("commitment_accepted")
+    private boolean commitmentAccept;
+
 
     @SerializedName("rop_item")
     public RealmList<AccionPreventiva> listaAccionPreventiva;
@@ -267,5 +273,21 @@ public class ROP extends RealmObject{
 
     public void setEstadoRop(int estadoRop) {
         this.estadoRop = estadoRop;
+    }
+
+    public String getWorkerCommitment() {
+        return workerCommitment;
+    }
+
+    public void setWorkerCommitment(String workerCommitment) {
+        this.workerCommitment = workerCommitment;
+    }
+
+    public boolean isCommitmentAccept() {
+        return commitmentAccept;
+    }
+
+    public void setCommitmentAccept(boolean commitmentAccept) {
+        this.commitmentAccept = commitmentAccept;
     }
 }

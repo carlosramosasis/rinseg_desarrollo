@@ -55,7 +55,7 @@
                         android:maxLines="1"
                         android:paddingLeft="23dp"
                         android:paddingRight="6dp"
-                        android:textColor="@color/colorPrimary"
+                        android:textColor="@color/colorSecondary0"
                         android:textColorHint="@color/colorSecondary0"
                         android:textSize="17dp" />
 
@@ -162,7 +162,7 @@
                         android:background="@color/colorWhite"
                         android:elevation="2dp"
                         android:gravity="center"
-                        android:hint="@string/hint_fecha"
+                        android:hint="@string/hint_fecha_limite"
                         android:maxLines="1"
                         android:paddingLeft="6dp"
                         android:paddingRight="6dp"

@@ -141,6 +141,8 @@
     <string name="label_nompre_rop4">Nombre Supervisor</string>
     <string name="label_empresa_rop4">Empresa</string>
     <string name="msg_confirmar_cerrar_rop">¿Está seguro de terminar el rop?</string>
+    <string name="yo">Yo</string>
+    <string name="acepto_compromiso">Acepto</string>
 
 
     <!--ROP Cerrado 1-->
