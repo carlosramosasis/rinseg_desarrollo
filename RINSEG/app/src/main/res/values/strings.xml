@@ -314,4 +314,10 @@
     <string name="tab_incidents_title_pending">PENDIENTES</string>
     <string name="tab_incidents_title_closed">CERRADOS</string>
 
+    <!-- Card acciones preventivas de un rop registrado -->
+    <string name="card_prev_actions_responsible">Responsable :&#032;</string>
+    <string name="card_prev_actions_deadline">Fecha límite : &#032;&#032;&#032;&#032;</string>
+    <string name="card_prev_actions_realizado">REALIZADO</string>
+    <string name="card_prev_actions_pendiente">PENDIENTE</string>
+
 </resources>
