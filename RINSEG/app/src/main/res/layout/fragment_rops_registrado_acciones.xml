@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/hint_tipo_evento"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/text_acciones_prev_tipo_evento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/rop_c1_texto_default"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/rop_c1_area_resp"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/text_acciones_prev_area_resp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/rop_c1_texto_default"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_acciones_prev_area_descr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/rop_c1_texto_default"
+        android:textColor="@color/colorGray"
+        android:textSize="16sp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_preventive_actions_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/backgorund_login"
+        android:clipToPadding="false"
+        android:paddingTop="6dp"/>
+
+</LinearLayout>

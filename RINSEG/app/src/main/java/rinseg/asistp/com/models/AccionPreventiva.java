@@ -9,11 +9,15 @@ import rinseg.asistp.com.utils.Generic;
 
 /**
  * Created by Carlos on 30/09/2016.
+ * Modelo Accion Preventiva
  */
 public class AccionPreventiva extends RealmObject {
+
     private int id;
+
     @SerializedName("responsible")
     private String responsable;
+
     @SerializedName("action")
     private String accion;
 
@@ -21,7 +25,6 @@ public class AccionPreventiva extends RealmObject {
 
     @SerializedName("deadline")
     private String fechaString;
-
 
     private Date fechaFinalizacion;
 
@@ -31,9 +34,9 @@ public class AccionPreventiva extends RealmObject {
     @SerializedName("action_done")
     private boolean accionHecha;
 
+    private boolean closed;
 
-    public AccionPreventiva() {
-    }
+    public AccionPreventiva() { }
 
     public AccionPreventiva(String responsable, Date fecha, String accion) {
         this.responsable = responsable;
@@ -73,7 +76,6 @@ public class AccionPreventiva extends RealmObject {
         this.fecha = fecha;
     }
 
-
     public String getFechaString() {
         return this.fechaString;
     }
@@ -112,5 +114,13 @@ public class AccionPreventiva extends RealmObject {
 
     public void setAccionHecha(boolean accionHecha) {
         this.accionHecha = accionHecha;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }

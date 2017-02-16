@@ -209,9 +209,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
         activityMain.ShowButtonsBottom(false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+        if ( mListener != null ) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -221,7 +220,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
         super.onDetach();
         mListener = null;
     }
-
 
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
@@ -238,16 +236,17 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopCerrados() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 1).findAll().sort("dateClose", Sort.DESCENDING);
+            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 1).findAll()
+                    .sort("dateClose", Sort.DESCENDING);
 
-            for (int i = 0; i < RopsRealm.size(); i++) {
+            for ( int i = 0; i < RopsRealm.size(); i++ ) {
                 ROP tRop = RopsRealm.get(i);
                 listaRops.add(tRop);
                 ropAdapter.notifyDataSetChanged();
@@ -266,10 +265,11 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
         startActivity(RopDetalleIntent);
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     public void RecuperarRopCerrado(int codeRop) {
         View parentLAyout = getView().findViewById(R.id.frame_rop_cerrados_content);
 
-        if (!Generic.IsOnRed(activityMain)) {
+        if ( !Generic.IsOnRed(activityMain) ) {
             Messages.showSB(parentLAyout, getString(R.string.no_internet), getString(R.string.ok));
             return;
         }
@@ -297,7 +297,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
 
                         String body = response.body().string();
 
-                        if (body.charAt(0) != '{') {
+                        if ( body.charAt(0) != '{' ) {
                             Messages.showSB(parentLAyout,
                                     getString(R.string.sincronizando_error), getString(R.string.ok));
                             return;
@@ -339,7 +339,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                             PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
                             realm.commitTransaction();
 
-
                             ROP ropCopy = realm.copyFromRealm(ropRecuperado);
 
                             String path = activityMain.getFilesDir().getPath();
@@ -354,14 +353,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                 dialogLoading.dismiss();
                                 Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
                             }
-
-
                         }
-
-
                         Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
-
-
                     } catch (Exception e) {
                         dialogLoading.dismiss();
                         e.printStackTrace();
@@ -369,7 +362,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                     } finally {
                         realm.close();
                     }
-
                 } else {
                     if ( response.code() == 422 ) {
                         // Mostramos mensaje del servidor :
@@ -397,12 +389,9 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                 Messages.showSB(rootLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
             }
         });
-
-
     }
 
     private void PopulateROP(ROP rop, JSONObject ropJson) {
-
         try {
             rop.setEstadoRop(1);
             rop.setId(ropJson.getInt("id"));
@@ -433,38 +422,30 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
             } else {
                 rop.setResearch_required(false);
             }
-
-
             Date eventDate = Generic.dateFormatterMySql.parse(rop.getEventDateString());
             rop.setEventDate(eventDate);
 
-
             //Creamos la carpeta que contendra las imagenes
-            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorRop(getActivity().getApplicationContext(), rop.getTmpId());
-
-
+            boolean createdImageGalery = Generic.CrearCarpetaImagenesPorRop(getActivity()
+                    .getApplicationContext(), rop.getTmpId());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void PopulateCompanieForRop(ROP rop, JSONObject companyJson, Realm realm) {
-
         try {
             CompanyRO company = realm.createObject(CompanyRO.class);
             company.setId(companyJson.getInt("id"));
             company.setDisplayName(companyJson.getString("display_name"));
             rop.setCompany(company);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void PopulateImagesForRopNew(ROP rop, JSONArray imagesArray, Realm realm) {
-        for (int i = 0; i < imagesArray.length(); i++) {
+        for ( int i = 0; i < imagesArray.length(); i++ ) {
             try {
                 JSONObject imgJson = imagesArray.getJSONObject(i);
                 ImagenRO imagen = realm.createObject(ImagenRO.class);
@@ -473,7 +454,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                 imagen.setDescripcion(imgJson.getString("description"));
                 imagen.setPath(imgJson.getString("path"));
                 rop.listaImgComent.add(imagen);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -490,7 +470,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                 accionPreventiva.setAccion(item.getString("action"));
                 accionPreventiva.setResponsable(item.getString("responsible"));
                 accionPreventiva.setFechaString(item.getString("date"));
-                accionPreventiva.setFecha(Generic.dateFormatterMySql.parse(accionPreventiva.getFechaString()));
+                accionPreventiva.setFecha(Generic.dateFormatterMySql.parse(
+                        accionPreventiva.getFechaString()));
                 rop.listaAccionPreventiva.add(accionPreventiva);
 
             } catch (Exception e) {
@@ -498,7 +479,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
             }
         }
     }
-
 
     private void GuardarImagenesEnLocal(final RealmList<ImagenRO> listaImagenes, final String pathBase) {
         cantImagenesTotal = listaImagenes.size();
@@ -510,7 +490,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                         .load(img.getPath()).asBitmap()
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
-                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            public void onResourceReady(final Bitmap resource,
+                                                        GlideAnimation<? super Bitmap> glideAnimation) {
                                 new Thread(new Runnable() {
                                     public void run() {
                                         Log.e("onResourceReady", "onResourceReady");
@@ -531,8 +512,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                                 _handler.sendMessage(msg);
                                                 Looper.loop();
                                             }
-
-
                                         } catch (IOException e) {
                                             Log.e("IOException", e.getLocalizedMessage());
                                             e.printStackTrace();
@@ -562,12 +541,9 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                 }
                             }
                         });
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
@@ -580,12 +556,11 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
 
 
     private void PopulateImagesForRopExisting(ROP rop, JSONArray imagesArray, Realm realm) {
-
-        for (int i = 0; i < imagesArray.length(); i++) {
+        for ( int i = 0; i < imagesArray.length(); i++ ) {
             try {
-
                 JSONObject imgJson = imagesArray.getJSONObject(i);
-                ImagenRO img = rop.listaImgComent.where().equalTo("name", imgJson.getString("name")).findFirst();
+                ImagenRO img = rop.listaImgComent.where().equalTo("name",
+                        imgJson.getString("name")).findFirst();
 
                 if (img == null) {
                     ImagenRO imagen = realm.createObject(ImagenRO.class);
@@ -599,15 +574,12 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                     path = path + "/" + Constants.PATH_IMAGE_GALERY_ROP + rop.getTmpId() + "/";
 
                     GuardarImagenesEnLocal(imagen, path);
-
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     private void GuardarImagenesEnLocal(ImagenRO img, String pathBase) {
@@ -640,7 +612,6 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                         }).start();
                     }
                 });
-
     }
 
     private Boolean validarDescargaTotalImagenes() {
@@ -650,11 +621,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
             cantImagenesRecibidos = 0;
             resu = true;
             dialogLoading.dismiss();
-
         }
-
         return resu;
     }
-
-
 }
