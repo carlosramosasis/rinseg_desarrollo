@@ -560,6 +560,7 @@ public class FragmentROPPendiente4 extends Fragment {
                             realm.beginTransaction();
                             mRop.setId(ropResult.getInt("id"));
                             mRop.setTmpId(String.valueOf(ropResult.getInt("id")));
+                            mRop.setEstadoRop(1);
                             realm.commitTransaction();
 
                             Generic.CambiarNombreCarpetaImageens(activityMain, Constants.PATH_IMAGE_GALERY_ROP, oldFolder, mRop.getTmpId());

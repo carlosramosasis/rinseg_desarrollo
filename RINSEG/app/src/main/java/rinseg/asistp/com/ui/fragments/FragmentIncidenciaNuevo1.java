@@ -483,6 +483,7 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
         txtNivelRiesgo.setText(String.valueOf(nivelRiesgo));
 
         Double valorMaximoBase = 0.0;
+        int nivelRiesgoTermometro = 0;
         Double nivelRiesgoEquivalente = 0.0;
 
 
@@ -498,8 +499,8 @@ public class FragmentIncidenciaNuevo1 extends Fragment {
                 Double rango = ((double)riesgo.getMaxValue() - riesgo.getMinValue());
                 Double unidad = (rango / 25);
 
-                nivelRiesgo = nivelRiesgo - riesgo.getMinValue();
-                nivelRiesgoEquivalente = nivelRiesgo / unidad;
+                nivelRiesgoTermometro = nivelRiesgo - riesgo.getMinValue();
+                nivelRiesgoEquivalente = nivelRiesgoTermometro / unidad;
                 switch (categoriaRiesgo) {
                     case "Bajo":
                         progressRiesgo.setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.progressbar_green, null));

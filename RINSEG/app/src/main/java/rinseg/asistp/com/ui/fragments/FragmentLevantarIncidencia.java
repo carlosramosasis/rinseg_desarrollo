@@ -174,7 +174,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         spinnerSeverities = (MaterialSpinner) v.findViewById(R.id.spinner_fix_incident_severity);
         textCategory = (TextView) v.findViewById(R.id.textview_fix_incident_category);
         textLevel = (TextView) v.findViewById(R.id.textview_fix_incident_level);
-        progressRiesgo =  (ProgressBar) v.findViewById(R.id.progress_lev_incidencia) ;
+        progressRiesgo = (ProgressBar) v.findViewById(R.id.progress_lev_incidencia);
 
         // Configurando Realm :
         Realm.init(this.getActivity().getApplicationContext());
@@ -391,14 +391,17 @@ public class FragmentLevantarIncidencia extends Fragment {
             incLevantadaRO = realm.createObject(IncidenciaLevantadaRO.class);
             incLevantadaRO.setIdIncidencia(incidenciaRO.getId());
             incLevantadaRO.setFechaLevantamiento(datePicker.getTime());
-            incLevantadaRO.setFechaLevantamientoString(
-                    Generic.dateFormatterMySql.format(datePicker.getTime()));
-            incLevantadaRO.setIdFrecuencia(
-                    listF.get(spinnerFrequencies.getSelectedIndex()).getId());
-            incLevantadaRO.setIdSeveridad(
-                    listS.get(spinnerSeverities.getSelectedIndex()).getId());
+            incLevantadaRO.setFechaLevantamientoString(Generic.dateFormatterMySql.format(datePicker.getTime()));
+            incLevantadaRO.setIdFrecuencia(listF.get(spinnerFrequencies.getSelectedIndex()).getId());
+            incLevantadaRO.setIdSeveridad(listS.get(spinnerSeverities.getSelectedIndex()).getId());
             incLevantadaRO.setCategoriaRiesgo(textCategory.getText().toString());
             incLevantadaRO.setNivelRiesgo(valorNiv);
+
+            IncidenciaRO incidencia = realm.where(IncidenciaRO.class).equalTo("id", idIncidencia).findFirst();
+            if (incidencia != null) {
+                incidencia.setClosed(true);
+            }
+
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -455,6 +458,7 @@ public class FragmentLevantarIncidencia extends Fragment {
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
                         dialog.dismiss();
+                        ///todo Actualizar id
                         // Actualizar el id
                         showDialogSuccess();
                     } catch (Exception e) {
@@ -500,7 +504,7 @@ public class FragmentLevantarIncidencia extends Fragment {
 
 
     void CalcularRiesgo() {
-        try{
+        try {
             textCategory.setText(getString(R.string.rop_c1_texto_default));
             textLevel.setText(getString(R.string.rop_c1_texto_default));
             progressRiesgo.setProgress(0);
@@ -559,7 +563,7 @@ public class FragmentLevantarIncidencia extends Fragment {
                     break;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

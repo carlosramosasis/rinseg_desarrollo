@@ -92,6 +92,9 @@ public class ROP extends RealmObject{
 
     private boolean cerrado;
 
+
+    /* Estado del ROP : Pendiente = 0, Registrado = 1, Cerrado = 2 */
+    @SerializedName("status")
     private int estadoRop;
 
     public ROP(){

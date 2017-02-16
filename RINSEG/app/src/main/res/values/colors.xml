@@ -13,10 +13,10 @@
     <color name="colorSecondary1">#eae6e2</color>
 
     <color name="colorGreenlight">#05c91f</color>
-    <color name="colorGreen">#04ac1b</color>
+    <color name="colorGreen">#2fc243</color>
     <color name="colorGreenDark">#027410</color>
     <color name="colorYellowLight">#fff04f</color>
-    <color name="colorYellow">#f9e511</color>
+    <color name="colorYellow">#ecdc2e</color>
     <color name="colorYellowDark">#d4c201</color>
     <color name="colorOrangeLight">#ffa154</color>
     <color name="colorOrange">#f4932b</color>

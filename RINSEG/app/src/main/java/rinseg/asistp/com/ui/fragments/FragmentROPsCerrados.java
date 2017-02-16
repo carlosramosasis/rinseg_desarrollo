@@ -245,7 +245,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
     private void LoadRopCerrados() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 1).findAll().sort("dateClose", Sort.DESCENDING);
+            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 2).findAll().sort("dateClose", Sort.DESCENDING);
 
             for (int i = 0; i < RopsRealm.size(); i++) {
                 ROP tRop = RopsRealm.get(i);

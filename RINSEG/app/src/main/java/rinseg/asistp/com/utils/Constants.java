@@ -44,4 +44,11 @@ public class Constants {
 
     public static String MY_SHARED_PREFERENCES = "RINSEG.PREFERENCES";
 
+    public static String BAJO = "Bajo";
+    public static String MEDIO = "Medio";
+    public static String ALTO = "Alto";
+    public static String MUY_ALTO = "Muy Alto";
+
+
+
 }

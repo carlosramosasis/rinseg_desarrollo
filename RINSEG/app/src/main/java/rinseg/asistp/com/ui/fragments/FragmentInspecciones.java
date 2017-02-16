@@ -184,7 +184,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerInspecciones.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        inspeccionAdapter = new InspeccionAdapter(listaInspeccinoes,this);
+        inspeccionAdapter = new InspeccionAdapter(activityMain,listaInspeccinoes,this);
         recyclerInspecciones.setAdapter(inspeccionAdapter);
 
         //configuramos Realm
