@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 /**
  * Created by Carlos Ramos on 28/10/2016.
  */
-public class ImagenRO extends RealmObject{
+public class ImagenRO extends RealmObject {
 
     private int id;
 
@@ -20,8 +20,7 @@ public class ImagenRO extends RealmObject{
 
     private int idParent;
 
-
-
+    private boolean inspeccionLevantada;
 
     public String getName() {
         return name;
@@ -64,4 +63,8 @@ public class ImagenRO extends RealmObject{
     public void setIdParent(int idParent) {
         this.idParent = idParent;
     }
+
+    public boolean isInspeccionLevantada() {return inspeccionLevantada;}
+
+    public void setInspeccionLevantada(boolean inspeccionLevantada) {this.inspeccionLevantada = inspeccionLevantada;}
 }

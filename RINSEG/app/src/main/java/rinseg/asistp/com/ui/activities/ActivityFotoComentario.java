@@ -49,7 +49,8 @@ public class ActivityFotoComentario extends AppCompatActivity {
     String tmpIdRop = null;
     String pTitulo = null;
     String tmpIdInci = null;
-    Boolean puedeEditar;
+    boolean puedeEditar;
+    boolean esInspeccionLevantada;
     String comentario = null;
     RealmConfiguration myConfig;
 
@@ -69,6 +70,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
                 puedeEditar = extras.getBoolean("puedeEditar", true);
                 comentario = extras.getString("comentario", null);
                 pTitulo = extras.getString("titulo",getString(R.string.title_add_imagen));
+                esInspeccionLevantada = extras.getBoolean("esInspeccionLevantada",false);
             }
         }
 
@@ -264,6 +266,7 @@ public class ActivityFotoComentario extends AppCompatActivity {
                 if (mRop != null) {
                     mRop.listaImgComent.add(imagenRO);
                 } else if (mIncidencia != null) {
+                    imagenRO.setInspeccionLevantada(esInspeccionLevantada);
                     mIncidencia.listaImgComent.add(imagenRO);
                 }
 

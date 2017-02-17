@@ -1,11 +1,18 @@
 package rinseg.asistp.com.ui.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,22 +26,32 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.FrecuencieRO;
+import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.IncidenciaLevantadaRO;
 import rinseg.asistp.com.models.IncidenciaRO;
 import rinseg.asistp.com.models.RiskRO;
@@ -43,7 +60,10 @@ import rinseg.asistp.com.models.SeveritiesRO;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
+import rinseg.asistp.com.ui.activities.ActivityFotoComentario;
+import rinseg.asistp.com.ui.activities.ActivityGaleria;
 import rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle;
+import rinseg.asistp.com.utils.Constants;
 import rinseg.asistp.com.utils.DialogLoading;
 import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
@@ -52,6 +72,7 @@ import rinseg.asistp.com.utils.RinsegModule;
 import rinseg.asistp.com.utils.SharedPreferencesHelper;
 
 import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
+import static rinseg.asistp.com.utils.Constants.tagIncidentes;
 
 public class FragmentLevantarIncidencia extends Fragment {
 
@@ -60,6 +81,13 @@ public class FragmentLevantarIncidencia extends Fragment {
 
     private int idInspeccion;
     private String idIncidencia;
+
+    int totalToSend, correctSend, failSend = 0;
+
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    // tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
 
     private OnFragmentInteractionListener mListener;
 
@@ -75,6 +103,11 @@ public class FragmentLevantarIncidencia extends Fragment {
     TextView textCategory;
     TextView textLevel;
     ProgressBar progressRiesgo;
+
+    DialogLoading dialog;
+
+    FloatingActionsMenu btnFabMenu;
+    FloatingActionButton btnTomarFoto, btnImportarFotos, btnGaleriaFotos;
 
     RealmResults<RiskRO> riesgosROs;
 
@@ -95,6 +128,8 @@ public class FragmentLevantarIncidencia extends Fragment {
     String categoriaRiesgo;
 
     SettingsInspectionRO sIns;
+
+    static Uri capturedImageUri = null;
 
     public FragmentLevantarIncidencia() {
     }
@@ -142,6 +177,10 @@ public class FragmentLevantarIncidencia extends Fragment {
     public void onResume() {
         super.onResume();
         activityMain.toolbarInspeccionDet.setTitle(R.string.title_levantamiento);
+        btnFabMenu.setVisibility(View.VISIBLE);
+        if (incidenciaRO != null) {
+            MostrarCantidadImagenesInspeccionesLevantadas(incidenciaRO.listaImgComent);
+        }
     }
 
     public void onButtonPressed(Uri uri) {
@@ -160,6 +199,32 @@ public class FragmentLevantarIncidencia extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imagen = null;
+                if (data != null) {
+                    if (data.getData() != null) {
+                        imagen = data.getData();
+                    }
+                } else if (capturedImageUri != null) {
+                    imagen = capturedImageUri;
+                    capturedImageUri = null;
+                }
+                if (imagen != null) {
+                    launchActivityFotoComentario(imagen);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     /**
      * Inicializamos los elementos
      */
@@ -175,6 +240,11 @@ public class FragmentLevantarIncidencia extends Fragment {
         textCategory = (TextView) v.findViewById(R.id.textview_fix_incident_category);
         textLevel = (TextView) v.findViewById(R.id.textview_fix_incident_level);
         progressRiesgo = (ProgressBar) v.findViewById(R.id.progress_lev_incidencia);
+
+        btnFabMenu = (FloatingActionsMenu) v.findViewById(R.id.fab_menu_rop);
+        btnTomarFoto = (FloatingActionButton) v.findViewById(R.id.fab_tomar_foto);
+        btnImportarFotos = (FloatingActionButton) v.findViewById(R.id.fab_import_foto);
+        btnGaleriaFotos = (FloatingActionButton) v.findViewById(R.id.fab_set_dir);
 
         // Configurando Realm :
         Realm.init(this.getActivity().getApplicationContext());
@@ -252,6 +322,71 @@ public class FragmentLevantarIncidencia extends Fragment {
                 activityMain.replaceFragment(f, true, 0, 0, 0, 0);
             }
         });
+
+        btnTomarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int permissionCheckCamera = ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.CAMERA);
+                int permissionCheckWrite = ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED ||
+                        permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+                    Permissions();
+                }
+
+                if (permissionCheckCamera == PackageManager.PERMISSION_GRANTED ||
+                        permissionCheckWrite == PackageManager.PERMISSION_GRANTED) {
+                    Calendar cal = Calendar.getInstance();
+                    File file = new File(Environment.getExternalStorageDirectory(),
+                            (cal.getTimeInMillis() + ".jpg"));
+                    if (!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        file.delete();
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    capturedImageUri = Uri.fromFile(file);
+
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+                }
+            }
+        });
+
+        btnImportarFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+            }
+        });
+
+        btnGaleriaFotos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchActivityGaleria();
+            }
+        });
+
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -437,10 +572,10 @@ public class FragmentLevantarIncidencia extends Fragment {
         // Obtenemos el token :
         SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
                 activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
-        String token = preferencesHelper.getToken();
+        final String token = preferencesHelper.getToken();
 
         // Mostramos dialog mientras se procese :
-        final DialogLoading dialog = new DialogLoading(activityMain);
+        dialog = new DialogLoading(activityMain);
         dialog.show();
 
         Realm realm = Realm.getInstance(myConfig);
@@ -457,10 +592,24 @@ public class FragmentLevantarIncidencia extends Fragment {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
-                        dialog.dismiss();
+                        // dialog.dismiss();
                         ///todo Actualizar id
                         // Actualizar el id
-                        showDialogSuccess();
+                        // showDialogSuccess();
+                        // Enviamos todas las imágenes :
+
+                        RealmResults<ImagenRO> listaImagenes = incidenciaRO.listaImgComent.where().equalTo("inspeccionLevantada", true).findAll();
+
+                        if (listaImagenes != null && listaImagenes.size() > 0) {
+                            for (int i = 0; i < listaImagenes.size(); i++) {
+                                ImagenRO image = listaImagenes.get(i);
+                                sendImage(image, incidenciaRO.getTmpId(), incidenciaRO.getId(), token);
+                            }
+                        } else {
+                            dialog.dismiss();
+                            showDialogSuccess();
+                        }
+
                     } catch (Exception e) {
                         dialog.dismiss();
                         e.printStackTrace();
@@ -482,6 +631,7 @@ public class FragmentLevantarIncidencia extends Fragment {
         });
     }
 
+
     /**
      * Dialog de información de éxito
      */
@@ -490,6 +640,23 @@ public class FragmentLevantarIncidencia extends Fragment {
         dialogConfirm.show();
         dialogConfirm.setTitle("INCIDENCIA LEVANTADA");
         dialogConfirm.setBody("Los nuevos datos de la inspección han sido enviados al servidor");
+        dialogConfirm.setTextBtnAceptar("DE ACUERDO");
+        dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
+        dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogConfirm.dismiss();
+                Fragment fragment = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+                activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
+            }
+        });
+    }
+
+    private void showDialogSuccess(String message) {
+        final DialogRINSEG dialogConfirm = new DialogRINSEG(activityMain);
+        dialogConfirm.show();
+        dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
+        dialogConfirm.setBody(message);
         dialogConfirm.setTextBtnAceptar("DE ACUERDO");
         dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
         dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
@@ -578,5 +745,142 @@ public class FragmentLevantarIncidencia extends Fragment {
             realm.close();
         }
     }
+
+    public void Permissions() {
+
+        ArrayList<String> especificacionPermisos = new ArrayList<>();
+
+        int permissionCheckCamera = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.CAMERA);
+        int permissionCheckWrite = ContextCompat.checkSelfPermission(
+                this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheckCamera != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.CAMERA);
+        }
+
+        if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+            especificacionPermisos.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        String[] permisos = new String[especificacionPermisos.size()];
+        permisos = especificacionPermisos.toArray(permisos);
+
+        if (especificacionPermisos.size() > 0) {
+            this.requestPermissions(permisos, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    public void launchActivityGaleria() {
+        Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
+        GaleriaIntent.putExtra("IncidentetmpId", incidenciaRO.getTmpId());
+        GaleriaIntent.putExtra("esInspeccionLevantada", true);
+        startActivity(GaleriaIntent);
+    }
+
+    public void launchActivityFotoComentario(Uri uriImagen) {
+        FotoModel fotoMd = new FotoModel();
+
+        Uri uri = uriImagen;
+        fotoMd.uri = uri;
+        //fotoMd.bitmap = null;
+
+        Intent FotoComentarioIntent = new Intent().setClass(
+                activityMain, ActivityFotoComentario.class);
+        FotoComentarioIntent.putExtra("imagen", fotoMd);
+        FotoComentarioIntent.putExtra("IncidenciatmpId", incidenciaRO.getTmpId());
+        FotoComentarioIntent.putExtra("esInspeccionLevantada", true);
+        startActivity(FotoComentarioIntent);
+    }
+
+    public void MostrarCantidadImagenesInspeccionesLevantadas(RealmList<ImagenRO> listaImagenes) {
+        int cant = listaImagenes.where().equalTo("inspeccionLevantada", true).findAll().size();
+        this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
+    }
+
+
+    /**
+     * Módulo para enviar la imagen de incidencia
+     */
+    private void sendImage(ImagenRO imagenRO, String tmpId, int idIncident, String api_token) {
+        imagenRO.setDescripcion("Inspección Levantada - "+imagenRO.getDescripcion());
+
+        File myDir = getActivity().getApplicationContext().getFilesDir();
+        File file = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + tmpId + "/"
+                + imagenRO.getName());
+
+        // Asignamos la imagen como Part
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file_image", file.getName(),
+                requestFile);
+
+        // Asignamos los campos como RequestBody :
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"),
+                imagenRO.getDescripcion());
+        RequestBody incident_id = RequestBody.create(MediaType.parse("multipart/form-data"),
+                String.valueOf(idIncident));
+
+        RestClient restClient = new RestClient(Services.INSPECTION);
+
+        Call<ResponseBody> call = restClient.iServices.addImageIncident(incident_id, description,
+                body, api_token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    correctSend++;
+                    try {
+                        // Seteando el id de imagen :
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        JSONObject messageResult = jsonObject.getJSONObject("message");
+                        JSONObject imageResult = messageResult.getJSONObject("inspection_image");
+
+                        Realm real = Realm.getInstance(myConfig);
+
+                        ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
+                                imageResult.getString("name")).findFirst();
+                        if (imagenInc != null) {
+                            real.beginTransaction();
+                            imagenInc.setId(imageResult.getInt("id"));
+                            real.commitTransaction();
+                        }
+                        if (correctSend == totalToSend) {
+                            dialog.dismiss();
+                            // showDialogSuccess(getString(R.string.msg_success_send_inspection));
+                            showDialogSuccess();
+                        } else {
+                            if (correctSend + failSend == totalToSend) {
+                                dialog.dismiss();
+                                //showDialogSuccess(getString(R.string.msg_success_send_inspe_error_image));
+                                showDialogSuccess();
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (correctSend + failSend == totalToSend) {
+                            dialog.dismiss();
+                        }
+                    }
+                } else {
+                    failSend++;
+                    if (correctSend + failSend == totalToSend) {
+                        dialog.dismiss();
+                        showDialogSuccess("El levantamiento de inspección ha sido enviada satisfactoriamente. Sin embargo, algunas imágenes no han sido enviadas.");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                failSend++;
+                if (correctSend + failSend == totalToSend) {
+                    dialog.dismiss();
+                    showDialogSuccess("El levantamiento de inspección ha sido enviada satisfactoriamente. Sin embargo, algunas imágenes no han sido enviadas.");
+                }
+            }
+        });
+    }
+
 
 }

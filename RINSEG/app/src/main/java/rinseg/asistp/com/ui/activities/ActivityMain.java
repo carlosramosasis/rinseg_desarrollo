@@ -159,6 +159,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
 
         setUpElements();
         setUpActions();
+        Permissions();
 
         //Llamamos al fragment ROPS pendientes para que sea el primero que se muestre
         replaceFragment(new FragmentTabRops(), true, 0, 0, 0, 0);

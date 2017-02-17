@@ -26,7 +26,8 @@
                 android:layout_marginBottom="10dp"
                 android:orientation="vertical"
                 android:scrollbars="vertical"
-                android:paddingBottom="10dp">
+                android:paddingBottom="80dp"
+                >
 
                 <TextView
                     android:gravity="center"
@@ -320,6 +321,17 @@
         </LinearLayout>
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="right"
+        android:layout_marginBottom="50dp"
+        >
+        <include layout="@layout/button_menu_rop"
+            ></include>
+    </LinearLayout>
+
+
 
     <!--<com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab_menu_fix_inci"

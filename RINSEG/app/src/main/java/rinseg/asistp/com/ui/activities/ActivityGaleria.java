@@ -16,6 +16,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rinseg.asistp.com.adapters.ImageAdapter;
@@ -46,6 +47,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
 
     ROP mRop;
     IncidenciaRO mIncidente;
+    boolean esIncidenciaLevantada = false;
 
     private File fileApp;
 
@@ -62,6 +64,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
             if (extras != null) {
                 tmpIdRop = extras.getString("ROPtmpId", null);
                 tmpIdIncidente = extras.getString("IncidentetmpId", null);
+                esIncidenciaLevantada = extras.getBoolean("esInspeccionLevantada", false);
             }
         }
 
@@ -94,7 +97,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
             } else if (mIncidente != null) {
                 FotoComentarioIntent.putExtra("IncidentetmpId", mIncidente.getTmpId());
             }
-            FotoComentarioIntent.putExtra("titulo",getString(R.string.title_imagen));
+            FotoComentarioIntent.putExtra("titulo", getString(R.string.title_imagen));
             FotoComentarioIntent.putExtra("puedeEditar", false);
             FotoComentarioIntent.putExtra("comentario", listaImagenes.get(position).getDescripcion());
             startActivity(FotoComentarioIntent);
@@ -130,12 +133,12 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
         // Crear un nuevo Adaptador
         fileApp = getApplicationContext().getFilesDir();
 
-        if(tmpIdRop!= null){
+        if (tmpIdRop != null) {
             LoadRopPendiente();
-            imageAdapter = new ImageAdapter(this,listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), this);
-        }else if(tmpIdIncidente != null){
+            imageAdapter = new ImageAdapter(this, listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_ROP, mRop.getTmpId(), this);
+        } else if (tmpIdIncidente != null) {
             LoadIncidente();
-            imageAdapter = new ImageAdapter(this,listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_INCIDENCIA,mIncidente.getTmpId(), this);
+            imageAdapter = new ImageAdapter(this, listaImagenes, fileApp, Constants.PATH_IMAGE_GALERY_INCIDENCIA, mIncidente.getTmpId(), this);
         }
 
         recyclerImage.setAdapter(imageAdapter);
@@ -220,10 +223,11 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
                 return;
             }
 
-            if (incidenteRealm.listaImgComent.size() > 0) {
+            RealmResults<ImagenRO> ListaComentario = incidenteRealm.listaImgComent.where().equalTo("inspeccionLevantada", esIncidenciaLevantada).findAll();
+            if (ListaComentario.size() > 0) {
 
-                for (int i = 0; i < incidenteRealm.listaImgComent.size(); i++) {
-                    ImagenRO img = incidenteRealm.listaImgComent.get(i);
+                for (int i = 0; i < ListaComentario.size(); i++) {
+                    ImagenRO img = ListaComentario.get(i);
                     listaImagenes.add(img);
                     imageAdapter.notifyDataSetChanged();
                 }

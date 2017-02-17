@@ -427,7 +427,12 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             realm.beginTransaction();
             for ( int i = 0; i < arrayIncidentes.length(); i++ ) {
                 JSONObject incidenteJson = arrayIncidentes.getJSONObject(i);
+
+                String oldFolder = String.valueOf(mInspc.listaIncidencias.get(i).getTmpId());
                 mInspc.listaIncidencias.get(i).setId(incidenteJson.getInt("id"));
+                mInspc.listaIncidencias.get(i).setTmpId(String.valueOf(incidenteJson.getInt("id")));
+                Generic.CambiarNombreCarpetaImageens(activityMain, Constants.PATH_IMAGE_GALERY_INCIDENCIA, oldFolder, mInspc.listaIncidencias.get(i).getTmpId());
+
             }
             realm.commitTransaction();
         } catch ( Exception e ) {
@@ -495,6 +500,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                         e.printStackTrace();
                         if ( correctSend + failSend == totalToSend ) {
                             dialog.dismiss();
+                            showDialogSuccess(getString(R.string.msg_success_send_inspe_error_image));
                         }
                     }
                 } else {
