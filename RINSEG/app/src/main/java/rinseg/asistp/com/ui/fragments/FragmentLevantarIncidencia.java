@@ -279,33 +279,37 @@ public class FragmentLevantarIncidencia extends Fragment {
 
             //Recuperamos desde Realm los riesgos :
             riesgosROs = realm.where(RiskRO.class).findAll();
+
+            // Recuperando la incidencia anfitriona :
+            if (!idIncidencia.equals("")) {
+                incidenciaRO = realm.where(IncidenciaRO.class)
+                        .equalTo("id", Integer.parseInt(idIncidencia)).findFirst();
+
+                // Seteando la frecuencia de la incidencia al spinner :
+                for (int i = 0; i < listF.size(); i++) {
+                    if (listF.get(i).getId() == incidenciaRO.getFrecuenciaId()) {
+                        spinnerFrequencies.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                // Seteando la severidad de la incidencia al spinner :
+                for (int i = 0; i < listS.size(); i++) {
+                    if (listS.get(i).getId() == incidenciaRO.getSeveridadId()) {
+                        spinnerSeverities.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
+            realm.close();
         } finally {
             realm.close();
         }
 
-        // Recuperando la incidencia anfitriona :
-        if (!idIncidencia.equals("")) {
-            incidenciaRO = realm.where(IncidenciaRO.class)
-                    .equalTo("id", Integer.parseInt(idIncidencia)).findFirst();
 
-            // Seteando la frecuencia de la incidencia al spinner :
-            for (int i = 0; i < listF.size(); i++) {
-                if (listF.get(i).getId() == incidenciaRO.getFrecuenciaId()) {
-                    spinnerFrequencies.setSelectedIndex(i);
-                    break;
-                }
-            }
-
-            // Seteando la severidad de la incidencia al spinner :
-            for (int i = 0; i < listS.size(); i++) {
-                if (listS.get(i).getId() == incidenciaRO.getSeveridadId()) {
-                    spinnerSeverities.setSelectedIndex(i);
-                    break;
-                }
-            }
-        }
         //textCategory.setText(incidenciaRO.getCategoria());
         //textLevel.setText(String.valueOf(incidenciaRO.getRiesgo()));
     }
@@ -569,6 +573,10 @@ public class FragmentLevantarIncidencia extends Fragment {
      * Módulo para enviar hacia el servidor los datos de la incidencia levantada
      */
     private void sendData() {
+        totalToSend = 0;
+        correctSend = 0;
+        failSend  = 0;
+
         // Obtenemos el token :
         SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(
                 activityMain.getSharedPreferences(MY_SHARED_PREFERENCES, Context.MODE_PRIVATE));
@@ -580,6 +588,7 @@ public class FragmentLevantarIncidencia extends Fragment {
 
         Realm realm = Realm.getInstance(myConfig);
         final IncidenciaLevantadaRO incidentToFix = realm.copyFromRealm(incLevantadaRO);
+
 
         RestClient restClient = new RestClient(Services.INSPECTION);
         Call<ResponseBody> call = restClient.iServices.setFixIncident(incidentToFix, token);
@@ -601,6 +610,7 @@ public class FragmentLevantarIncidencia extends Fragment {
                         RealmResults<ImagenRO> listaImagenes = incidenciaRO.listaImgComent.where().equalTo("inspeccionLevantada", true).findAll();
 
                         if (listaImagenes != null && listaImagenes.size() > 0) {
+                            totalToSend = listaImagenes.size();
                             for (int i = 0; i < listaImagenes.size(); i++) {
                                 ImagenRO image = listaImagenes.get(i);
                                 sendImage(image, incidenciaRO.getTmpId(), incidenciaRO.getId(), token);
@@ -741,6 +751,7 @@ public class FragmentLevantarIncidencia extends Fragment {
             sIns = realm.where(SettingsInspectionRO.class).findFirst();
         } catch (Exception e) {
             e.printStackTrace();
+            realm.close();
         } finally {
             realm.close();
         }
@@ -803,7 +814,7 @@ public class FragmentLevantarIncidencia extends Fragment {
      * Módulo para enviar la imagen de incidencia
      */
     private void sendImage(ImagenRO imagenRO, String tmpId, int idIncident, String api_token) {
-        imagenRO.setDescripcion("Inspección Levantada - "+imagenRO.getDescripcion());
+        imagenRO.setDescripcion("Inspección Levantada - " + imagenRO.getDescripcion());
 
         File myDir = getActivity().getApplicationContext().getFilesDir();
         File file = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA + tmpId + "/"
@@ -829,18 +840,19 @@ public class FragmentLevantarIncidencia extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     correctSend++;
+                    Realm real = Realm.getInstance(myConfig);
                     try {
                         // Seteando el id de imagen :
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         JSONObject messageResult = jsonObject.getJSONObject("message");
                         JSONObject imageResult = messageResult.getJSONObject("inspection_image");
 
-                        Realm real = Realm.getInstance(myConfig);
-
                         ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
                                 imageResult.getString("name")).findFirst();
                         if (imagenInc != null) {
-                            real.beginTransaction();
+                            if (!real.isInTransaction()) {
+                                real.beginTransaction();
+                            }
                             imagenInc.setId(imageResult.getInt("id"));
                             real.commitTransaction();
                         }
@@ -856,10 +868,14 @@ public class FragmentLevantarIncidencia extends Fragment {
                             }
                         }
                     } catch (Exception e) {
+                        real.close();
                         e.printStackTrace();
                         if (correctSend + failSend == totalToSend) {
                             dialog.dismiss();
+                            showDialogSuccess("El levantamiento de inspección ha sido enviada satisfactoriamente. Sin embargo, algunas imágenes no han sido enviadas.");
                         }
+                    } finally {
+                        real.close();
                     }
                 } else {
                     failSend++;

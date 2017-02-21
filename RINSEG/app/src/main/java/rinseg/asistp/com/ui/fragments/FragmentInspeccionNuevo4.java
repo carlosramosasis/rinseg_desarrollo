@@ -470,13 +470,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if ( response.isSuccessful() ) {
                     correctSend++;
+                    Realm real = Realm.getInstance(myConfig);
                     try {
                         // Seteando el id de imagen :
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         JSONObject messageResult = jsonObject.getJSONObject("message");
                         JSONObject imageResult = messageResult.getJSONObject("inspection_image");
 
-                        Realm real = Realm.getInstance(myConfig);
+
 
                         ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
                                 imageResult.getString("name")).findFirst();
@@ -497,11 +498,14 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                         }
                     }
                     catch ( Exception e ) {
+                        real.close();
                         e.printStackTrace();
                         if ( correctSend + failSend == totalToSend ) {
                             dialog.dismiss();
                             showDialogSuccess(getString(R.string.msg_success_send_inspe_error_image));
                         }
+                    }finally {
+                        real.close();
                     }
                 } else {
                     failSend++;

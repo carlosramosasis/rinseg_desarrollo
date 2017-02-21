@@ -83,6 +83,11 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
 
     static Uri capturedImageUri = null;
 
+    //import foto
+    public int PICK_IMAGE_REQUEST = 1;
+    //tomar foto
+    public int REQUEST_IMAGE_CAPTURE = 1;
+
     public FragmentIncidenciaNuevo2() { }
 
     public static FragmentIncidenciaNuevo2 newInstance(String idIncident, Boolean newIncident) {
@@ -159,7 +164,7 @@ public class FragmentIncidenciaNuevo2 extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == activityMain.PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
             try {
                 Uri imagen = null;
                 if (data != null) {
