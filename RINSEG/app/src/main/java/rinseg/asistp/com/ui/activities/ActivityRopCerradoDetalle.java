@@ -22,6 +22,7 @@ public class ActivityRopCerradoDetalle extends AppCompatActivity {
     ActivityRopCerradoDetalle thiss = this;
 
     int idRop;
+    String idTmpRop;
 
 
     ///todo :::::::::::::::::::::::::::::::::::::::::::::::EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -37,6 +38,7 @@ public class ActivityRopCerradoDetalle extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 idRop = extras.getInt("ROPId", 0);
+                idTmpRop = extras.getString("ROPIdTmp", "");
             }
         }
 
@@ -44,6 +46,7 @@ public class ActivityRopCerradoDetalle extends AppCompatActivity {
         Fragment fRop1 = new FragmentROPCerrado1();
         Bundle args = new Bundle();
         args.putInt("ROPId", idRop);
+        args.putString("ROPIdTmp", idTmpRop);
         fRop1.setArguments(args);
         replaceFragment(fRop1, true, 0, 0, 0, 0);
     }

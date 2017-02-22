@@ -39,6 +39,9 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
         public TextView txtHoraCrea;
         public TextView txtTipoEvento;
         public TextView txtEmrpesa;
+        public TextView txtUsuarioCrea;
+
+        public LinearLayout linearUsuario;
 
         public final RelativeLayout vLayout;
 
@@ -50,6 +53,9 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
             txtHoraCrea = (TextView) v.findViewById(R.id.txt_card_view_hora_crea_rop);
             txtTipoEvento = (TextView) v.findViewById(R.id.txt_card_view_tipo_evento_rop);
             txtEmrpesa = (TextView) v.findViewById(R.id.txt_card_view_empresa_rop);
+            txtUsuarioCrea = (TextView) v.findViewById(R.id.txt_card_view_usuario_crea_rop);
+
+            linearUsuario = (LinearLayout) v.findViewById(R.id.linear_card_view_rop_usuario_crea);
             vLayout = (RelativeLayout) v.findViewById(R.id.linearlayout_card_rop);
 
         }
@@ -88,7 +94,7 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
 
     @Override
     public void onBindViewHolder(final RopViewHolder viewHolder, final int i) {
-        if (ListaRops.get(i).getEstadoRop() > 0 ) {
+        if (ListaRops.get(i).getEstadoRop() > 0) {
             if (ListaRops.get(i).getId() != 0) {
                 viewHolder.txtCodigo.setText(("" + ListaRops.get(i).getId()));
             } else {
@@ -99,7 +105,7 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
             viewHolder.txtCodigo.setText(ListaRops.get(i).getTmpId());
         }
 
-        if(ListaRops.get(i).getEventDate() != null){
+        if (ListaRops.get(i).getEventDate() != null) {
             viewHolder.txtFechaCrea.setText(Generic.dateFormatter.format(ListaRops.get(i).getEventDate()));
             viewHolder.txtHoraCrea.setText(Generic.timeFormatter.format(ListaRops.get(i).getEventDate()));
         }
@@ -122,6 +128,12 @@ public class RopAdapter extends RecyclerView.Adapter<RopAdapter.RopViewHolder> {
             }
         }
 
+
+        if (ListaRops.get(i).usuarioCreador != null) {
+            viewHolder.txtUsuarioCrea.setText(ListaRops.get(i).usuarioCreador.getName() + " " + ListaRops.get(i).usuarioCreador.getLastname());
+        } else {
+            viewHolder.linearUsuario.setVisibility(View.GONE);
+        }
 
         viewHolder.vLayout.setOnClickListener(new View.OnClickListener() {
             @Override

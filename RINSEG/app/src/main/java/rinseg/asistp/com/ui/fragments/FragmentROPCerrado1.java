@@ -156,6 +156,9 @@ public class FragmentROPCerrado1 extends Fragment {
 
     private DialogLoading dialogLoading;
 
+    int idRop = 0;
+    String idTmpRop ;
+
     public FragmentROPCerrado1() {
         // Required empty public constructor
     }
@@ -550,15 +553,23 @@ public class FragmentROPCerrado1 extends Fragment {
 
     private void LoadRop() {
 
-        int idRop = 0;
+
         if (bundle != null) {
             idRop = bundle.getInt("ROPId", 0);
+            idTmpRop = bundle.getString("ROPIdTmp", "");
 
+            Log.e("id ROP", idRop + " " + idTmpRop);
             //ROP tmpRop = new ROP();
-            if (idRop != 0) {
+
                 final Realm realm = Realm.getInstance(myConfig);
                 try {
-                    mRop = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+                    if (idRop != 0) {
+                        mRop = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+                    }else if (!idTmpRop.equals("")){
+                        mRop = realm.where(ROP.class).equalTo("tmpId", idTmpRop).findFirst();
+                    }
+
+
                     if (mRop == null) {
                         return;
                     }
@@ -680,7 +691,7 @@ public class FragmentROPCerrado1 extends Fragment {
                 } finally {
                     realm.close();
                 }
-            }
+
         }
     }
 

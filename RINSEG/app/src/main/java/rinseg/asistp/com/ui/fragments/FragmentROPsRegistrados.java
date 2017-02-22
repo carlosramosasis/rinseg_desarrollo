@@ -51,6 +51,7 @@ import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.CompanyRO;
 import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.ROP;
+import rinseg.asistp.com.models.User;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
@@ -179,12 +180,12 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                 btnRecuperaRop.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if ( !txtCodigoRecuperar.getText().toString().trim().equals("") ) {
+                        if (!txtCodigoRecuperar.getText().toString().trim().equals("")) {
                             try {
                                 final int codRop = Integer.parseInt(
                                         txtCodigoRecuperar.getText().toString().trim());
                                 RecuperarRopCerrado(codRop);
-                            } catch ( Exception e ) {
+                            } catch (Exception e) {
                                 Messages.showSB(getView(), "Asegúrese de ingresar un código válido");
                             }
                         } else {
@@ -210,7 +211,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     }
 
     public void onButtonPressed(Uri uri) {
-        if ( mListener != null ) {
+        if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -227,13 +228,16 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     }
 
     @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) { }
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
@@ -246,22 +250,26 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
             RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 1).findAll()
                     .sort("dateClose", Sort.DESCENDING);
 
-            for ( int i = 0; i < RopsRealm.size(); i++ ) {
+            for (int i = 0; i < RopsRealm.size(); i++) {
                 ROP tRop = RopsRealm.get(i);
                 listaRops.add(tRop);
                 ropAdapter.notifyDataSetChanged();
             }
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             realm.close();
         }
     }
 
-    /** Módulo encargado de lanzar la actividad */
+    /**
+     * Módulo encargado de lanzar la actividad
+     */
     public void launchActivityRopDetalle(ROP rop) {
         Intent RopDetalleIntent = new Intent().setClass(activityMain, ActivityRopCerradoDetalle.class);
         RopDetalleIntent.putExtra("ROPId", rop.getId());
+        RopDetalleIntent.putExtra("ROPIdTmp", rop.getTmpId());
+
         startActivity(RopDetalleIntent);
     }
 
@@ -269,7 +277,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     public void RecuperarRopCerrado(int codeRop) {
         View parentLAyout = getView().findViewById(R.id.frame_rop_cerrados_content);
 
-        if ( !Generic.IsOnRed(activityMain) ) {
+        if (!Generic.IsOnRed(activityMain)) {
             Messages.showSB(parentLAyout, getString(R.string.no_internet), getString(R.string.ok));
             return;
         }
@@ -297,7 +305,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
 
                         String body = response.body().string();
 
-                        if ( body.charAt(0) != '{' ) {
+                        if (body.charAt(0) != '{') {
                             Messages.showSB(parentLAyout,
                                     getString(R.string.sincronizando_error), getString(R.string.ok));
                             return;
@@ -308,6 +316,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                         JSONObject rCompanyJSON = ropJSON.getJSONObject("company");
                         JSONArray rImagesJSON = ropJSON.getJSONArray("images");
                         JSONArray rRopItemsJSON = ropJSON.getJSONArray("rop_items");
+                        JSONObject usuario = ropJSON.getJSONObject("user");
 
                         ROP ropRecuperado = realm.where(ROP.class)
                                 .equalTo("id", ropJSON.getInt("id")).findFirst();
@@ -315,6 +324,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                         if (ropRecuperado != null) {
                             realm.beginTransaction();
                             PopulateImagesForRopExisting(ropRecuperado, rImagesJSON, realm);
+                            PopulateUserForRop(ropRecuperado, usuario, realm);
                             realm.commitTransaction();
 
                             ROP ropCopy = realm.copyFromRealm(ropRecuperado);
@@ -337,6 +347,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                             //PopulateCompanieForRop(ropRecuperado, rCompanyJSON, realm);
                             PopulateImagesForRopNew(ropRecuperado, rImagesJSON, realm);
                             PopulateRopItemsForRop(ropRecuperado, rRopItemsJSON, realm);
+                            PopulateUserForRop(ropRecuperado, usuario, realm);
                             realm.commitTransaction();
 
                             ROP ropCopy = realm.copyFromRealm(ropRecuperado);
@@ -354,7 +365,9 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                 Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
                             }
                         }
-                        Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
+
+
+                        //Messages.showToast(rootLayout, getString(R.string.msg_rop_recuperado_ok));
                     } catch (Exception e) {
                         dialogLoading.dismiss();
                         e.printStackTrace();
@@ -363,14 +376,14 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                         realm.close();
                     }
                 } else {
-                    if ( response.code() == 422 ) {
+                    if (response.code() == 422) {
                         // Mostramos mensaje del servidor :
                         try {
                             JSONObject jsonObject = new JSONObject(response.errorBody().string());
                             String message = jsonObject.getString("message");
                             Messages.showSB(rootLayout, message, "ok");
                             dialogLoading.dismiss();
-                        } catch ( Exception e ) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             dialogLoading.dismiss();
                             Messages.showSB(rootLayout,
@@ -445,7 +458,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
     }
 
     private void PopulateImagesForRopNew(ROP rop, JSONArray imagesArray, Realm realm) {
-        for ( int i = 0; i < imagesArray.length(); i++ ) {
+        for (int i = 0; i < imagesArray.length(); i++) {
             try {
                 JSONObject imgJson = imagesArray.getJSONObject(i);
                 ImagenRO imagen = realm.createObject(ImagenRO.class);
@@ -507,8 +520,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                             cantImagenesRecibidos += 1;
                                             if (validarDescargaTotalImagenes()) {
                                                 Looper.prepare();
-                                                Message msg =  new Message();
-                                                msg.obj =  getString(R.string.msg_rop_recuperado_ok);
+                                                Message msg = new Message();
+                                                msg.obj = getString(R.string.msg_rop_recuperado_ok);
                                                 _handler.sendMessage(msg);
                                                 Looper.loop();
                                             }
@@ -518,8 +531,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                             cantImagenesRecibidos += 1;
                                             if (validarDescargaTotalImagenes()) {
                                                 Looper.prepare();
-                                                Message msg =  new Message();
-                                                msg.obj =  getString(R.string.msg_rop_recuperado_fail);
+                                                Message msg = new Message();
+                                                msg.obj = getString(R.string.msg_rop_recuperado_fail);
                                                 _handler.sendMessage(msg);
                                                 Looper.loop();
                                             }
@@ -534,8 +547,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                                 cantImagenesRecibidos += 1;
                                 if (validarDescargaTotalImagenes()) {
                                     Looper.prepare();
-                                    Message msg =  new Message();
-                                    msg.obj =  getString(R.string.msg_rop_recuperado_fail);
+                                    Message msg = new Message();
+                                    msg.obj = getString(R.string.msg_rop_recuperado_fail);
                                     _handler.sendMessage(msg);
                                     Looper.loop();
                                 }
@@ -556,7 +569,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
 
 
     private void PopulateImagesForRopExisting(ROP rop, JSONArray imagesArray, Realm realm) {
-        for ( int i = 0; i < imagesArray.length(); i++ ) {
+        for (int i = 0; i < imagesArray.length(); i++) {
             try {
                 JSONObject imgJson = imagesArray.getJSONObject(i);
                 ImagenRO img = rop.listaImgComent.where().equalTo("name",
@@ -579,6 +592,24 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void PopulateUserForRop(ROP rop, JSONObject usuarioJson, Realm realm) {
+        try {
+            rop.usuarioCreador = realm.createObject(User.class);
+            rop.usuarioCreador.setId(usuarioJson.getInt("id"));
+            rop.usuarioCreador.setName(usuarioJson.getString("name"));
+            rop.usuarioCreador.setLastname(usuarioJson.getString("lastname"));
+            rop.usuarioCreador.setUsername(usuarioJson.getString("username"));
+            rop.usuarioCreador.setDni(usuarioJson.getString("dni"));
+            rop.usuarioCreador.setEmail(usuarioJson.getString("email"));
+            rop.usuarioCreador.setPhoto(usuarioJson.getString("photo"));
+            rop.usuarioCreador.setCompany_id(usuarioJson.getInt("company_id"));
+            rop.usuarioCreador.setManagement_id(usuarioJson.getInt("management_id"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

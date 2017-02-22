@@ -602,7 +602,8 @@ public class FragmentLevantarIncidencia extends Fragment {
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
                         // dialog.dismiss();
-                        ///todo Actualizar id
+                        ///todo Actualizar incidente cerrado
+                        updateIncidenteClose();
                         // Actualizar el id
                         // showDialogSuccess();
                         // Enviamos todas las imágenes :
@@ -656,7 +657,9 @@ public class FragmentLevantarIncidencia extends Fragment {
             @Override
             public void onClick(View view) {
                 dialogConfirm.dismiss();
-                Fragment fragment = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+              /*  Fragment fragment = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+                activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);*/
+                Fragment fragment = FragmentTabsIncidents.newInstance(idInspeccion);
                 activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
             }
         });
@@ -807,6 +810,23 @@ public class FragmentLevantarIncidencia extends Fragment {
     public void MostrarCantidadImagenesInspeccionesLevantadas(RealmList<ImagenRO> listaImagenes) {
         int cant = listaImagenes.where().equalTo("inspeccionLevantada", true).findAll().size();
         this.btnGaleriaFotos.setTitle(getString(R.string.label_fotos) + " (" + cant + ")");
+    }
+
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
+    private void updateIncidenteClose() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            if (!realm.isInTransaction()) {
+                realm.beginTransaction();
+            }
+            incidenciaRO.setClosed(true);
+            realm.commitTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+            realm.close();
+        } finally {
+            realm.close();
+        }
     }
 
 

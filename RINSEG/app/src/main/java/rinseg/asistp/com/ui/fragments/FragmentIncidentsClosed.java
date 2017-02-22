@@ -63,7 +63,7 @@ public class FragmentIncidentsClosed extends Fragment implements ListenerClick {
         View view = inflater.inflate(R.layout.fragment_incidents_closed, container, false);
 
         setUpElements(view);
-        setUpData();
+        //setUpData();
 
         return view;
     }
@@ -114,6 +114,7 @@ public class FragmentIncidentsClosed extends Fragment implements ListenerClick {
     @Override
     public void onResume() {
         super.onResume();
+        setUpData();
     }
 
     public interface OnFragmentInteractionListener {

@@ -86,6 +86,8 @@ public class ROP extends RealmObject{
 
     public RealmList<EventItemsRO> listaEventItems;
 
+    public User usuarioCreador;
+
     private String tmpId;
     private boolean puedeElimianrse;
     private String imageFolder;

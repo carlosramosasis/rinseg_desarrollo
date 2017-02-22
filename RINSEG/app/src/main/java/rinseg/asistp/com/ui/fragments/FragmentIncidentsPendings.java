@@ -64,7 +64,7 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
         View view = inflater.inflate(R.layout.fragment_incidents_pendings, container, false);
 
         setUpElements(view);
-        setUpData();
+       // setUpData();
 
         return view;
     }
@@ -97,6 +97,9 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
         final Realm realm = Realm.getInstance(myConfig);
         try {
             if (idInspeccion != 0) {
+                listIncidents.clear();
+                adapterList.notifyDataSetChanged();
+
                 InspeccionRO inspeccionRO = realm.where(InspeccionRO.class)
                         .equalTo("id", idInspeccion).findFirst();
                 List<IncidenciaRO> listInci = inspeccionRO.listaIncidencias.where()
@@ -115,6 +118,7 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
     @Override
     public void onResume() {
         super.onResume();
+        setUpData();
     }
 
     public interface OnFragmentInteractionListener {

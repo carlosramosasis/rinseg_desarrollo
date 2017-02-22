@@ -235,8 +235,10 @@ public class FragmentInspeccionIncidenciaDetalle1 extends Fragment {
         activityMain.toolbarInspeccionDet.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment f = FragmentInspeccionDetalle2.newInstance(idInspeccion);
-                activityMain.replaceFragment(f, true, 0, 0, 0, 0);
+               /* Fragment f = FragmentInspeccionDetalle2.newInstance(idInspeccion);
+                activityMain.replaceFragment(f, true, 0, 0, 0, 0);*/
+                Fragment fragment = FragmentTabsIncidents.newInstance(idInspeccion);
+                activityMain.replaceFragment(fragment, true, 0, 0, 0, 0);
             }
         });
     }
