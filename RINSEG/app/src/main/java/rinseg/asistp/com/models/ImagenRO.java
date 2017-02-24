@@ -3,6 +3,10 @@ package rinseg.asistp.com.models;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
+
 import io.realm.RealmObject;
 
 /**
@@ -66,5 +70,18 @@ public class ImagenRO extends RealmObject {
 
     public boolean isInspeccionLevantada() {return inspeccionLevantada;}
 
-    public void setInspeccionLevantada(boolean inspeccionLevantada) {this.inspeccionLevantada = inspeccionLevantada;}
+    public void setInspeccionLevantada(boolean inspeccionLevantada) {
+        this.inspeccionLevantada = inspeccionLevantada;
+    }
+
+    public void setValues(JSONObject json) {
+        try {
+            setId(json.getInt("id"));
+            setName(json.getString("name"));
+            setDescripcion(json.getString("description"));
+            setPath(json.getString("path"));
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 }

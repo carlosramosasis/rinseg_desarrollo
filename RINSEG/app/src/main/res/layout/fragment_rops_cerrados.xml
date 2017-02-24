@@ -33,6 +33,7 @@
         android:src="@drawable/ic_cloud_download"
         app:fab_colorNormal="@color/colorAccent"
         app:fab_colorPressed="@color/colorAccentDark"
-        app:fab_colorRipple="@color/colorTertiary"/>
+        app:fab_colorRipple="@color/colorTertiary"
+        android:visibility="gone"/>
 
 </FrameLayout>

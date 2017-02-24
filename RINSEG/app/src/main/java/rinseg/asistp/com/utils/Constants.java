@@ -22,7 +22,7 @@ public class Constants {
 
     public static String SUCCESS = "success";
 
-    public static String PATH_IMAGE_GALERY_ROP = "image_galery_rop/";
+    public static String PATH_IMAGE_GALERY_ROP = "/image_galery_rop/";
     public static String PATH_IMAGE_GALERY_INCIDENCIA = "image_galery_incidencia/";
 
     public static char[] CHARSET_AZ_09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -27,7 +25,6 @@ import io.realm.Sort;
 import rinseg.asistp.com.adapters.IncidenciaAdapter;
 import rinseg.asistp.com.adapters.InspeccionAdapter;
 import rinseg.asistp.com.listener.ListenerClick;
-import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
@@ -37,14 +34,6 @@ import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentROPsPendientes.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentROPsPendientes#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,9 +44,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     private String mParam1;
     private String mParam2;
 
-
     private OnFragmentInteractionListener mListener;
-
 
     public FloatingActionButton btnAgregar;
     ActivityMain activityMain;
@@ -71,19 +58,8 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
 
     public int REQUEST_IMAGE_CAPTURE = 1;
 
-    public FragmentROPsPendientes() {
-        // Required empty public constructor
-    }
+    public FragmentROPsPendientes() { }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentROPsPendientes.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FragmentROPsPendientes newInstance(String param1, String param2) {
         FragmentROPsPendientes fragment = new FragmentROPsPendientes();
         Bundle args = new Bundle();
@@ -106,30 +82,21 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rops_pendientes, container, false);
 
         setUpElements(view);
         setUpActions();
-
         LoadRopPendientes();
 
-        Log.e("rops pndientes","createView");
-
         return view;
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         activityMain.ShowButtonsBottom(false);
-
-
     }
-
 
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
@@ -149,26 +116,10 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
-    }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
 
     @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
-    }
-
-
-
-
-/*    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) { }
 
     @Override
     public void onDetach() {
@@ -176,21 +127,9 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
 
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
@@ -198,7 +137,6 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
         activityMain = ((ActivityMain) getActivity());
 
         btnAgregar = (FloatingActionButton) v.findViewById(R.id.btn_agregar_rop);
-
 
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
@@ -222,7 +160,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
 
     private void setUpActions() {
 
-        btnAgregar.setOnClickListener(new View.OnClickListener() {
+        /*btnAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment fRopPendiente1 = new FragmentROPPendiente1();
@@ -231,31 +169,30 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
                 fRopPendiente1.setArguments(args);
                 activityMain.replaceFragment(fRopPendiente1, true, 0, 0, 0, 0);
             }
-        });
+        });*/
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopPendientes() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 0).findAll().sort("tmpId", Sort.DESCENDING);
+            RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 0).findAll()
+                    .sort("tmpId", Sort.DESCENDING);
 
             for (int i = 0; i < RopsRealm.size(); i++) {
                 ROP tRop = RopsRealm.get(i);
                 listaRops.add(tRop);
                 ropAdapter.notifyDataSetChanged();
             }
-
-
-        } catch (Exception ex) {
+        } catch ( Exception ex ) {
             ex.printStackTrace();
         } finally {
             realm.close();
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
+        if ( mListener != null ) {
             mListener.onFragmentInteraction(uri);
         }
     }
@@ -264,7 +201,6 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     public void MostrarEliminarRop(int position){
         final int mPosition = position;
         final View v = getView();
-        Log.e("Long click", "long click " + position);
 
         final ROP ropEliminar = listaRops.get(mPosition);
         final DialogRINSEG dialogEliminarRop = new DialogRINSEG(activityMain);
@@ -276,10 +212,12 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
             public void onClick(View view) {
                 Realm realm = Realm.getInstance(myConfig);
                 try {
-                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId()).equalTo("cerrado",false).findFirst();
+                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId())
+                            .equalTo("cerrado",false).findFirst();
 
-                    if(ropRealm != null){
-                        boolean eliminoCarpeta = Generic.EliminarImagenCarpeta(activityMain.getApplicationContext(),ropRealm.getTmpId());
+                    if( ropRealm != null ) {
+                        boolean eliminoCarpeta = Generic.EliminarImagenCarpeta(activityMain
+                                .getApplicationContext(),ropRealm.getTmpId());
 
                         realm.beginTransaction();
                         ropRealm.deleteFromRealm();
@@ -287,27 +225,19 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
                         listaRops.remove(mPosition);
                         ropAdapter.notifyDataSetChanged();
 
-
-
                         Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_ok));
-                    }else{
+                    } else {
                         Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_fail_cerrado));
                     }
-
                     dialogEliminarRop.dismiss();
 
-                } catch (Exception e) {
+                } catch ( Exception e ) {
                     Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_error));
                     dialogEliminarRop.dismiss();
                 } finally {
                     realm.close();
                 }
-
             }
         });
     }
-
-
-
-
 }

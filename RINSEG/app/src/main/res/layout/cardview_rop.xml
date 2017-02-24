@@ -58,7 +58,7 @@
             android:id="@+id/txt_card_view_tipo_evento_rop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="tipo evento"
+            android:text="@string/rop_c1_texto_default"
             android:textSize="15sp"
             android:textColor="@color/colorAccent"
             android:layout_alignParentEnd="true"
@@ -73,27 +73,28 @@
             android:textColor="@color/colorPrimary"
             android:layout_below="@+id/txt_card_view_tipo_evento_rop"
             android:lines="1" />
+
         <LinearLayout
             android:id="@+id/linear_card_view_rop_usuario_crea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_below="@id/txt_card_view_empresa_rop"
-            >
+            android:layout_below="@id/txt_card_view_empresa_rop">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="usuario creador:"
+                android:text="@string/card_closed_rop_user"
                 android:textSize="14sp"
                 android:textColor="@color/colorGray1"
-                android:layout_marginRight="3dp"
-                android:lines="1"
-                />
+                android:layout_marginEnd="3dp"
+                android:lines="1"/>
+
             <TextView
                 android:id="@+id/txt_card_view_usuario_crea_rop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="usuario creador:"
+                android:text="@string/rop_c1_texto_default"
                 android:textSize="15sp"
                 android:textColor="@color/colorPrimary"
                 android:lines="1"

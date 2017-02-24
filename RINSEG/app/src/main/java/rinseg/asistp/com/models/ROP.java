@@ -2,6 +2,8 @@ package rinseg.asistp.com.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -21,7 +23,6 @@ public class ROP extends RealmObject{
 
     @SerializedName("event_id")
     private int eventId;
-
 
     @SerializedName("target_id")
     private int targetId;
@@ -77,10 +78,8 @@ public class ROP extends RealmObject{
     @SerializedName("commitment_accepted")
     private boolean commitmentAccept;
 
-
     @SerializedName("rop_item")
     public RealmList<AccionPreventiva> listaAccionPreventiva;
-
 
     public RealmList<ImagenRO> listaImgComent;
 
@@ -95,19 +94,16 @@ public class ROP extends RealmObject{
 
     private boolean cerrado;
 
-
-    /* Estado del ROP : Pendiente = 0, Registrado = 1, Cerrado = 2 */
+    /** Estado del ROP : Pendiente = 0, Registrado = 1, Cerrado = 2 */
     @SerializedName("status")
     private int estadoRop;
 
-    public ROP(){
-    }
+    public ROP(){ }
 
     public ROP(int _id, Date _eventDate) {
         this.setId(_id);
         this.setEventDate(_eventDate);
     }
-
 
     public int getId() {
         return id;
@@ -140,7 +136,6 @@ public class ROP extends RealmObject{
     public void setTmpId(String _tmpId) {
         this.tmpId = _tmpId;
     }
-
 
     public int getRiskId() {return riskId;}
 
@@ -196,7 +191,6 @@ public class ROP extends RealmObject{
 
     public void setImageFolder(String _imageFolder) {this.imageFolder = _imageFolder;}
 
-
     public String getSupervisorName() {
         return supervisorName;
     }
@@ -212,8 +206,6 @@ public class ROP extends RealmObject{
     public void setSupervisorCompany(String supervisorCompany) {
         this.supervisorCompany = supervisorCompany;
     }
-
-
 
     public int getUserId() {
         return userId;
@@ -256,7 +248,6 @@ public class ROP extends RealmObject{
         this.dateCloseString = dateCloseString;
     }
 
-
     public String getEventDateString() {
         return eventDateString;
     }
@@ -295,5 +286,40 @@ public class ROP extends RealmObject{
 
     public void setCommitmentAccept(boolean commitmentAccept) {
         this.commitmentAccept = commitmentAccept;
+    }
+
+    public void setValues(JSONObject json) {
+        try {
+            setEstadoRop(1);
+            setId(json.getInt("id"));
+            setCode(json.getInt("code"));
+            setRiskId(json.getInt("risk_id"));
+            setEventId(json.getInt("event_id"));
+            setTargetId(json.getInt("target_id"));
+            setAreaId(json.getInt("area_id"));
+            setArea(json.getString("area_name"));
+            setEventPlace(json.getString("event_place"));
+            setCompanyId(json.getInt("company_id"));
+            setEventDateString(json.getString("event_date"));
+            setEventDescription(json.getString("event_description"));
+            setReporterName(json.getString("reporter_name"));
+            setReporterCompany(json.getString("reporter_company"));
+            setSupervisorName(json.getString("supervisor_name"));
+            setSupervisorCompany(json.getString("supervisor_company"));
+            setDateCloseString(json.getString("date_close"));
+            setUserId(json.getInt("user_id"));
+            setTmpId(String.valueOf(json.getInt("id")));
+            setEstadoRop(json.getInt("status"));
+            int research_required = json.getInt("research_required");
+            if (research_required == 1) {
+                setResearch_required(true);
+            } else {
+                setResearch_required(false);
+            }
+            Date eventDate = Generic.dateFormatterMySql.parse(getEventDateString());
+            setEventDate(eventDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

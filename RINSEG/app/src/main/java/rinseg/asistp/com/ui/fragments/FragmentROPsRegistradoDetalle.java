@@ -2,7 +2,6 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +15,12 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
-import io.realm.Sort;
+
 import rinseg.asistp.com.adapters.AccionPrevEstadoAdapter;
 import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.AreaRO;
+import rinseg.asistp.com.models.EventRO;
+
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.utils.RinsegModule;
@@ -37,8 +38,8 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
     private int idRop = 0;
     String idTmpRop = "";
 
+    private ROP rop;
 
-    private RecyclerView recyclerAcciones;
     private TextView textTipoEvento, textArea, textDescripcion;
     private List<AccionPreventiva> listAcciones;
     private AccionPrevEstadoAdapter adapter;
@@ -76,11 +77,9 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         return view;
     }
 
-    /**
-     * Proceso para cargar vistas
-     */
+    /** Proceso para cargar vistas */
     private void setUpElements(View v) {
-        recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_preventive_actions_list);
+        RecyclerView recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_preventive_actions_list);
         textTipoEvento = (TextView) v.findViewById(R.id.text_acciones_prev_tipo_evento);
         textArea = (TextView) v.findViewById(R.id.text_acciones_prev_area_resp);
         textDescripcion = (TextView) v.findViewById(R.id.text_acciones_prev_area_descr);
@@ -96,7 +95,6 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
-
         //configuramos Realm
         Realm.init(this.getActivity().getApplicationContext());
         myConfig = new RealmConfiguration.Builder()
@@ -107,31 +105,30 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
                 .build();
     }
 
-    /**
-     * Proceso para cargar datos
-     */
+    /** Proceso para cargar datos */
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void setUpData() {
         Realm realm = Realm.getInstance(myConfig);
         try {
-            ROP RopsRealm = null;
-
             if (idRop != 0) {
-                RopsRealm = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+                rop = realm.where(ROP.class).equalTo("id", idRop).findFirst();
             } else if (!idTmpRop.equals("")) {
-                RopsRealm = realm.where(ROP.class).equalTo("tmpId", idTmpRop).findFirst();
+                rop = realm.where(ROP.class).equalTo("tmpId", idTmpRop).findFirst();
             }
+            if (rop != null) {
+                // Recuperamos el tipo de evento :
+                String eventType = realm.where(EventRO.class).equalTo("id", rop.getEventId())
+                        .findFirst().getDisplayName();
+                textTipoEvento.setText(eventType);
+                // Recuperamos el área :
+                String area = realm.where(AreaRO.class).equalTo("id", rop.getAreaId())
+                        .findFirst().getDisplayName();
+                textArea.setText(area);
+                textDescripcion.setText(rop.getEventDescription());
 
-            if(RopsRealm == null){
-                return;
-            }
-
-
-            for (int i = 0; i < RopsRealm.listaAccionPreventiva.size(); i++) {
-                AccionPreventiva tAccion = RopsRealm.listaAccionPreventiva.get(i);
-                listAcciones.add(tAccion);
+                listAcciones.addAll(rop.listaAccionPreventiva);
                 adapter.notifyDataSetChanged();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

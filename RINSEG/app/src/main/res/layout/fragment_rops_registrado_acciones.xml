@@ -74,7 +74,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_preventive_actions_list"
-        android:layout_width="match_parent"
+        android:layout_width="409dp"
         android:layout_height="match_parent"
         android:background="@drawable/backgorund_login"
         android:clipToPadding="false"

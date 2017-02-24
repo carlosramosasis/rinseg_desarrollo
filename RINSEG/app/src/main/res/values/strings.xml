@@ -299,7 +299,7 @@
 
     <!--Generic -->
     <string name="no_internet">Ud. no tiene acceso a internet.</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="btn_aceptar">ACEPTAR</string>
 
     <!-- Mensajes al terminar envío de Inpsección -->
@@ -319,5 +319,14 @@
     <string name="card_prev_actions_deadline">Fecha límite : &#032;&#032;&#032;&#032;</string>
     <string name="card_prev_actions_realizado">REALIZADO</string>
     <string name="card_prev_actions_pendiente">PENDIENTE</string>
+
+    <!-- Card acciones preventivas de un rop registrado -->
+    <string name="card_closed_rop_user">Creado por :&#032;</string>
+
+    <!-- Fragment Tab ROPs -->
+    <string name="fragment_tab_rops_retrieve_rop_cod_invalid">
+        Asegúrese de ingresar un código válido
+    </string>
+    <string name="fragment_tab_rops_retrieve_rop_cod_empty">Ingrese código de ROP</string>
 
 </resources>
