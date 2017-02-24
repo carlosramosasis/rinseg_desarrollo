@@ -489,7 +489,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick {
                 accionPreventiva.setId(item.getInt("id"));
                 accionPreventiva.setAccion(item.getString("action"));
                 accionPreventiva.setResponsable(item.getString("responsible"));
-                accionPreventiva.setFechaString(item.getString("date"));
+                accionPreventiva.setFechaString(item.getString("deadline"));
                 accionPreventiva.setFecha(Generic.dateFormatterMySql.parse(accionPreventiva.getFechaString()));
                 rop.listaAccionPreventiva.add(accionPreventiva);
 

@@ -224,7 +224,8 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
 
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
-        launchActivityRopDetalle(listaRops.get(position));
+        //launchActivityRopDetalle(listaRops.get(position));
+        replaceFragmentWithAccionesRegistradas(listaRops.get(position));
     }
 
     @Override
@@ -271,6 +272,12 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
         RopDetalleIntent.putExtra("ROPIdTmp", rop.getTmpId());
 
         startActivity(RopDetalleIntent);
+    }
+
+    private void replaceFragmentWithAccionesRegistradas(ROP rop){
+        FragmentROPsRegistradoDetalle fragment = FragmentROPsRegistradoDetalle.newInstance(rop.getId(),rop.getTmpId());
+        activityMain.replaceFragment(fragment,false,0,0,0,0);
+
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
@@ -482,7 +489,7 @@ public class FragmentROPsRegistrados extends Fragment implements ListenerClick {
                 accionPreventiva.setId(item.getInt("id"));
                 accionPreventiva.setAccion(item.getString("action"));
                 accionPreventiva.setResponsable(item.getString("responsible"));
-                accionPreventiva.setFechaString(item.getString("date"));
+                accionPreventiva.setFechaString(item.getString("deadline"));
                 accionPreventiva.setFecha(Generic.dateFormatterMySql.parse(
                         accionPreventiva.getFechaString()));
                 rop.listaAccionPreventiva.add(accionPreventiva);

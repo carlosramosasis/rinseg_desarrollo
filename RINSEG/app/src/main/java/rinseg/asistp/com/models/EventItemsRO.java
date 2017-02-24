@@ -1,5 +1,7 @@
 package rinseg.asistp.com.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import io.realm.RealmObject;
 
 /**
@@ -8,6 +10,7 @@ import io.realm.RealmObject;
  * Congestión o acción restringida - Sistemas de advertencia - Peligro...
  */
 public class EventItemsRO  extends RealmObject {
+    @SerializedName("id")
     private int Id;
     private String Code;
     private String Name;

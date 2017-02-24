@@ -2,9 +2,11 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import io.realm.Sort;
 import rinseg.asistp.com.adapters.AccionPrevEstadoAdapter;
 import rinseg.asistp.com.models.AccionPreventiva;
+import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.utils.RinsegModule;
 
 /**
  * Created by OSequeiros on 14/02/2017.
@@ -23,19 +31,27 @@ import rinseg.asistp.com.rinseg.R;
 
 public class FragmentROPsRegistradoDetalle extends Fragment {
 
-    private static final String ARG_PARAM = "id_rop";
+    private static final String ARG_ID_ROP = "id_rop";
+    private static final String ARG_ID_TMP_ROP = "id_tmp_rop";
 
-    private int idRop;
+    private int idRop = 0;
+    String idTmpRop = "";
+
 
     private RecyclerView recyclerAcciones;
     private TextView textTipoEvento, textArea, textDescripcion;
     private List<AccionPreventiva> listAcciones;
     private AccionPrevEstadoAdapter adapter;
 
-    public FragmentROPsRegistradoDetalle newInstance(int id) {
+    Toolbar toolbar;
+
+    RealmConfiguration myConfig;
+
+    public static FragmentROPsRegistradoDetalle newInstance(int id,String idTmp) {
         FragmentROPsRegistradoDetalle fragment = new FragmentROPsRegistradoDetalle();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM, id);
+        args.putInt(ARG_ID_ROP, id);
+        args.putString(ARG_ID_TMP_ROP, idTmp);
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,8 +59,9 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if ( getArguments() != null ) {
-            idRop = getArguments().getInt(ARG_PARAM);
+        if (getArguments() != null) {
+            idRop = getArguments().getInt(ARG_ID_ROP,0);
+            idTmpRop =  getArguments().getString(ARG_ID_TMP_ROP,"");
         }
     }
 
@@ -59,7 +76,9 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         return view;
     }
 
-    /** Proceso para cargar vistas */
+    /**
+     * Proceso para cargar vistas
+     */
     private void setUpElements(View v) {
         recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_preventive_actions_list);
         textTipoEvento = (TextView) v.findViewById(R.id.text_acciones_prev_tipo_evento);
@@ -74,10 +93,49 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         recyclerAcciones.setLayoutManager(lManager);
         recyclerAcciones.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerAcciones.setItemAnimator(new DefaultItemAnimator());
+
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
+
+        //configuramos Realm
+        Realm.init(this.getActivity().getApplicationContext());
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
     }
 
-    /** Proceso para cargar datos */
+    /**
+     * Proceso para cargar datos
+     */
     private void setUpData() {
+        Realm realm = Realm.getInstance(myConfig);
+        try {
+            ROP RopsRealm = null;
 
+            if (idRop != 0) {
+                RopsRealm = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+            } else if (!idTmpRop.equals("")) {
+                RopsRealm = realm.where(ROP.class).equalTo("tmpId", idTmpRop).findFirst();
+            }
+
+            if(RopsRealm == null){
+                return;
+            }
+
+
+            for (int i = 0; i < RopsRealm.listaAccionPreventiva.size(); i++) {
+                AccionPreventiva tAccion = RopsRealm.listaAccionPreventiva.get(i);
+                listAcciones.add(tAccion);
+                adapter.notifyDataSetChanged();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            realm.close();
+        }
     }
 }
