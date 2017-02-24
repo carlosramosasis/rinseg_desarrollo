@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="rinseg.asistp.com.rinseg">
+    package="rinseg.asistp.com.rinseg" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -8,14 +8,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme" >
         <service
             android:name="rinseg.asistp.com.intent_services.RopIntentServices"
             android:enabled="true"
@@ -24,9 +22,7 @@
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivitySplash"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-
-            >
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,27 +31,23 @@
         </activity>
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityLogin"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityMain"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityInspeccionDetalle"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityFotoComentario"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name="rinseg.asistp.com.receive.NetworkStateReceiver">
+        <receiver android:name="rinseg.asistp.com.receive.NetworkStateReceiver" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -64,18 +56,20 @@
 
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            />
-        <activity android:name="rinseg.asistp.com.ui.activities.ActivityGaleria"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="rinseg.asistp.com.ui.activities.ActivityGaleria"
             android:screenOrientation="portrait"
-            >
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
-        <activity android:name="rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia"
-            android:theme="@style/AppTheme.NoActionBar"
+        <activity
+            android:name="rinseg.asistp.com.ui.activities.ActivityGenerarIncidencia"
             android:screenOrientation="portrait"
-            >
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity android:name="rinseg.asistp.com.ui.activities.ActivityRopRegistradoDetalle"
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
     </application>
 

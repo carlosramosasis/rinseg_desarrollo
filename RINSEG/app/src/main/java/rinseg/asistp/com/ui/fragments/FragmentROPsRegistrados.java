@@ -24,8 +24,9 @@ import rinseg.asistp.com.listener.ListenerClick;
 import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
-import rinseg.asistp.com.ui.activities.ActivityRopCerradoDetalle;
 import rinseg.asistp.com.ui.interfaces.IChangeViewPager;
+import rinseg.asistp.com.ui.activities.ActivityRopRegistradoDetalle;
+
 import rinseg.asistp.com.utils.RinsegModule;
 
 public class FragmentROPsRegistrados extends Fragment
@@ -104,8 +105,8 @@ public class FragmentROPsRegistrados extends Fragment
 
     @Override
     public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
-        //launchActivityRopDetalle(listaRops.get(position));
-        replaceFragmentWithAccionesRegistradas(listaRops.get(position));
+        launchActivityRopDetalle(listaRops.get(position));
+        //replaceFragmentWithAccionesRegistradas(listaRops.get(position));
     }
 
     @Override
@@ -144,11 +145,12 @@ public class FragmentROPsRegistrados extends Fragment
      * Módulo encargado de lanzar la actividad
      */
     public void launchActivityRopDetalle(ROP rop) {
-        Intent RopDetalleIntent = new Intent().setClass(activityMain, ActivityRopCerradoDetalle.class);
-        RopDetalleIntent.putExtra("ROPId", rop.getId());
-        RopDetalleIntent.putExtra("ROPIdTmp", rop.getTmpId());
+       // Intent RopDetalleIntent = new Intent().setClass(activityMain, ActivityRopCerradoDetalle.class);
+        Intent RopRegistradoDetalleIntent = new Intent().setClass(activityMain, ActivityRopRegistradoDetalle.class);
+        RopRegistradoDetalleIntent.putExtra("ROPId", rop.getId());
+        RopRegistradoDetalleIntent.putExtra("ROPIdTmp", rop.getTmpId());
 
-        startActivity(RopDetalleIntent);
+        startActivity(RopRegistradoDetalleIntent);
     }
 
     private void replaceFragmentWithAccionesRegistradas(ROP rop){

@@ -72,12 +72,30 @@
         android:textColor="@color/colorGray"
         android:textSize="16sp"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_preventive_actions_list"
-        android:layout_width="409dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/backgorund_login"
-        android:clipToPadding="false"
-        android:paddingTop="6dp"/>
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Acciones preventivas o correctivas"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center"
+            />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_preventive_actions_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/backgorund_login"
+            android:clipToPadding="false"
+            android:paddingTop="6dp"/>
+    </LinearLayout>
+
+
 
 </LinearLayout>

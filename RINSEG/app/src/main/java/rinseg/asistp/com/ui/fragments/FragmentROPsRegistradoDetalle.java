@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -20,9 +21,11 @@ import rinseg.asistp.com.adapters.AccionPrevEstadoAdapter;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.EventRO;
-
 import rinseg.asistp.com.models.ROP;
+import rinseg.asistp.com.models.SettingsRopRO;
 import rinseg.asistp.com.rinseg.R;
+import rinseg.asistp.com.ui.activities.ActivityMain;
+import rinseg.asistp.com.ui.activities.ActivityRopRegistradoDetalle;
 import rinseg.asistp.com.utils.RinsegModule;
 
 /**
@@ -35,20 +38,22 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
     private static final String ARG_ID_ROP = "id_rop";
     private static final String ARG_ID_TMP_ROP = "id_tmp_rop";
 
+    SettingsRopRO sRop;
+
     private int idRop = 0;
     String idTmpRop = "";
 
     private ROP rop;
 
     private TextView textTipoEvento, textArea, textDescripcion;
-    private List<AccionPreventiva> listAcciones;
+    private List<AccionPreventiva> listAcciones = new ArrayList<>();
     private AccionPrevEstadoAdapter adapter;
 
     Toolbar toolbar;
 
     RealmConfiguration myConfig;
 
-    public static FragmentROPsRegistradoDetalle newInstance(int id,String idTmp) {
+    public static FragmentROPsRegistradoDetalle newInstance(int id, String idTmp) {
         FragmentROPsRegistradoDetalle fragment = new FragmentROPsRegistradoDetalle();
         Bundle args = new Bundle();
         args.putInt(ARG_ID_ROP, id);
@@ -61,8 +66,8 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            idRop = getArguments().getInt(ARG_ID_ROP,0);
-            idTmpRop =  getArguments().getString(ARG_ID_TMP_ROP,"");
+            idRop = getArguments().getInt(ARG_ID_ROP, 0);
+            idTmpRop = getArguments().getString(ARG_ID_TMP_ROP, "");
         }
     }
 
@@ -72,12 +77,15 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         View view = inflater.inflate(R.layout.fragment_rops_registrado_acciones, container, false);
 
         setUpElements(view);
+        LoadSettingRop();
         setUpData();
 
         return view;
     }
 
-    /** Proceso para cargar vistas */
+    /**
+     * Proceso para cargar vistas
+     */
     private void setUpElements(View v) {
         RecyclerView recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_preventive_actions_list);
         textTipoEvento = (TextView) v.findViewById(R.id.text_acciones_prev_tipo_evento);
@@ -92,6 +100,7 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         recyclerAcciones.setLayoutManager(lManager);
         recyclerAcciones.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerAcciones.setItemAnimator(new DefaultItemAnimator());
+        recyclerAcciones.setAdapter(adapter);
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
@@ -105,34 +114,71 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
                 .build();
     }
 
-    /** Proceso para cargar datos */
+    /**
+     * Proceso para cargar datos
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
+
+    private void LoadSettingRop() {
+        final Realm realm = Realm.getInstance(myConfig);
+        try {
+            sRop = realm.where(SettingsRopRO.class).findFirst();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            realm.close();
+        }
+
+    }
+
     private void setUpData() {
         Realm realm = Realm.getInstance(myConfig);
         try {
+
+            String _idRop = "";
             if (idRop != 0) {
                 rop = realm.where(ROP.class).equalTo("id", idRop).findFirst();
+                _idRop = "" + idRop;
             } else if (!idTmpRop.equals("")) {
                 rop = realm.where(ROP.class).equalTo("tmpId", idTmpRop).findFirst();
+                _idRop = idTmpRop;
             }
-            if (rop != null) {
-                // Recuperamos el tipo de evento :
-                String eventType = realm.where(EventRO.class).equalTo("id", rop.getEventId())
-                        .findFirst().getDisplayName();
-                textTipoEvento.setText(eventType);
-                // Recuperamos el área :
-                String area = realm.where(AreaRO.class).equalTo("id", rop.getAreaId())
-                        .findFirst().getDisplayName();
-                textArea.setText(area);
-                textDescripcion.setText(rop.getEventDescription());
 
-                listAcciones.addAll(rop.listaAccionPreventiva);
-                adapter.notifyDataSetChanged();
+            if (rop == null) {
+                return;
             }
+
+            // recuperar tipo de evento
+            for (int i = 0; i < sRop.events.size(); i++) {
+                EventRO tmpEvent = sRop.events.get(i);
+                if (tmpEvent.getId() == rop.getEventId()) {
+                    textTipoEvento.setText(tmpEvent.getDisplayName());
+                    break;
+                }
+            }
+
+            // recuperar area responsable
+            for (int i = 0; i < sRop.areas.size(); i++) {
+                AreaRO tmpArea = sRop.areas.get(i);
+                if (tmpArea.getId() == rop.getAreaId()) {
+                    textArea.setText(tmpArea.getDisplayName());
+                    break;
+                }
+            }
+
+            textDescripcion.setText(rop.getEventDescription());
+
+            ((ActivityRopRegistradoDetalle) getActivity()).getSupportActionBar().setTitle("Rop #" + _idRop);
+
+            listAcciones.addAll(rop.listaAccionPreventiva);
+            adapter.notifyDataSetChanged();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             realm.close();
         }
     }
+
+
 }
