@@ -276,7 +276,7 @@ public class FragmentROPPendiente2 extends Fragment
         lManagerActoCondicion = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerActoCondicion.setLayoutManager(lManagerActoCondicion);
         // Crear un nuevo Adaptador
-        actoCondicionAdapter = new ActoCondicionSubestandarSeleccionadosAdapter(listaActoCondicion);
+        actoCondicionAdapter = new ActoCondicionSubestandarSeleccionadosAdapter(listaActoCondicion,getActivity());
         recyclerActoCondicion.setAdapter(actoCondicionAdapter);
 
         //configuracion para el recicler Acciones preventivas

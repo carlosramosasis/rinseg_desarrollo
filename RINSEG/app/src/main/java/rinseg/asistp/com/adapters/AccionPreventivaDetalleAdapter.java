@@ -5,11 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.itextpdf.text.pdf.parser.Line;
 
 import java.util.List;
 
 import rinseg.asistp.com.listener.ListenerClickAccionPreventiva;
+import rinseg.asistp.com.listener.ListenerClickAccionPreventivaDetalle;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.utils.Generic;
@@ -25,6 +29,7 @@ public class AccionPreventivaDetalleAdapter extends RecyclerView.Adapter<AccionP
         public TextView txtResponsable;
         public TextView txtAccion;
         public TextView txtFecha;
+        public LinearLayout  vLayout;
 
 
         public AccionViewHolder(View v) {
@@ -33,11 +38,12 @@ public class AccionPreventivaDetalleAdapter extends RecyclerView.Adapter<AccionP
             txtResponsable = (TextView) v.findViewById(R.id.txt_card_view_accion_responsable_detalle);
             txtAccion = (TextView) v.findViewById(R.id.txt_card_view_accion_accion_detalle);
             txtFecha = (TextView) v.findViewById(R.id.txt_card_view_accion_fecha_detalle);
+            vLayout = (LinearLayout) v.findViewById(R.id.linearlayout_card_acciones_registradas);
 
         }
     }
 
-    public AccionPreventivaDetalleAdapter(List<AccionPreventiva> accionesPreventivas ) {
+    public AccionPreventivaDetalleAdapter(List<AccionPreventiva> accionesPreventivas) {
         this.ListaAcciones = accionesPreventivas;
     }
 

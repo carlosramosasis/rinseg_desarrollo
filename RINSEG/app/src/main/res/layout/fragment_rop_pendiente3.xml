@@ -66,9 +66,11 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:lines="1"
+                            android:maxLines="1"
                             android:textColor="@color/colorPrimary"
                             android:textSize="16dp"
                             android:layout_marginLeft="5dp"
+                            android:inputType="text"
                             />
                     </LinearLayout>
 

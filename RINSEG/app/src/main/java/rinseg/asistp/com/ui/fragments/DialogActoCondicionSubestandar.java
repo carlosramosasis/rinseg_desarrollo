@@ -114,15 +114,21 @@ public class DialogActoCondicionSubestandar extends Dialog
             case R.id.btn_dialog_actocondi_aceptar:
                 // Recorremos la lista de ítems checkeados:
                 RealmList<EventItemsRO> itemsChecked = new RealmList<>();
-                for ( int i = 0; i < listaItems.size(); i++ ){
-                    if ( itemsAdapter.listCheckedActos.get(i) ) {
-                        itemsChecked.add(listaItems.get(i));
-                    }
-                }
-                // Guardamos en Realm
+
                 Realm realm = Realm.getInstance(myConfig);
                 realm.beginTransaction();
-                currentROP.setListaEventItems(itemsChecked);
+                //currentROP.listaEventItems.clear();
+                currentROP.listaEventItems = new RealmList<EventItemsRO>();
+                for ( int i = 0; i < listaItems.size(); i++ ){
+                    if ( itemsAdapter.listCheckedActos.get(i) ) {
+                       // itemsChecked.add(listaItems.get(i));
+                        currentROP.listaEventItems.add(listaItems.get(i));
+                    }
+                }
+               // currentROP.listaEventItems.addAll(itemsChecked);
+                // Guardamos en Realm
+
+               //currentROP.setListaEventItems(itemsChecked);
                 realm.commitTransaction();
                 mListener.onAcceptItems();
                 dismiss();

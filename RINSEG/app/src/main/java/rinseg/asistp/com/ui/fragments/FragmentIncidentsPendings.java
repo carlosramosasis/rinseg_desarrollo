@@ -2,6 +2,7 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,7 +42,11 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
 
     RealmConfiguration myConfig;
 
-    /** Constructor de fragment */
+    private TabLayout tabIncidents;
+
+    /**
+     * Constructor de fragment
+     */
     public FragmentIncidentsPendings newInstance(int idIspeccion) {
         FragmentIncidentsPendings fragment = new FragmentIncidentsPendings();
         Bundle args = new Bundle();
@@ -64,17 +69,22 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
         View view = inflater.inflate(R.layout.fragment_incidents_pendings, container, false);
 
         setUpElements(view);
-       // setUpData();
+        // setUpData();
 
         return view;
     }
 
-    /** Proceso para cargar las vistas */
+    /**
+     * Proceso para cargar las vistas
+     */
     private void setUpElements(View v) {
+
+        tabIncidents = (TabLayout) getActivity().findViewById(R.id.tab_incidents);
+
         RecyclerView recyclerIncidents = (RecyclerView) v.findViewById(
                 R.id.recycler_incidents_pending);
         recyclerIncidents.setHasFixedSize(true);
-        RecyclerView.LayoutManager lManager =  new LinearLayoutManager(
+        RecyclerView.LayoutManager lManager = new LinearLayoutManager(
                 getActivity().getApplicationContext());
         recyclerIncidents.setLayoutManager(lManager);
 
@@ -91,7 +101,9 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
                 .build();
     }
 
-    /** Proceso para cargar datos */
+    /**
+     * Proceso para cargar datos
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void setUpData() {
         final Realm realm = Realm.getInstance(myConfig);
@@ -119,6 +131,9 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
     public void onResume() {
         super.onResume();
         setUpData();
+
+        tabIncidents.getTabAt(0).setText(getString(R.string.tab_incidents_title_pending) + " (" + listIncidents.size() + ")");
+
     }
 
     public interface OnFragmentInteractionListener {
@@ -129,15 +144,18 @@ public class FragmentIncidentsPendings extends Fragment implements ListenerClick
     public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
         Fragment f = FragmentInspeccionIncidenciaDetalle1.newInstance(idInspeccion,
                 String.valueOf(listIncidents.get(position).getId()));
-        ((ActivityInspeccionDetalle)getActivity()).replaceFragment(f, false, 0, 0, 0, 0);
+        ((ActivityInspeccionDetalle) getActivity()).replaceFragment(f, false, 0, 0, 0, 0);
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 }

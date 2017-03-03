@@ -518,6 +518,8 @@ public class FragmentROPPendiente4 extends Fragment {
             mRop.setDateClose(fecha.getTime());
             mRop.setDateCloseString(Generic.dateFormatterMySql.format(mRop.getDateClose()));
             mRop.setEstadoRop(1);
+
+
             realm.commitTransaction();
         } catch (Exception e) {
             realm.close();
@@ -529,11 +531,20 @@ public class FragmentROPPendiente4 extends Fragment {
 
 
         final ROP ropToSend = realm.copyFromRealm(rop);
+        for (int i = 0; i < mRop.listaEventItems.size(); i++) {
+            ropToSend.listaEventItems.get(i).setName(null);
+            ropToSend.listaEventItems.get(i).setCode(null);
+            ropToSend.listaEventItems.get(i).setChecked(null);
+        }
 
         String token = activityMain.usuarioLogueado.getApi_token();
         final View v = this.getView();
         dialogLoading.show();
         RestClient restClient = new RestClient(Services.URL_ROPS);
+
+        for (int i = 0; i < ropToSend.listaEventItems.size(); i++) {
+            Log.e("Rop listaEventItems", "" + ropToSend.listaEventItems.get(i).getId() + ropToSend.listaEventItems.get(i).getName());
+        }
 
         Call<ResponseBody> call = restClient.iServices.setRopCerrado(ropToSend, token);
 
@@ -552,6 +563,7 @@ public class FragmentROPPendiente4 extends Fragment {
                         if (status.equals(Constants.SUCCESS)) {
                             JSONObject messageResult = jsonObject.getJSONObject("message");
                             JSONObject ropResult = messageResult.getJSONObject("rop");
+                            Log.e("Rop JSON", ropResult.toString());
 
                             String api_token = activityMain.usuarioLogueado.getApi_token();
 
@@ -561,6 +573,12 @@ public class FragmentROPPendiente4 extends Fragment {
                             mRop.setId(ropResult.getInt("id"));
                             mRop.setTmpId(String.valueOf(ropResult.getInt("id")));
                             mRop.setEstadoRop(1);
+
+                            JSONArray ropItems = messageResult.getJSONArray("rop_items");
+                            for (int i = 0; i < ropItems.length(); i++) {
+                                mRop.listaAccionPreventiva.get(i).setId(ropItems.getJSONObject(i).getInt("id"));
+                            }
+
                             realm.commitTransaction();
 
                             Generic.CambiarNombreCarpetaImageens(activityMain, Constants.PATH_IMAGE_GALERY_ROP, oldFolder, mRop.getTmpId());

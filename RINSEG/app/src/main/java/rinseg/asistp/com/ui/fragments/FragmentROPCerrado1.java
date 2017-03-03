@@ -53,6 +53,7 @@ import retrofit2.Response;
 import rinseg.asistp.com.adapters.AccionPreventivaAdapter;
 import rinseg.asistp.com.adapters.AccionPreventivaDetalleAdapter;
 import rinseg.asistp.com.adapters.RopAdapter;
+import rinseg.asistp.com.listener.ListenerClickAccionPreventivaDetalle;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.CompanyRO;
@@ -90,7 +91,7 @@ import static rinseg.asistp.com.utils.Constants.MY_SHARED_PREFERENCES;
  * Use the {@link FragmentROPCerrado1#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentROPCerrado1 extends Fragment {
+public class FragmentROPCerrado1 extends Fragment  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

@@ -35,6 +35,7 @@ public class AccionPreventiva extends RealmObject {
     @SerializedName("action_done")
     private boolean accionHecha;
 
+    @SerializedName("close")
     private boolean closed;
 
     public AccionPreventiva() { }

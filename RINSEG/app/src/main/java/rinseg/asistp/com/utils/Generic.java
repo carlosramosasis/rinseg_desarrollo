@@ -15,6 +15,7 @@ import android.os.NetworkOnMainThreadException;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.google.gson.annotations.Expose;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -100,17 +101,43 @@ public class Generic {
 
 
     public static boolean CrearCarpetaImagenesPorRop(Context context, String carpertaRop) {
-        boolean result = false;
+        boolean result = true;
+        try {
+            File myDir = context.getFilesDir();
+            File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + carpertaRop + "/");
 
-        File myDir = context.getFilesDir();
-        File folder = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP + carpertaRop + "/");
-
-        if (!folder.exists()) {
-            result = folder.mkdirs();
+            if (!folder.exists()) {
+                result = folder.mkdirs();
+            }
+            Log.e("resultSaveImageGalery", String.valueOf(result));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Log.e("resultSaveImageGalery", String.valueOf(result));
 
         return result;
+    }
+
+    public static void BorrrarCarpetasImagenes(Context context) {
+        try {
+            File myDir = context.getFilesDir();
+            File folderRops = new File(myDir, Constants.PATH_IMAGE_GALERY_ROP);
+            File folderIncidentes = new File(myDir, Constants.PATH_IMAGE_GALERY_INCIDENCIA);
+
+            folderRops.delete();
+            folderIncidentes.delete();
+
+          /*  if (folderRops.delete() && folderIncidentes.delete()) {
+                result = true;
+            }else{
+                result = false;
+            }*/
+
+           // Log.e("DeleteImagesGalery", String.valueOf(result));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public static boolean CrearCarpetaImagenesPorIncidencia(Context context, String carpertaIncidencia) {
@@ -255,7 +282,7 @@ public class Generic {
                 }
             }
         } catch (Exception e) {
-            return  false;
+            return false;
         }
         return resu;
     }

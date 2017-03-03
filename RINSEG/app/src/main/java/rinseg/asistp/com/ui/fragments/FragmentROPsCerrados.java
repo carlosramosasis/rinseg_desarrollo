@@ -3,6 +3,7 @@ package rinseg.asistp.com.ui.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,6 +39,8 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick, ICh
     private RecyclerView.Adapter ropAdapter;
     private List<ROP> listaRops = new ArrayList<>();
 
+    TabLayout tabLayout;
+
     public FragmentROPsCerrados() { }
 
     @Override
@@ -52,7 +55,7 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick, ICh
         View view = inflater.inflate(R.layout.fragment_rops_cerrados, container, false);
 
         setUpElements(view);
-        LoadRopCerrados();
+        //LoadRopCerrados();
 
         return view;
     }
@@ -60,6 +63,8 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick, ICh
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
         activityMain = ((ActivityMain) getActivity());
+
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_rops);
 
         //configuracion para el recicler
         RecyclerView recyclerRops = (RecyclerView) v.findViewById(R.id.recycler_view_rops_cerrados);
@@ -86,6 +91,9 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick, ICh
     public void onResume() {
         super.onResume();
         activityMain.ShowButtonsBottom(false);
+        LoadRopCerrados();
+
+        tabLayout.getTabAt(2).setText(getString(R.string.tab_cerrados) + " (" + listaRops.size() + ")");
     }
 
     public void onButtonPressed(Uri uri) {
@@ -120,6 +128,9 @@ public class FragmentROPsCerrados extends Fragment implements ListenerClick, ICh
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopCerrados() {
+        listaRops.clear();
+        ropAdapter.notifyDataSetChanged();
+
         Realm realm = Realm.getInstance(myConfig);
         try {
             RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 2).findAll()

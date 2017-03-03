@@ -329,4 +329,8 @@
     </string>
     <string name="fragment_tab_rops_retrieve_rop_cod_empty">Ingrese código de ROP</string>
 
+    <string name="btn_guardar">GUARDAR</string>
+
+    <string name="msg_error_levantar_accion_preventiva">Ocurrió un error al levantar la accion preventiva.</string>
+
 </resources>

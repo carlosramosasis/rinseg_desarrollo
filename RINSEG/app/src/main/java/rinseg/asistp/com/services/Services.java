@@ -26,6 +26,7 @@ public class Services {
     static final String SYNC = "sync";
     static final String ROP_CLOSE = "close";
     static final String ADD_IMAGEN = "add-image";
+    static final String FIX_ACTONS = "preventive-actions-close";
     static final String ADD_INS_IMAGEN = "add-inspection-image";
     static final String ROP_RECOVERY = "find";
     static final String FIX_INCIDENT = "close-incident";

@@ -83,7 +83,7 @@ public class ROP extends RealmObject{
 
     public RealmList<ImagenRO> listaImgComent;
 
-    //@SerializedName("event_item")
+    @SerializedName("event_item")
     public RealmList<EventItemsRO> listaEventItems;
 
     public User usuarioCreador;

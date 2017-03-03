@@ -330,6 +330,8 @@ public class FragmentTabRops extends Fragment {
                             } else {
                                 message = "No se ha podido descargar las imágenes";
                             }
+
+
                             if (ropCopy.getEstadoRop() == 1) {
                                 // Notificamos al Pager de registrados :
                                 notifyDowloandROP(ropCopy, false);
@@ -376,7 +378,7 @@ public class FragmentTabRops extends Fragment {
             }
 
             @Override
-            public void onFailure (Call < ResponseBody > call, Throwable t){
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 dialogLoading.dismiss();
                 Messages.showSB(vLayout, getString(R.string.msg_rop_recuperado_fail), "ok");
             }
@@ -449,22 +451,24 @@ public class FragmentTabRops extends Fragment {
                                     public void run() {
                                         File file = new File(path);
                                         try {
-                                            if (file.createNewFile()) {
-                                                FileOutputStream ostream = new FileOutputStream(file);
-                                                resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
-                                                ostream.flush();
-                                                ostream.close();
-                                                cantImagenesRecibidos += 1;
-                                                if (validarDescargaTotalImagenes()) {
-                                                    if (Looper.myLooper() == null) {
-                                                        Looper.prepare();
-                                                        Message msg = new Message();
-                                                        msg.obj = getString(R.string.msg_rop_recuperado_ok);
-                                                        _handler.sendMessage(msg);
-                                                        Looper.loop();
-                                                    }
+                                            // if (file.createNewFile()) {
+                                            file.createNewFile();
+                                            FileOutputStream ostream = new FileOutputStream(file);
+                                            resource.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                            ostream.flush();
+                                            ostream.close();
+                                            cantImagenesRecibidos += 1;
+                                            if (validarDescargaTotalImagenes()) {
+                                                if (Looper.myLooper() == null) {
+                                                    Looper.prepare();
+                                                    Message msg = new Message();
+                                                    msg.obj = getString(R.string.msg_rop_recuperado_ok);
+                                                    _handler.sendMessage(msg);
+                                                    Looper.loop();
                                                 }
-                                            } else {
+                                            }
+                                           /* }
+                                            else {
                                                 Log.e(getClass().getCanonicalName(), "Error al crear "
                                                         + file.getPath());
                                                 cantImagenesRecibidos += 1;
@@ -477,7 +481,7 @@ public class FragmentTabRops extends Fragment {
                                                         Looper.loop();
                                                     }
                                                 }
-                                            }
+                                            }*/
                                         } catch (IOException e) {
                                             Log.e("IOException", e.getMessage());
                                             e.printStackTrace();

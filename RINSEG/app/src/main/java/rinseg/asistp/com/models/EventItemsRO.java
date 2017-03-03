@@ -1,5 +1,7 @@
 package rinseg.asistp.com.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
@@ -10,11 +12,16 @@ import io.realm.RealmObject;
  * Congestión o acción restringida - Sistemas de advertencia - Peligro...
  */
 public class EventItemsRO  extends RealmObject {
+
     @SerializedName("id")
     private int Id;
+    @SerializedName("code")
     private String Code;
+    @SerializedName("name")
     private String Name;
-    private boolean checked;
+    @SerializedName("checked")
+    private Boolean checked;
+
 
     public int getId() {
         return Id;
@@ -42,7 +49,7 @@ public class EventItemsRO  extends RealmObject {
 
     public boolean isChecked() {return checked;}
 
-    public void setChecked(boolean checked) {this.checked = checked;}
+    public void setChecked(Boolean checked) {this.checked = checked;}
 
     @Override
     public String toString() {

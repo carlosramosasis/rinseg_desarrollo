@@ -1,5 +1,7 @@
 package rinseg.asistp.com.adapters;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +23,14 @@ import rinseg.asistp.com.utils.Generic;
  */
 public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.Adapter<ActoCondicionSubestandarSeleccionadosAdapter.AccionViewHolder> {
     public List<EventItemsRO> ListaActosCondiciones;
+    public Context mContext;
+
 
     public static class AccionViewHolder extends RecyclerView.ViewHolder {
         //Campos respectivos del item
         public CheckBox mCheckActoCondicion;
         public TextView mTextActoCondicion;
+
 
 
         public AccionViewHolder(View v) {
@@ -34,8 +39,9 @@ public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.A
         }
     }
 
-    public ActoCondicionSubestandarSeleccionadosAdapter(List<EventItemsRO> actoCondicionSub) {
+    public ActoCondicionSubestandarSeleccionadosAdapter(List<EventItemsRO> actoCondicionSub,Context context) {
         this.ListaActosCondiciones = actoCondicionSub;
+        mContext = context;
     }
 
     @Override
@@ -51,7 +57,9 @@ public class ActoCondicionSubestandarSeleccionadosAdapter extends RecyclerView.A
 
     @Override
     public void onBindViewHolder(final AccionViewHolder viewHolder, final int i) {
+        Typeface type = Typeface.createFromAsset(mContext.getAssets(),"fonts/arial_narrow.ttf");
         viewHolder.mTextActoCondicion.setText(ListaActosCondiciones.get(i).getName());
+        viewHolder.mTextActoCondicion.setTypeface(type);
     }
 
 

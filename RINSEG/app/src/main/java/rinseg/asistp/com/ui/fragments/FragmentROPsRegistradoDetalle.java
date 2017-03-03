@@ -6,6 +6,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 import rinseg.asistp.com.adapters.AccionPrevEstadoAdapter;
+import rinseg.asistp.com.adapters.AccionPreventivaDetalleAdapter;
+import rinseg.asistp.com.listener.ListenerClickAccionPreventivaDetalle;
 import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.AreaRO;
 import rinseg.asistp.com.models.EventRO;
@@ -33,7 +36,9 @@ import rinseg.asistp.com.utils.RinsegModule;
  * Fragment que muestra el listado de acciones preventivas
  */
 
-public class FragmentROPsRegistradoDetalle extends Fragment {
+public class FragmentROPsRegistradoDetalle extends Fragment implements ListenerClickAccionPreventivaDetalle {
+
+    ActivityRopRegistradoDetalle activity;
 
     private static final String ARG_ID_ROP = "id_rop";
     private static final String ARG_ID_TMP_ROP = "id_tmp_rop";
@@ -87,13 +92,15 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
      * Proceso para cargar vistas
      */
     private void setUpElements(View v) {
+        activity = (ActivityRopRegistradoDetalle) getActivity();
+
         RecyclerView recyclerAcciones = (RecyclerView) v.findViewById(R.id.recycler_preventive_actions_list);
         textTipoEvento = (TextView) v.findViewById(R.id.text_acciones_prev_tipo_evento);
         textArea = (TextView) v.findViewById(R.id.text_acciones_prev_area_resp);
         textDescripcion = (TextView) v.findViewById(R.id.text_acciones_prev_area_descr);
 
         recyclerAcciones.setHasFixedSize(true);
-        adapter = new AccionPrevEstadoAdapter(listAcciones, getContext());
+        adapter = new AccionPrevEstadoAdapter(listAcciones, getContext(), this);
 
         LinearLayoutManager lManager = new LinearLayoutManager(this.getActivity()
                 .getApplicationContext());
@@ -168,10 +175,14 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
 
             textDescripcion.setText(rop.getEventDescription());
 
-            ((ActivityRopRegistradoDetalle) getActivity()).getSupportActionBar().setTitle("Rop #" + _idRop);
+            ((ActivityRopRegistradoDetalle) getActivity()).getSupportActionBar().setTitle("Rop# " + _idRop);
 
+            for (int i = 0; i < rop.listaAccionPreventiva.size(); i++) {
+                Log.e("accion", rop.listaAccionPreventiva.get(i).isClosed() + "" + rop.listaAccionPreventiva.get(i).getId());
+            }
             listAcciones.addAll(rop.listaAccionPreventiva);
             adapter.notifyDataSetChanged();
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -180,5 +191,15 @@ public class FragmentROPsRegistradoDetalle extends Fragment {
         }
     }
 
+
+    @Override
+    public void onItemClicked(AccionPrevEstadoAdapter.AccionViewHolder holder, int position) {
+        AccionPreventiva accion  = listAcciones.get(position);
+        if(!accion.isClosed()){
+            FragmentLevantarAccionPreventiva fragment = FragmentLevantarAccionPreventiva.newInstance(accion.getId(), rop.getId());
+            activity.replaceFragment(fragment, false, 0, 0, 0, 0);
+        }
+
+    }
 
 }

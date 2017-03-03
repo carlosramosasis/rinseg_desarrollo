@@ -378,7 +378,7 @@ public class FragmentROPPendiente3 extends Fragment {
 
                     txtEmpleado.setText(mRop.getWorkerCommitment());
                     if(mRop.isCommitmentAccept()){
-                        chkAcepto.isChecked();
+                        chkAcepto.setChecked(true);
                     }
 
 

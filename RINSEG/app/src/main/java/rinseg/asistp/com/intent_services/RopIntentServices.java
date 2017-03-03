@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -25,6 +27,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.ROP;
@@ -111,6 +114,15 @@ public class RopIntentServices extends IntentService {
 
     void EnviarRop(Realm realm, final ROP ropCopy) {
 
+        RealmList<EventItemsRO> listaEventItemsCopy = ropCopy.listaEventItems;
+        ropCopy.listaEventItems =  new RealmList<EventItemsRO>();
+
+        for (int i = 0; i < listaEventItemsCopy.size(); i++) {
+            EventItemsRO evetItem = new EventItemsRO();
+            evetItem.setId(listaEventItemsCopy.get(i).getId());
+            ropCopy.listaEventItems.add(evetItem);
+        }
+
        final String token = usuParaToken.getApi_token();
 
         RestClient restClient = new RestClient(Services.URL_ROPS);
@@ -136,6 +148,14 @@ public class RopIntentServices extends IntentService {
                             ROP ropCerradoRealm = realm.where(ROP.class).equalTo("tmpId",ropCopy.getTmpId()).findFirst();
                             ropCerradoRealm.setId(ropResult.getInt("id"));
                             ropCerradoRealm.setTmpId(String.valueOf(ropResult.getInt("id")));
+                            ropCerradoRealm.setEstadoRop(1);
+
+                            JSONArray ropItems = messageResult.getJSONArray("rop_items");
+                            for (int i = 0; i < ropItems.length(); i++) {
+                                ropCerradoRealm.listaAccionPreventiva.get(i).setId(ropItems.getJSONObject(i).getInt("id"));
+                            }
+
+
                             realm.commitTransaction();
 
                             Generic.CambiarNombreCarpetaImageens(getApplicationContext(), Constants.PATH_IMAGE_GALERY_ROP, oldFolder, ropCerradoRealm.getTmpId());

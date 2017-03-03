@@ -24,7 +24,10 @@ public class ImagenRO extends RealmObject {
 
     private int idParent;
 
+    private boolean accionLevantada;
+
     private boolean inspeccionLevantada;
+
 
     public String getName() {
         return name;
@@ -73,6 +76,10 @@ public class ImagenRO extends RealmObject {
     public void setInspeccionLevantada(boolean inspeccionLevantada) {
         this.inspeccionLevantada = inspeccionLevantada;
     }
+
+    public boolean isAccionLevantada() {return accionLevantada;}
+
+    public void setAccionLevantada(boolean accionLevantada) {this.accionLevantada = accionLevantada;}
 
     public void setValues(JSONObject json) {
         try {

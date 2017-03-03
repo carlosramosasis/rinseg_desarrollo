@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import rinseg.asistp.com.models.ROP;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.activities.ActivityMain;
 import rinseg.asistp.com.adapters.RopAdapter;
+import rinseg.asistp.com.ui.activities.ActivityRopRegistradoDetalle;
 import rinseg.asistp.com.utils.DialogRINSEG;
 import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
@@ -54,11 +56,15 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     private RecyclerView.LayoutManager lManager;
     private List<ROP> listaRops = new ArrayList<>();
 
+    TabLayout tabLayout;
+
     RealmConfiguration myConfig;
 
     public int REQUEST_IMAGE_CAPTURE = 1;
 
-    public FragmentROPsPendientes() { }
+
+    public FragmentROPsPendientes() {
+    }
 
     public static FragmentROPsPendientes newInstance(String param1, String param2) {
         FragmentROPsPendientes fragment = new FragmentROPsPendientes();
@@ -96,6 +102,8 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     public void onResume() {
         super.onResume();
         activityMain.ShowButtonsBottom(false);
+
+        tabLayout.getTabAt(0).setText(getString(R.string.tab_pendientes) + " (" + listaRops.size() + ")");
     }
 
     @Override
@@ -116,10 +124,12 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     }
 
     @Override
-    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) { }
+    public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) { }
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
+    }
 
     @Override
     public void onDetach() {
@@ -135,6 +145,8 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     private void setUpElements(View v) {
 
         activityMain = ((ActivityMain) getActivity());
+
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_rops);
 
         btnAgregar = (FloatingActionButton) v.findViewById(R.id.btn_agregar_rop);
 
@@ -184,7 +196,7 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
                 listaRops.add(tRop);
                 ropAdapter.notifyDataSetChanged();
             }
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             realm.close();
@@ -192,13 +204,13 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
     }
 
     public void onButtonPressed(Uri uri) {
-        if ( mListener != null ) {
+        if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
 
 
-    public void MostrarEliminarRop(int position){
+    public void MostrarEliminarRop(int position) {
         final int mPosition = position;
         final View v = getView();
 
@@ -212,12 +224,12 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
             public void onClick(View view) {
                 Realm realm = Realm.getInstance(myConfig);
                 try {
-                    ROP ropRealm =  realm.where(ROP.class).equalTo("tmpId",ropEliminar.getTmpId())
-                            .equalTo("cerrado",false).findFirst();
+                    ROP ropRealm = realm.where(ROP.class).equalTo("tmpId", ropEliminar.getTmpId())
+                            .equalTo("cerrado", false).findFirst();
 
-                    if( ropRealm != null ) {
+                    if (ropRealm != null) {
                         boolean eliminoCarpeta = Generic.EliminarImagenCarpeta(activityMain
-                                .getApplicationContext(),ropRealm.getTmpId());
+                                .getApplicationContext(), ropRealm.getTmpId());
 
                         realm.beginTransaction();
                         ropRealm.deleteFromRealm();
@@ -225,14 +237,14 @@ public class FragmentROPsPendientes extends Fragment implements ListenerClick {
                         listaRops.remove(mPosition);
                         ropAdapter.notifyDataSetChanged();
 
-                        Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_ok));
+                        Messages.showToast(v, getString(R.string.dialog_body_rop_pendiente_eliminar_ok));
                     } else {
-                        Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_fail_cerrado));
+                        Messages.showToast(v, getString(R.string.dialog_body_rop_pendiente_eliminar_fail_cerrado));
                     }
                     dialogEliminarRop.dismiss();
 
-                } catch ( Exception e ) {
-                    Messages.showToast(v,getString(R.string.dialog_body_rop_pendiente_eliminar_error));
+                } catch (Exception e) {
+                    Messages.showToast(v, getString(R.string.dialog_body_rop_pendiente_eliminar_error));
                     dialogEliminarRop.dismiss();
                 } finally {
                     realm.close();

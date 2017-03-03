@@ -3,6 +3,7 @@ package rinseg.asistp.com.ui.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +40,8 @@ public class FragmentROPsRegistrados extends Fragment
     private RecyclerView.Adapter ropAdapter;
     private List<ROP> listaRops = new ArrayList<>();
 
+    TabLayout tabLayout;
+
     RealmConfiguration myConfig;
 
     public FragmentROPsRegistrados() { }
@@ -55,7 +58,7 @@ public class FragmentROPsRegistrados extends Fragment
         View view = inflater.inflate(R.layout.fragment_rops_registrado, container, false);
 
         setUpElements(view);
-        LoadRopCerrados();
+        //LoadRopCerrados();
 
         return view;
     }
@@ -63,6 +66,8 @@ public class FragmentROPsRegistrados extends Fragment
     //Proceso para cargar las vistas
     private void setUpElements(View v) {
         activityMain = ((ActivityMain) getActivity());
+
+        tabLayout = (TabLayout) getActivity().findViewById(R.id.tab_rops);
 
         //configuracion para el recicler
         RecyclerView recyclerRops = (RecyclerView) v.findViewById(R.id.recycler_view_rops_registrados);
@@ -89,6 +94,9 @@ public class FragmentROPsRegistrados extends Fragment
     public void onResume() {
         super.onResume();
         activityMain.ShowButtonsBottom(false);
+        LoadRopCerrados();
+
+        tabLayout.getTabAt(1).setText(getString(R.string.tab_registrados) + " (" + listaRops.size() + ")");
     }
 
     public void onButtonPressed(Uri uri) {
@@ -124,6 +132,9 @@ public class FragmentROPsRegistrados extends Fragment
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void LoadRopCerrados() {
+        listaRops.clear();
+        ropAdapter.notifyDataSetChanged();
+
         Realm realm = Realm.getInstance(myConfig);
         try {
             RealmResults<ROP> RopsRealm = realm.where(ROP.class).equalTo("estadoRop", 1).findAll()

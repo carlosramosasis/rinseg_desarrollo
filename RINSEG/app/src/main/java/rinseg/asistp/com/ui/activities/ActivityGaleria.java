@@ -48,6 +48,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
     ROP mRop;
     IncidenciaRO mIncidente;
     boolean esIncidenciaLevantada = false;
+    boolean esAccionLevantada = false;
 
     private File fileApp;
 
@@ -65,6 +66,7 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
                 tmpIdRop = extras.getString("ROPtmpId", null);
                 tmpIdIncidente = extras.getString("IncidentetmpId", null);
                 esIncidenciaLevantada = extras.getBoolean("esInspeccionLevantada", false);
+                esAccionLevantada = extras.getBoolean("esAccionLevantada", false);
             }
         }
 
@@ -198,10 +200,12 @@ public class ActivityGaleria extends AppCompatActivity implements ListenerClickI
                 return;
             }
 
-            if (RopRealm.listaImgComent.size() > 0) {
+            RealmResults<ImagenRO> ListaComentario = RopRealm.listaImgComent.where().equalTo("accionLevantada",esAccionLevantada).findAll();
 
-                for (int i = 0; i < RopRealm.listaImgComent.size(); i++) {
-                    ImagenRO img = RopRealm.listaImgComent.get(i);
+            if (ListaComentario.size() > 0) {
+
+                for (int i = 0; i < ListaComentario.size(); i++) {
+                    ImagenRO img = ListaComentario.get(i);
                     listaImagenes.add(img);
                     imageAdapter.notifyDataSetChanged();
                 }

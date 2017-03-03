@@ -1,14 +1,27 @@
 package rinseg.asistp.com.ui.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import rinseg.asistp.com.models.User;
 import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.ui.fragments.FragmentROPsRegistradoDetalle;
+import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.Generic;
+import rinseg.asistp.com.utils.RinsegModule;
+import rinseg.asistp.com.utils.SharedPreferencesHelper;
 
 public class ActivityRopRegistradoDetalle extends AppCompatActivity {
 
@@ -18,6 +31,11 @@ public class ActivityRopRegistradoDetalle extends AppCompatActivity {
 
     int idRop;
     String idTmpRop;
+
+    RealmConfiguration myConfig;
+
+    private User usuarioLogueado;
+
 
 
     ///todo :::::::::::::::::::::::::::::::::::::::::::::::EVENTOS ::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -53,6 +71,13 @@ public class ActivityRopRegistradoDetalle extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar_rop_registrado_detalle);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left);
+
+        myConfig = new RealmConfiguration.Builder()
+                .name("rinseg.realm")
+                .schemaVersion(2)
+                .modules(new RinsegModule())
+                .deleteRealmIfMigrationNeeded()
+                .build();
     }
 
     void setUpActions() {

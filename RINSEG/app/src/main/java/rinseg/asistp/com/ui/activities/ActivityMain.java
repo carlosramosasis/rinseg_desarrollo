@@ -916,6 +916,8 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                     realm.delete(SettingsInspectionRO.class);
                 }
             });
+
+            Generic.BorrrarCarpetasImagenes(this);
         } catch (Exception e) {
             e.printStackTrace();
         }

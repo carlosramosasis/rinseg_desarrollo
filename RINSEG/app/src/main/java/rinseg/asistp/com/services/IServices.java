@@ -18,6 +18,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Query;
+import rinseg.asistp.com.models.AccionPreventiva;
 import rinseg.asistp.com.models.IncidenciaLevantadaRO;
 import rinseg.asistp.com.models.InspeccionRO;
 import rinseg.asistp.com.models.ROP;
@@ -52,9 +53,13 @@ public interface IServices {
     @POST(Services.ROP_RECOVERY)
     Call<ResponseBody> getRopClosed(@Field("code") int id_rop, @Query("api_token") String api_token);
 
-
     @POST(Services.LOGOUT)
     Call<ResponseBody> setLogout(@Query("api_token") String api_token);
+
+
+    @POST(Services.FIX_ACTONS)
+    Call<ResponseBody> setFixActions(@Body AccionPreventiva accion,
+                                     @Query("api_token") String api_token);
 
     @POST(Services.CLOSE)
     Call<ResponseBody> sendInspection(@Body InspeccionRO incidencia,

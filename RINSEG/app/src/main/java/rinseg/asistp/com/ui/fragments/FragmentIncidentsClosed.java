@@ -2,6 +2,7 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +41,8 @@ public class FragmentIncidentsClosed extends Fragment implements ListenerClick {
 
     RealmConfiguration myConfig;
 
+    private TabLayout tabIncidents;
+
     /** Constructor de fragment */
     public FragmentIncidentsClosed newInstance(int idIspeccion) {
         FragmentIncidentsClosed fragment = new FragmentIncidentsClosed();
@@ -70,6 +73,8 @@ public class FragmentIncidentsClosed extends Fragment implements ListenerClick {
 
     /** Proceso para cargar las vistas */
     private void setUpElements(View v) {
+        tabIncidents = (TabLayout) getActivity().findViewById(R.id.tab_incidents);
+
         RecyclerView recyclerIncidents = (RecyclerView) v.findViewById(
                 R.id.recycler_incidents_closed);
         recyclerIncidents.setHasFixedSize(true);
@@ -115,6 +120,7 @@ public class FragmentIncidentsClosed extends Fragment implements ListenerClick {
     public void onResume() {
         super.onResume();
         setUpData();
+        tabIncidents.getTabAt(1).setText(getString(R.string.tab_incidents_title_closed) + " (" + listIncidents.size() + ")");
     }
 
     public interface OnFragmentInteractionListener {
