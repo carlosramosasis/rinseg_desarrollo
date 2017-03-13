@@ -27,6 +27,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rinseg.asistp.com.models.EventItemsFix;
 import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.FrecuencieRO;
 import rinseg.asistp.com.models.ImagenRO;
@@ -60,7 +61,7 @@ public class RopIntentServices extends IntentService {
             Boolean intentActivo = preferences.getBoolean(Constants.KEY_INTENT_SERV_ACTIVO, false);
             if (!intentActivo) {
                 preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO, true).commit();
-                Log.e("intent", "esto viene del intent");
+                //Log.e("intent", "esto viene del intent");
 
                 //configuramos Realm
                 Realm.init(this.getApplicationContext());
@@ -88,7 +89,7 @@ public class RopIntentServices extends IntentService {
                         ROP rop = ropsCerradosNoEnviados.get(i);
                         ROP ropCopy = realm.copyFromRealm(rop);
                         EnviarRop(realm,ropCopy);
-                        Log.e("ROP en INTENT",ropCopy.toString());
+                        //Log.e("ROP en INTENT",ropCopy.toString());
                     }
                 } else {
                     TerminaProceso();
@@ -107,20 +108,19 @@ public class RopIntentServices extends IntentService {
 
 
     void TerminaProceso() {
-        Log.e("intent", "acabo el intent");
+        //Log.e("intent", "acabo el intent");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO, false).commit();
     }
 
     void EnviarRop(Realm realm, final ROP ropCopy) {
 
-        RealmList<EventItemsRO> listaEventItemsCopy = ropCopy.listaEventItems;
-        ropCopy.listaEventItems =  new RealmList<EventItemsRO>();
 
-        for (int i = 0; i < listaEventItemsCopy.size(); i++) {
-            EventItemsRO evetItem = new EventItemsRO();
-            evetItem.setId(listaEventItemsCopy.get(i).getId());
-            ropCopy.listaEventItems.add(evetItem);
+
+        for (int i = 0; i < ropCopy.listaEventItems.size(); i++) {
+            EventItemsFix evetItem = new EventItemsFix();
+            evetItem.setId(ropCopy.listaEventItems.get(i).getId());
+            ropCopy.listaEventItemsFix.add(evetItem);
         }
 
        final String token = usuParaToken.getApi_token();
@@ -175,7 +175,7 @@ public class RopIntentServices extends IntentService {
 
                         }
 
-                        Log.e("jsonObject", jsonObject.toString());
+                        //Log.e("jsonObject", jsonObject.toString());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -262,7 +262,7 @@ public class RopIntentServices extends IntentService {
 
                                 }
 
-                                Log.e("jsonObject", jsonObject.toString());
+                                //Log.e("jsonObject", jsonObject.toString());
 
 
                             } catch (Exception e) {
@@ -273,8 +273,8 @@ public class RopIntentServices extends IntentService {
 
 
                         } else {
-                            Log.e("imagen", response.message());
-                            Log.e("imagen error", response.errorBody().toString());
+                            //Log.e("imagen", response.message());
+                            //Log.e("imagen error", response.errorBody().toString());
                             //dialogLoading.dismiss();
                             //Messages.showSB(getView(), getString(R.string.msg_login_fail), "ok");
                         }

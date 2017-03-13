@@ -204,9 +204,9 @@ public class FragmentSingIn extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     try {
-                        dialogLoading.dismiss();
+                        //dialogLoading.dismiss();
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        Log.e("jsonObject",jsonObject.toString());
+                        //Log.e("jsonObject",jsonObject.toString());
                         JSONObject usur = jsonObject.getJSONObject("user");
                         Gson gson = new Gson();
                         User u = gson.fromJson(usur.toString(), User.class);

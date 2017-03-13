@@ -85,7 +85,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if ( getArguments() != null ) {
+        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
@@ -118,9 +118,9 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == TAKE_PHOTO_CODE ) {
-            Log.d("CameraDemo", "Pic saved");
-        }
+        //if (requestCode == TAKE_PHOTO_CODE ) {
+        //Log.d("CameraDemo", "Pic saved");
+        //}
     }
 
     @Override
@@ -150,7 +150,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     @Override
     public void onItemClicked(InspeccionAdapter.InspeccionViewHolder holder, int position) {
         // Si la inspección está cerrada, lanzamos Inspección detalle :
-        if ( listaInspeccinoes.get(position).isCerrado() ) {
+        if (listaInspeccinoes.get(position).isCerrado()) {
             launchActivityInspeccionDetalle(listaInspeccinoes.get(position));
         } else {
             // La inspección aún se puede editar :
@@ -163,13 +163,16 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
     }
 
     @Override
-    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) { }
+    public void onItemClicked(IncidenciaAdapter.IncidenciaViewHolder holder, int position) {
+    }
 
     @Override
-    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) { }
+    public void onItemLongClicked(RopAdapter.RopViewHolder holder, int position) {
+    }
 
 
     // Proceso para cargar las vistas
@@ -184,7 +187,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
         lManager = new LinearLayoutManager(this.getActivity().getApplicationContext());
         recyclerInspecciones.setLayoutManager(lManager);
         // Crear un nuevo Adaptador
-        inspeccionAdapter = new InspeccionAdapter(activityMain,listaInspeccinoes,this);
+        inspeccionAdapter = new InspeccionAdapter(activityMain, listaInspeccinoes, this);
         recyclerInspecciones.setAdapter(inspeccionAdapter);
 
         //configuramos Realm
@@ -235,7 +238,7 @@ public class FragmentInspecciones extends Fragment implements ListenerClick {
                 activityMain, ActivityInspeccionDetalle.class);
         InspeccionDetalleIntent.putExtra("InspId", insp.getId());
         InspeccionDetalleIntent.putExtra("InspTmpId", insp.getTmpId());
-        startActivity(InspeccionDetalleIntent );
+        startActivity(InspeccionDetalleIntent);
     }
 
     private void LoadInspeccionesCerradas() {

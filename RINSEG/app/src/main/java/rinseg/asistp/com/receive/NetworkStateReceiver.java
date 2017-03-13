@@ -31,7 +31,7 @@ public class NetworkStateReceiver extends WakefulBroadcastReceiver {
 
 
         if (intent.getAction() != null && intent.getAction().equals("recieve")) {
-            Log.d("", "broadcast received !!");
+            //Log.d("", "broadcast received !!");
         }
 
 
@@ -53,7 +53,7 @@ public class NetworkStateReceiver extends WakefulBroadcastReceiver {
 
 
                 if (ni.getType() == ConnectivityManager.TYPE_WIFI) {
-                    Log.e("conectado", "si wifi");
+                    //Log.e("conectado", "si wifi");
                     if (typeConect != ni.getType()) {
                         typeConect = ni.getType();
                         firstConnect = true;
@@ -64,7 +64,7 @@ public class NetworkStateReceiver extends WakefulBroadcastReceiver {
 
 
                 } else if (ni.getType() == ConnectivityManager.TYPE_MOBILE) {
-                    Log.e("conectado", "si datos");
+                    //Log.e("conectado", "si datos");
                     if (typeConect != ni.getType()) {
                         typeConect = ni.getType();
                         firstConnect = true;
@@ -79,7 +79,7 @@ public class NetworkStateReceiver extends WakefulBroadcastReceiver {
 
         } else {
             firstConnect = true;
-            Log.e("conectado", "no");
+            //Log.e("conectado", "no");
         }
     }
 }

@@ -164,8 +164,6 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
         //Llamamos al fragment ROPS pendientes para que sea el primero que se muestre
         replaceFragment(new FragmentTabRops(), true, 0, 0, 0, 0);
 
-        Permissions();
-
     }
 
     @Override
@@ -457,13 +455,13 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                         RealmResults<FrecuencieRO> f = realm.where(FrecuencieRO.class).findAll();
                         RealmResults<CompanyRO> c = realm.where(CompanyRO.class).findAll();
                         RealmList<CompanyRO> comp = insp.companies;
-                        Log.e("INSP", insp.toString());
-                        Log.e("ROP", rop.toString());
-                        for (CompanyRO cm : comp) {
-                            Log.e("INSP_COMP", cm.getId() + " " + cm.getDisplayName());
-                        }
-                        Log.e("FREC", f.toString());
-                        Log.e("COMP", c.toString());
+                        //Log.e("INSP", insp.toString());
+                        //Log.e("ROP", rop.toString());
+                        //for (CompanyRO cm : comp) {
+                            //Log.e("INSP_COMP", cm.getId() + " " + cm.getDisplayName());
+                        //}
+                        //Log.e("FREC", f.toString());
+                        //Log.e("COMP", c.toString());
 
                     } catch (Exception e) {
                         syncDialog.dismiss();
@@ -937,7 +935,7 @@ public class ActivityMain extends AppCompatActivity implements NavigationView.On
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        Log.e("jsonObject", jsonObject.toString());
+                        //Log.e("jsonObject", jsonObject.toString());
                         //  JSONObject usur = jsonObject.getJSONObject("user");
                         //Gson gson = new Gson();
                         //User u = gson.fromJson(usur.toString(), User.class);

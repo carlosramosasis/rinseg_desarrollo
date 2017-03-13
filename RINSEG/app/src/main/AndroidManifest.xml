@@ -18,6 +18,10 @@
             android:name="rinseg.asistp.com.intent_services.RopIntentServices"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name="rinseg.asistp.com.intent_services.InspeccionIntentServices"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name="rinseg.asistp.com.ui.activities.ActivitySplash"

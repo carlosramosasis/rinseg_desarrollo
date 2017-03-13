@@ -85,7 +85,7 @@
                     android:id="@+id/btn_guardar_foto_comentario"
                     android:layout_width="47dp"
                     android:layout_height="47dp"
-                    android:background="@drawable/backgorund_circle_gradient"
+                    android:background="@drawable/backgorund_circle_rojo"
                     android:src="@drawable/ic_send"
                     android:layout_marginTop="7dp"
                     android:layout_marginRight="7dp"

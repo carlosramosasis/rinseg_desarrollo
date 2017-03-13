@@ -8,6 +8,7 @@
     tools:context="rinseg.asistp.com.ui.fragments.FragmentInspeccionNuevo2">
 
     <LinearLayout
+        android:id="@+id/linear_root_inspeccion_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

@@ -225,8 +225,8 @@ public class FragmentInspeccionDetalle1 extends Fragment {
                             loading.dismiss();
                             Messages.showSB(
                                     getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
-                            Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                                    response.message() + "code :" + response.code());
+                            //Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                            //        response.message() + "code :" + response.code());
                         }
                     }
 

@@ -31,6 +31,7 @@ import rinseg.asistp.com.rinseg.R;
 import rinseg.asistp.com.services.RestClient;
 import rinseg.asistp.com.services.Services;
 import rinseg.asistp.com.utils.Constants;
+import rinseg.asistp.com.utils.Generic;
 import rinseg.asistp.com.utils.Messages;
 import rinseg.asistp.com.utils.RinsegModule;
 
@@ -55,7 +56,7 @@ public class InspeccionIntentServices extends IntentService {
             Boolean intentActivo = preferences.getBoolean(Constants.KEY_INTENT_SERV_ACTIVO_INSPECCION, false);
             if (!intentActivo) {
                 preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO_INSPECCION, true).commit();
-                Log.e("intent", "esto viene del intent INSPECCION");
+                //Log.e("intent", "esto viene del intent INSPECCION");
 
                 //configuramos Realm
                 Realm.init(this.getApplicationContext());
@@ -82,8 +83,8 @@ public class InspeccionIntentServices extends IntentService {
                     for (int y = 0; y < inspeccionesCerradasNoEnviadas.size(); y++) {
                         InspeccionRO inspeccion = inspeccionesCerradasNoEnviadas.get(y);
                         InspeccionRO inspeccionCopy = realm.copyFromRealm(inspeccion);
-                        EnviarInspeccion(realm, inspeccionCopy, inspeccion);
-                        Log.e("Inspeccion en INTENT", inspeccionCopy.toString());
+                        EnviarInspeccion( inspeccionCopy, inspeccion);
+                        //Log.e("Inspeccion en INTENT", inspeccionCopy.toString());
                     }
                 } else {
                     TerminaProceso();
@@ -102,22 +103,20 @@ public class InspeccionIntentServices extends IntentService {
 
 
     void TerminaProceso() {
-        Log.e("intent", "acabo el intent inspeccion");
+        //Log.e("intent", "acabo el intent inspeccion");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO_INSPECCION, false).commit();
     }
 
-    void EnviarInspeccion(final Realm realm, final InspeccionRO inspeccionCopy, final InspeccionRO inspeccionOriginal) {
+    void EnviarInspeccion( final InspeccionRO inspeccionCopy, final InspeccionRO inspeccionOriginal) {
 
         final String token = usuParaToken.getApi_token();
 
         //Asignar ids temporal segun orden a Incidente(inspection_items),
         // (asi lo requiere el sevicio web)
-        int cantImagenesTotal = 0;
         for (int i = 0; i < inspeccionCopy.listaIncidencias.size(); i++) {
             inspeccionCopy.listaIncidencias.get(i).setId(i);
             // asignamos el id temporal del incidente a sus respectivas imagenes
-            cantImagenesTotal += inspeccionCopy.listaIncidencias.get(i).listaImgComent.size();
             for (int j = 0; j < inspeccionCopy.listaIncidencias.get(i).listaImgComent.size(); j++) {
                 inspeccionCopy.listaIncidencias.get(i).listaImgComent.get(j).setIdParent(i);
             }
@@ -140,27 +139,41 @@ public class InspeccionIntentServices extends IntentService {
                         JSONArray listaIncidentes = jsonObject.getJSONObject("message")
                                 .getJSONArray("inspection_items");
 
-                        // Actualizar el registro en Realm :
-                        updateLocalInspection(inspeccionOriginal, inspeccionResult.getInt("id"));
+                        Realm realm = Realm.getInstance(myConfig);
+                        InspeccionRO inspeccionRealm = realm.where(InspeccionRO.class)
+                                .equalTo("tmpId",inspeccionCopy.getTmpId()).findFirst();
 
-                        // Actualizar incidentes en Realm :
-                        updateLocalIncidentes(inspeccionOriginal, listaIncidentes);
-
-                        InspeccionRO currentInspe = realm.copyFromRealm(inspeccionOriginal);
-
-                        //Enviamos todas las imágenes :
-                        for (IncidenciaRO incident : currentInspe.listaIncidencias) {
-                            if (incident.listaImgComent.size() > 0) {
-                                for (ImagenRO image : incident.listaImgComent) {
-                                    sendImage(image, incident.getTmpId(), incident.getId(), token);
-                                }
-                                TerminaProceso();
-                            } else {
-                                TerminaProceso();
-                            }
+                        if(!realm.isInTransaction()){
+                            realm.beginTransaction();
                         }
 
-                        Log.e("jsonObject", jsonObject.toString());
+
+                        // Actualizar el registro en Realm :
+                        updateLocalInspection(inspeccionRealm, inspeccionResult.getInt("id"));
+
+                        // Actualizar incidentes en Realm :
+                        updateLocalIncidentes(inspeccionRealm, listaIncidentes);
+                        realm.commitTransaction();
+
+                        //InspeccionRO currentInspe = realm.copyFromRealm(inspeccionOriginal);
+
+                        if(inspeccionRealm.listaIncidencias.size() > 0){
+                            //Enviamos todas las imágenes :
+                            for (IncidenciaRO incident : inspeccionRealm.listaIncidencias) {
+                                if (incident.listaImgComent.size() > 0) {
+                                    for (ImagenRO image : incident.listaImgComent) {
+                                        sendImage(image, incident.getTmpId(), incident.getId(), token);
+                                    }
+                                }
+                            }
+                            TerminaProceso();
+                        }else{
+                            TerminaProceso();
+                        }
+
+
+
+                        //Log.e("jsonObject", jsonObject.toString());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -182,35 +195,31 @@ public class InspeccionIntentServices extends IntentService {
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void updateLocalInspection(InspeccionRO inspeccionOriginal, int id) {
-        Realm realm = Realm.getInstance(myConfig);
         try {
-            realm.beginTransaction();
             inspeccionOriginal.setId(id);
             inspeccionOriginal.setTmpId(String.valueOf(id));
-            realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
-            realm.close();
         } finally {
-            realm.close();
+
         }
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private void updateLocalIncidentes(InspeccionRO inspeccionOriginal, JSONArray arrayIncidentes) {
-        Realm realm = Realm.getInstance(myConfig);
         try {
-            realm.beginTransaction();
+
             for (int i = 0; i < arrayIncidentes.length(); i++) {
                 JSONObject incidenteJson = arrayIncidentes.getJSONObject(i);
+
+                String oldFolder = String.valueOf(inspeccionOriginal.listaIncidencias.get(i).getTmpId());
                 inspeccionOriginal.listaIncidencias.get(i).setId(incidenteJson.getInt("id"));
+                inspeccionOriginal.listaIncidencias.get(i).setTmpId(String.valueOf(incidenteJson.getInt("id")));
+                Generic.CambiarNombreCarpetaImageens(getApplicationContext(), Constants.PATH_IMAGE_GALERY_INCIDENCIA, oldFolder, inspeccionOriginal.listaIncidencias.get(i).getTmpId());
             }
-            realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
-            realm.close();
         } finally {
-            realm.close();
         }
     }
 
@@ -282,7 +291,7 @@ public class InspeccionIntentServices extends IntentService {
 
                                 }
 
-                                Log.e("jsonObject", jsonObject.toString());
+                                //Log.e("jsonObject", jsonObject.toString());
 
 
                             } catch (Exception e) {
@@ -293,8 +302,8 @@ public class InspeccionIntentServices extends IntentService {
 
 
                         } else {
-                            Log.e("imagen", response.message());
-                            Log.e("imagen error", response.errorBody().toString());
+                            //Log.e("imagen", response.message());
+                            //Log.e("imagen error", response.errorBody().toString());
                             //dialogLoading.dismiss();
                             //Messages.showSB(getView(), getString(R.string.msg_login_fail), "ok");
                         }
@@ -352,23 +361,29 @@ public class InspeccionIntentServices extends IntentService {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    try{
+                    Realm real = Realm.getInstance(myConfig);
+                    try {
                         // Seteando el id de imagen :
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         JSONObject messageResult = jsonObject.getJSONObject("message");
                         JSONObject imageResult = messageResult.getJSONObject("inspection_image");
 
-                        Realm real = Realm.getInstance(myConfig);
 
                         ImagenRO imagenInc = real.where(ImagenRO.class).equalTo("name",
                                 imageResult.getString("name")).findFirst();
                         if (imagenInc != null) {
-                            real.beginTransaction();
+                            if(!real.isInTransaction()){
+                                real.beginTransaction();
+                            }
+
                             imagenInc.setId(imageResult.getInt("id"));
                             real.commitTransaction();
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
+                        real.close();
+                    }finally {
+                        real.close();
                     }
                 }
             }

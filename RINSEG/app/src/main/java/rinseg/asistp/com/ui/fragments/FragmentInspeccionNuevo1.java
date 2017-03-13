@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -73,6 +74,8 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
     EditText txtNombreInspector;
     Spinner spinnerGerencia;
     Button btnAgregar;
+
+    LinearLayout linearRoot;
 
     public FragmentInspeccionNuevo1() {
     }
@@ -173,6 +176,7 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         txtDni = (EditText) v.findViewById(R.id.txt_inpeccion_1_dni);
         txtNombreInspector = (EditText) v.findViewById(R.id.txt_inpeccion_1_nombre);
         btnAgregar = (Button) v.findViewById(R.id.btn_incpeccion_1_agregar_inspector);
+        linearRoot = (LinearLayout) v.findViewById(R.id.linear_root_inspeccion_1);
 
         //configuracion para el recicler
         recyclerInspectores = (RecyclerView) v.findViewById(R.id.recycler_inpeccion_1_inspectores);
@@ -277,6 +281,25 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         }
     }
 
+    private boolean ValidarInspectorRepetido() {
+        boolean resu = true;
+        try {
+            for (int i = 0; i < listaInspectores.size(); i++) {
+                InspectorRO inspector = listaInspectores.get(i);
+                String dni = txtDni.getText().toString().trim();
+                if (inspector.getDni().equals(dni)) {
+                    Messages.showSB(linearRoot, "No se puede agregar el mismo DNI más de una vez", "ok");
+                    resu = false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resu = false;
+        }
+
+        return resu;
+    }
+
     private boolean ValidarFormulario() {
 
         boolean resu = true;
@@ -312,6 +335,11 @@ public class FragmentInspeccionNuevo1 extends Fragment implements ListenerClickI
         if (!ValidarFormulario()) {
             return;
         }
+
+        if(!ValidarInspectorRepetido()){
+            return;
+        }
+
 
         Realm realm = Realm.getInstance(myConfig);
         try {

@@ -109,7 +109,7 @@ public class Generic {
             if (!folder.exists()) {
                 result = folder.mkdirs();
             }
-            Log.e("resultSaveImageGalery", String.valueOf(result));
+            //Log.e("resultSaveImageGalery", String.valueOf(result));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,7 +149,7 @@ public class Generic {
         if (!folder.exists()) {
             result = folder.mkdirs();
         }
-        Log.e("resultSaveImageGalery", String.valueOf(result));
+        //Log.e("resultSaveImageGalery", String.valueOf(result));
 
         return result;
     }
@@ -188,7 +188,7 @@ public class Generic {
             if (folderRop.exists()) {
                 File[] files = folderRop.listFiles();
                 for (int i = 0; i < files.length; i++) {
-                    Log.e("getName", files[i].getName());
+                    //Log.e("getName", files[i].getName());
                     if (files[i].getName().equals(nombreImagen)) {
                         //result.bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
                         //result.bitmap = null;
@@ -243,7 +243,7 @@ public class Generic {
         if (folder.exists()) {
             File[] files = folder.listFiles();
             for (int i = 0; i < files.length; i++) {
-                Log.d("Files", "FileName:" + files[i].getName());
+                //Log.d("Files", "FileName:" + files[i].getName());
                 resu += 1;
             }
         }
@@ -262,7 +262,7 @@ public class Generic {
         if (folder.exists()) {
             File[] files = folder.listFiles();
             for (int i = 0; i < files.length; i++) {
-                Log.d("Files", "FileName:" + files[i].getName());
+                //Log.d("Files", "FileName:" + files[i].getName());
                 resu += 1;
             }
         }
@@ -362,7 +362,7 @@ public class Generic {
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-                Log.e("load", "load ok");
+                //Log.e("load", "load ok");
             }
         };
         return target;

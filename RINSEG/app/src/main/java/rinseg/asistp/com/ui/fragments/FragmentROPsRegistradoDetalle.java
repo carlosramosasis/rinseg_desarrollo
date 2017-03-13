@@ -175,11 +175,11 @@ public class FragmentROPsRegistradoDetalle extends Fragment implements ListenerC
 
             textDescripcion.setText(rop.getEventDescription());
 
-            ((ActivityRopRegistradoDetalle) getActivity()).getSupportActionBar().setTitle("Rop# " + _idRop);
+            ((ActivityRopRegistradoDetalle) getActivity()).getSupportActionBar().setTitle("ROP# " + _idRop);
 
-            for (int i = 0; i < rop.listaAccionPreventiva.size(); i++) {
-                Log.e("accion", rop.listaAccionPreventiva.get(i).isClosed() + "" + rop.listaAccionPreventiva.get(i).getId());
-            }
+            //for (int i = 0; i < rop.listaAccionPreventiva.size(); i++) {
+                //Log.e("accion", rop.listaAccionPreventiva.get(i).isClosed() + "" + rop.listaAccionPreventiva.get(i).getId());
+            // }
             listAcciones.addAll(rop.listaAccionPreventiva);
             adapter.notifyDataSetChanged();
 
@@ -194,8 +194,8 @@ public class FragmentROPsRegistradoDetalle extends Fragment implements ListenerC
 
     @Override
     public void onItemClicked(AccionPrevEstadoAdapter.AccionViewHolder holder, int position) {
-        AccionPreventiva accion  = listAcciones.get(position);
-        if(!accion.isClosed()){
+        AccionPreventiva accion = listAcciones.get(position);
+        if (!accion.isClosed() && rop.getId() != 0) {
             FragmentLevantarAccionPreventiva fragment = FragmentLevantarAccionPreventiva.newInstance(accion.getId(), rop.getId());
             activity.replaceFragment(fragment, false, 0, 0, 0, 0);
         }

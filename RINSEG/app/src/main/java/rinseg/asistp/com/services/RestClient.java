@@ -45,7 +45,7 @@ public class RestClient {
 
 
                                 Request request = requestBuilder.build();
-                                Log.e("request",request.toString());
+                                //Log.e("request",request.toString());
                                 return chain.proceed(request);
                             }
                         })

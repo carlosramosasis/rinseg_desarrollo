@@ -51,7 +51,7 @@ public class DialogRINSEG extends Dialog implements android.view.View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_dialog_aceptar:
-                Log.e("btnAceptar","ACEPTAR");
+                //Log.e("btnAceptar","ACEPTAR");
                 break;
             case R.id.btn_cancelar:
                 dismiss();

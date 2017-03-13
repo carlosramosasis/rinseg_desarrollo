@@ -27,6 +27,8 @@
     <color name="colorAccentDark2">#680002</color>
     <color name="colorGray1">#606060</color>
     <color name="colorGray">#484848</color>
+    <color name="colorCeleste">#2eb4be</color>
+
     <color name="colorPrimarytransparent">#af282828</color>
 
     <color name="colorAccentTransparent">#9de42a2d</color>

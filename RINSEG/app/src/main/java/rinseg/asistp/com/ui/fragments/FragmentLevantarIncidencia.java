@@ -600,7 +600,7 @@ public class FragmentLevantarIncidencia extends Fragment {
                     try {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
+                        //Log.d("TAG-INCIDENT-FIX ", jsonObject.toString());
                         // dialog.dismiss();
                         ///todo Actualizar incidente cerrado
                         updateIncidenteClose();
@@ -629,8 +629,8 @@ public class FragmentLevantarIncidencia extends Fragment {
                     dialog.dismiss();
                     Messages.showSB(getView(), getString(R.string.msg_error_guardar_inspeccion),
                             "ok");
-                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                            response.message() + "code :" + response.code());
+                    //Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                    //       response.message() + "code :" + response.code());
                 }
             }
 

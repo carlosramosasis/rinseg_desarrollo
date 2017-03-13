@@ -2,8 +2,10 @@ package rinseg.asistp.com.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -301,6 +303,8 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             mInspc.setDateCloseString(Generic.dateFormatterMySql.format(mInspc.getDateClose()));
             mInspc.setCerrado(true);
             realm.commitTransaction();
+
+            TerminaProceso();
         } catch (Exception e) {
             e.printStackTrace();
             realm.close();
@@ -373,6 +377,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
                     } catch (Exception e) {
                         dialog.dismiss();
                         e.printStackTrace();
+                        Messages.showSB(getView(), getString(R.string.msg_error_guardar_inspeccion));
                     }
                 } else {
                     dialog.dismiss();
@@ -384,6 +389,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 dialog.dismiss();
                 t.printStackTrace();
+                showDialogSuccess(getString(R.string.msg_error_guardar_inspeccion));
             }
         });
     }
@@ -394,7 +400,7 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
         dialogConfirm.setTitle("INSPECCIÓN FINALIZADA");
         dialogConfirm.setBody(message);
         dialogConfirm.setTextBtnAceptar("DE ACUERDO");
-        dialogConfirm.btnCancelar.setVisibility(View.INVISIBLE);
+        dialogConfirm.btnCancelar.setVisibility(View.GONE);
         dialogConfirm.btnAceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -527,4 +533,10 @@ public class FragmentInspeccionNuevo4 extends Fragment implements ListenerClick 
             }
         });
     }
+
+    void TerminaProceso() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO_INSPECCION, false).commit();
+    }
+
 }

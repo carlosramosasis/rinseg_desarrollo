@@ -13,8 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.itextpdf.text.pdf.parser.Line;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,6 +86,7 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
     EditText txtNombreResponsable;
     Spinner spinnerGerencia;
     Button btnAgregar;
+    LinearLayout linearRoot;
 
     public FragmentInspeccionNuevo2() {
         // Required empty public constructor
@@ -204,6 +208,7 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         txtDni = (EditText) v.findViewById(R.id.txt_inpeccion_2_dni);
         txtNombreResponsable= (EditText) v.findViewById(R.id.txt_inpeccion_2_nombre);
         btnAgregar = (Button) v.findViewById(R.id.btn_incpeccion_2_agregar_responsable);
+        linearRoot =  (LinearLayout) v. findViewById(R.id.linear_root_inspeccion_2);
 
 
         //configuracion para el recicler
@@ -306,6 +311,25 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
         }
     }
 
+    private boolean ValidarResponsableRepetido() {
+        boolean resu = true;
+        try {
+            for (int i = 0; i < listaResponsables.size(); i++) {
+                InspectorRO responsable = listaResponsables.get(i);
+                String dni = txtDni.getText().toString().trim();
+                if (responsable.getDni().equals(dni)) {
+                    Messages.showSB(linearRoot, "No se puede agregar el mismo DNI más de una vez", "ok");
+                    resu = false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resu = false;
+        }
+
+        return resu;
+    }
+
     private boolean ValidarFormulario() {
 
         boolean resu = true;
@@ -337,6 +361,9 @@ public class FragmentInspeccionNuevo2 extends Fragment implements ListenerClickI
 
     private void AgregarResponsable() {
         if (!ValidarFormulario()) {
+            return;
+        }
+        if (!ValidarResponsableRepetido()) {
             return;
         }
 

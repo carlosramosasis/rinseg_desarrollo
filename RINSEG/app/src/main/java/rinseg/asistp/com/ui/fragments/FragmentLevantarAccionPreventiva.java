@@ -377,7 +377,7 @@ public class FragmentLevantarAccionPreventiva extends Fragment {
                     try {
                         // Intentaremos castear la respuesta :
                         JSONObject jsonObject = new JSONObject(response.body().string());
-                        Log.d("TAG-ACTIONS-FIX ", jsonObject.toString());
+                        //Log.d("TAG-ACTIONS-FIX ", jsonObject.toString());
                         // dialog.dismiss();
                         ///todo Actualizar accion prevntiva cerrado
                         updateAccion();
@@ -408,8 +408,8 @@ public class FragmentLevantarAccionPreventiva extends Fragment {
                     dialog.dismiss();
                     Messages.showSB(getView(), getString(R.string.msg_error_levantar_accion_preventiva),
                             "ok");
-                    Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                            response.message() + "code :" + response.code());
+                    //Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                    //       response.message() + "code :" + response.code());
                 }
             }
 
@@ -518,7 +518,8 @@ public class FragmentLevantarAccionPreventiva extends Fragment {
             if (!realm.isInTransaction()) {
                 realm.beginTransaction();
             }
-            Log.e("accionclosed", "" + accionPreventivaRO.isClosed());
+            //Log.e("accionclosed", "" + accionPreventivaRO.isClosed());
+
 
             AccionPreventiva accion = ropRO.listaAccionPreventiva.where().equalTo("id", accionPreventivaRO.getId()).findFirst();
             accion.setClosed(true);
@@ -529,7 +530,7 @@ public class FragmentLevantarAccionPreventiva extends Fragment {
                 }
 
             }
-            Log.e("id accion levantada", "" + accionPreventivaRO.getId());
+            //Log.e("id accion levantada", "" + accionPreventivaRO.getId());
             realm.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
@@ -660,7 +661,7 @@ public class FragmentLevantarAccionPreventiva extends Fragment {
         Realm realm = Realm.getInstance(myConfig);
         try {
 
-            Log.e("accionclosed", "" + accionPreventivaRO.isClosed());
+            //Log.e("accionclosed", "" + accionPreventivaRO.isClosed());
 
             int totalAcciones = ropRO.listaAccionPreventiva.size();
             int totalAccionesLevantadas = 0;

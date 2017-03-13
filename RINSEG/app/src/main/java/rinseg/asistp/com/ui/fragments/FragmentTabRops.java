@@ -483,7 +483,7 @@ public class FragmentTabRops extends Fragment {
                                                 }
                                             }*/
                                         } catch (IOException e) {
-                                            Log.e("IOException", e.getMessage());
+                                            //Log.e("IOException", e.getMessage());
                                             e.printStackTrace();
                                             cantImagenesRecibidos += 1;
                                             if (validarDescargaTotalImagenes()) {
@@ -503,7 +503,7 @@ public class FragmentTabRops extends Fragment {
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                                 super.onLoadFailed(e, errorDrawable);
-                                Log.e("Glide_Error", e.getMessage());
+                                //Log.e("Glide_Error", e.getMessage());
                                 cantImagenesRecibidos += 1;
                                 if (validarDescargaTotalImagenes()) {
                                     if (Looper.myLooper() == null) {
@@ -580,11 +580,11 @@ public class FragmentTabRops extends Fragment {
                                         ostream.flush();
                                         ostream.close();
                                     } else {
-                                        Log.e(getClass().getCanonicalName(), "Error al crear " +
-                                                file.getPath());
+                                        //Log.e(getClass().getCanonicalName(), "Error al crear " +
+                                        //       file.getPath());
                                     }
                                 } catch (IOException e) {
-                                    Log.e("IOException", e.getLocalizedMessage());
+                                    //Log.e("IOException", e.getLocalizedMessage());
                                     e.printStackTrace();
                                 }
                             }

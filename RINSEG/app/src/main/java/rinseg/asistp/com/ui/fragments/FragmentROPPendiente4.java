@@ -3,11 +3,13 @@ package rinseg.asistp.com.ui.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -43,6 +45,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rinseg.asistp.com.models.CompanyRO;
+import rinseg.asistp.com.models.EventItemsFix;
+import rinseg.asistp.com.models.EventItemsRO;
 import rinseg.asistp.com.models.FotoModel;
 import rinseg.asistp.com.models.ImagenRO;
 import rinseg.asistp.com.models.ROP;
@@ -501,6 +505,8 @@ public class FragmentROPPendiente4 extends Fragment {
 
             realm.commitTransaction();
 
+            TerminaProceso();
+
         } catch (Exception e) {
             Messages.showSB(getView(), e.getMessage(), "ok");
         } finally {
@@ -532,9 +538,9 @@ public class FragmentROPPendiente4 extends Fragment {
 
         final ROP ropToSend = realm.copyFromRealm(rop);
         for (int i = 0; i < mRop.listaEventItems.size(); i++) {
-            ropToSend.listaEventItems.get(i).setName(null);
-            ropToSend.listaEventItems.get(i).setCode(null);
-            ropToSend.listaEventItems.get(i).setChecked(null);
+            EventItemsFix evetItemFix = new EventItemsFix();
+            evetItemFix.setId(mRop.listaEventItems.get(i).getId());
+            ropToSend.listaEventItemsFix.add(evetItemFix);
         }
 
         String token = activityMain.usuarioLogueado.getApi_token();
@@ -542,14 +548,14 @@ public class FragmentROPPendiente4 extends Fragment {
         dialogLoading.show();
         RestClient restClient = new RestClient(Services.URL_ROPS);
 
-        for (int i = 0; i < ropToSend.listaEventItems.size(); i++) {
-            Log.e("Rop listaEventItems", "" + ropToSend.listaEventItems.get(i).getId() + ropToSend.listaEventItems.get(i).getName());
-        }
+        //for (int i = 0; i < ropToSend.listaEventItems.size(); i++) {
+            //Log.e("Rop listaEventItems", "" + ropToSend.listaEventItems.get(i).getId() + ropToSend.listaEventItems.get(i).getName());
+        //}
 
         Call<ResponseBody> call = restClient.iServices.setRopCerrado(ropToSend, token);
 
-        Log.e("rop risk ", "" + rop.getRiskId());
-        Log.e("call ", "" + call.toString());
+        //Log.e("rop risk ", "" + rop.getRiskId());
+        //Log.e("call ", "" + call.toString());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -563,7 +569,7 @@ public class FragmentROPPendiente4 extends Fragment {
                         if (status.equals(Constants.SUCCESS)) {
                             JSONObject messageResult = jsonObject.getJSONObject("message");
                             JSONObject ropResult = messageResult.getJSONObject("rop");
-                            Log.e("Rop JSON", ropResult.toString());
+                            //Log.e("Rop JSON", ropResult.toString());
 
                             String api_token = activityMain.usuarioLogueado.getApi_token();
 
@@ -599,7 +605,7 @@ public class FragmentROPPendiente4 extends Fragment {
 
                         }
 
-                        Log.e("jsonObject", jsonObject.toString());
+                        //Log.e("jsonObject", jsonObject.toString());
 
                     } catch (Exception e) {
                         dialogLoading.dismiss();
@@ -692,7 +698,7 @@ public class FragmentROPPendiente4 extends Fragment {
 
                                 }
 
-                                Log.e("jsonObject", jsonObject.toString());
+                                //Log.e("jsonObject", jsonObject.toString());
 
 
                             } catch (Exception e) {
@@ -702,8 +708,8 @@ public class FragmentROPPendiente4 extends Fragment {
                             }
 
                         } else {
-                            Log.e("imagen", response.message());
-                            Log.e("imagen error", response.errorBody().toString());
+                            //Log.e("imagen", response.message());
+                            //Log.e("imagen error", response.errorBody().toString());
                             //dialogLoading.dismiss();
                             //Messages.showSB(getView(), getString(R.string.msg_login_fail), "ok");
                         }
@@ -717,7 +723,7 @@ public class FragmentROPPendiente4 extends Fragment {
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         cantImagenesEnviadas += 1;
                         postExecute(idRop);
-                        Log.e("failure", t.getMessage());
+                        //Log.e("failure", t.getMessage());
                         //dialogLoading.dismiss();
                         //Messages.showSB(getView(), getString(R.string.msg_servidor_inaccesible), "ok");
                     }
@@ -840,6 +846,11 @@ public class FragmentROPPendiente4 extends Fragment {
         Intent GaleriaIntent = new Intent().setClass(activityMain, ActivityGaleria.class);
         GaleriaIntent.putExtra("ROPtmpId", mRop.getTmpId());
         startActivity(GaleriaIntent);
+    }
+
+    void TerminaProceso() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        preferences.edit().putBoolean(Constants.KEY_INTENT_SERV_ACTIVO, false).commit();
     }
 
 

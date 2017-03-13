@@ -472,8 +472,8 @@ public class FragmentROPCerrado1 extends Fragment  {
                             loading.dismiss();
                             Messages.showSB(
                                     getView(), getString(R.string.msg_error_guardar_inspeccion), "ok");
-                            Log.e("TAG_OnResponse", response.errorBody() + " - " +
-                                    response.message() + "code :" + response.code());
+                            //Log.e("TAG_OnResponse", response.errorBody() + " - " +
+                            //       response.message() + "code :" + response.code());
                         }
                     }
 
@@ -559,7 +559,7 @@ public class FragmentROPCerrado1 extends Fragment  {
             idRop = bundle.getInt("ROPId", 0);
             idTmpRop = bundle.getString("ROPIdTmp", "");
 
-            Log.e("id ROP", idRop + " " + idTmpRop);
+            //Log.e("id ROP", idRop + " " + idTmpRop);
             //ROP tmpRop = new ROP();
 
                 final Realm realm = Realm.getInstance(myConfig);
@@ -789,7 +789,7 @@ public class FragmentROPCerrado1 extends Fragment  {
 
                                 }
 
-                                Log.e("jsonObject", jsonObject.toString());
+                                //Log.e("jsonObject", jsonObject.toString());
 
 
                             } catch (Exception e) {
@@ -800,8 +800,8 @@ public class FragmentROPCerrado1 extends Fragment  {
 
 
                         } else {
-                            Log.e("imagen", response.message());
-                            Log.e("imagen error", response.errorBody().toString());
+                            //Log.e("imagen", response.message());
+                            //Log.e("imagen error", response.errorBody().toString());
                             //dialogLoading.dismiss();
                             //Messages.showSB(getView(), getString(R.string.msg_login_fail), "ok");
                         }
@@ -815,7 +815,7 @@ public class FragmentROPCerrado1 extends Fragment  {
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         cantImagenesEnviadas += 1;
                         postExecute();
-                        Log.e("failure", t.getMessage());
+                        //Log.e("failure", t.getMessage());
                         //dialogLoading.dismiss();
                         //Messages.showSB(getView(), getString(R.string.msg_servidor_inaccesible), "ok");
                     }
